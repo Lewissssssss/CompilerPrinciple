@@ -286,6 +286,29 @@ void create_jump(string exit_bb, BasicBlock current_bb){
     // insert_instruction(new_inst, current_bb);
 }
 
+void create_function_call(Func_Type func, string res, Symbol_Tabel symbol_table, BasicBlock current_bb){
+    Operand result = Operand(OPD_VARIABLE, res);
+    Operand func_name = Operand(OPD_VARIABLE, func.f_name);
+    vector<Var_Type> args;
+    vector<string> arg_names = func.tmp_arg_name;
+    for(auto name : arg_names){ {
+        Var_Type tmp = symbol_table.lookup_var(name);
+        args.push_back(tmp);
+    }
+    Operand args_op = Operand(OPD_ARGS, args);
+    Instruction new_inst = Instruction(IR_CALL, result, func_name, args_op);
+    current_bb.push_back(new_inst);
+}
+
+void create_store(string opd1, string opd2, BasicBlock current_bb){
+    string res = "res"
+    Operand result = Operand(OPD_VARIABLE, res);
+    Operand op1 = Operand(OPD_VARIABLE, opd1);
+    Operand op2 = Operand(OPD_VARIABLE, opd2);
+    Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
+    current_bb.push_back(new_inst);
+}
+
 ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb){
     Expr_Stmt_type exp_type=get_exprTpye_from_node(&expr);
 
@@ -323,7 +346,15 @@ ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb
             Type arg_temp = get<Var_Type>(translated_arg).type;
             func.args.push_back(arg_temp);
         }
-        return func;
+        string res_name = to_string(symbol_tabel.get_current_tbl_size());
+        Var_Type res;
+        res.type = func.return_type;
+        res.val = func.return_val;
+        res.tmp_var_name = res_name;
+        symbol_tabel.add_symbol(res_name, res);
+
+        create_function_call(func, res_name, sybmbol_table, current_bb);
+        return res;
     }
     else if (exp_type == ARRAY_et) {
         // ID[Idx1]..[IdxN]
