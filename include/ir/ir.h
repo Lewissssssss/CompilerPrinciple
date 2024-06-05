@@ -8,11 +8,19 @@
 #include <unordered_map>
 // #define BasicBlock int
 
-typedef struct
-{
-    std::vector<std::vector<Instruction>>::iterator iter_to_BBs;
-    int current_bb;
+// typedef struct
+// {
+//     std::vector<std::vector<Instruction>>::iterator iter_to_BBs;
+//     int current_bb;
+// } BasicBlock;
+
+typedef struct{
+    std::vector<Instruction> inst_list;
+    std::string name;
 } BasicBlock;
+
+typedef std::vector<BasicBlock> BBs;
+int bb_num = 0;
 
 
 enum Expr_Stmt_type{
@@ -121,7 +129,8 @@ struct Func_Type {
 // };
 // Func_BasicBlocks Func_BB_map;
 
-unordered_map<string, std::vector<std::vector<Instruction>>> Func_BB_map;// GLOBAL, for func's basic blocks.
+// unordered_map<string, std::vector<std::vector<Instruction>>> Func_BB_map;// GLOBAL, for func's basic blocks.
+unordered_map<string, std::vector<BBs>> Func_BB_map;// LOCAL, for func's basic blocks.
 string cur_Func;
 
 typedef std::variant<Var_Type, Func_Type, std::unordered_map<std::string, Var_Type>::iterator> ir_Type;//iterator to handel LVal
