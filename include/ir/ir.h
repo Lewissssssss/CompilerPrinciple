@@ -67,14 +67,23 @@ struct Func_Type {
     Type return_type;
     value return_val;
     std::vector<Type> args;
+    std::vector<std::string> tmp_arg_name;
     int arg_num;
     Func_Type() {}
-    Func_Type(const Func_Type &f) : return_type(f.return_type), return_val(f.return_val), args(f.args), arg_num(f.arg_num) {}
+    Func_Type(const Func_Type &f) {
+        return_type = f.return_type;
+        return_val = f.return_val;
+        args = f.args;
+        tmp_arg_name = f.tmp_arg_name;
+        arg_num = f.arg_num;
+    }
+
     Func_Type& operator=(const Func_Type& f) {
         if (this != &f) {
             return_type = f.return_type;
             return_val = f.return_val;
             args = f.args;
+            tmp_arg_name = f.tmp_arg_name;
             arg_num = f.arg_num;
         }
         return *this;
