@@ -10,6 +10,8 @@
 typedef struct {
     std::vector<Instruction> inst_list;
     std::string name;
+
+    
 } BasicBlock;
 
 typedef std::vector<BasicBlock> BBs;
@@ -79,7 +81,7 @@ struct Func_Type {
     }
 };
 
-std::unordered_map<std::string, std::vector<BBs>> Func_BB_map; // LOCAL, for func's basic blocks.
+std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
 std::string cur_Func;
 
 typedef std::variant<Var_Type, Func_Type, std::unordered_map<std::string, Var_Type>::iterator> ir_Type; // iterator to handle LVal
@@ -112,6 +114,7 @@ public:
     std::unordered_map<std::string, Var_Type>::iterator get_Lval(const std::string& identifier) {
         return Var_sym_tbl.find(identifier);
     }
+    int get_current_tbl_size(){return Var_sym_tbl.size();}
 };
 
 class Symbol_Table {
@@ -137,6 +140,7 @@ public:
     Field_Sym& get_current_symbol_tbl() {
         return Stack.top();
     }
+    int get_current_tbl_size(){Stack.top().get_current_tbl_size();}
 };
 
 Symbol_Table SYM_TBL;
