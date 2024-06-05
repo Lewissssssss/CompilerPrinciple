@@ -6,13 +6,21 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
+#include <regex>
+#include <algorithm>
 
-typedef struct {
+struct BasicBlock{
     std::vector<Instruction> inst_list;
     std::string name;
-
-    
-} BasicBlock;
+    BasicBlock(std::vector<Instruction> inst_list, std::string name) : inst_list(inst_list), name(name) {}
+    BasicBlock& operator=(const BasicBlock& b){
+        if(this != &b){
+            inst_list = b.inst_list;
+            name = b.name;
+        }
+        return *this;
+    }
+} ;
 
 typedef std::vector<BasicBlock> BBs;
 int bb_num = 0;

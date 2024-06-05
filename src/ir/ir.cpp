@@ -206,69 +206,98 @@ ir_Type create_constant(int number, Type type){
     return ret;
 
 }
-std::unordered_map<std::string, Var_Type>::iterator create_load(std::unordered_map<std::string, Var_Type>::iterator addr, BasicBlock& current_bb){//这里的addr实际就是变量的iterator，类似于指针
-    //创建inst条目
-    Var_Type *target=new Var_Type();
-    target->tmp_var_name="tmp_"+addr->first;
-    target->type=addr->second.type;
-    target->val=addr->second.val;
 
-    auto op_target = new Operand(OPD_VARIABLE,target->tmp_var_name);
-    auto op_source = new Operand(OPD_VARIABLE, addr->first);
-    auto inst = new Instruction(IR_LOAD, *op_target, *op_source);
+void create_load(Var_Type target, Var_Type source, BasicBlock& current_bb){
+    auto tar = new Operand(OPD_VARIABLE, target.tmp_var_name);
+    auto src = new Operand(OPD_VARIABLE, source.tmp_var_name);
+    auto inst = new Instruction(IR_LOAD, *tar,*src);
 
     insert_instruction(*inst, current_bb);
-    // vector<Instruction>& cur_BB = (*(current_bb.iter_to_BBs))[current_bb.current_bb];
-    // cur_BB.push_back(*inst);
-    //inst条目创建、插入BB完毕
-    return addr;
 }//load重要的就是target and source   
-ir_Type create_binary(string operation, ir_Type exp1, ir_Type exp2, BasicBlock current_bb){
-    if(operation=="ADD"){
-        auto& e1=get<Var_Type>(exp1);
-        auto& e2=get<Var_Type>(exp2);
 
-        int v1=get<int>(e1.val);
-        int v2=get<int>(e2.val);
-        int v=v1+v2;
+// std::unordered_map<std::string, Var_Type>::iterator create_load(std::unordered_map<std::string, Var_Type>::iterator addr, BasicBlock& current_bb){//这里的addr实际就是变量的iterator，类似于指针
+//     //创建inst条目
+//     Var_Type *target=new Var_Type();
+//     target->tmp_var_name="tmp_"+addr->first;
+//     target->type=addr->second.type;
+//     target->val=addr->second.val;
 
-        Var_Type ret;
-        ret.type=INT_TY;
-        ret.val=v;
-        //inst 创建
-        auto res = new Operand()
-        return ret;
+//     auto op_target = new Operand(OPD_VARIABLE,target->tmp_var_name);
+//     auto op_source = new Operand(OPD_VARIABLE, addr->first);
+//     auto inst = new Instruction(IR_LOAD, *op_target, *op_source);
 
-    }else if("AND"){
-        auto& e1=get<Var_Type>(exp1);
-        auto& e2=get<Var_Type>(exp2);
+//     insert_instruction(*inst, current_bb);
+//     // vector<Instruction>& cur_BB = (*(current_bb.iter_to_BBs))[current_bb.current_bb];
+//     // cur_BB.push_back(*inst);
+//     //inst条目创建、插入BB完毕
+//     return addr;
+// }//load重要的就是target and source
+void create_binary(string operation,Var_Type BinOpRes, Var_Type exp1, Var_Type exp2, BasicBlock current_bb){
+    auto BOR = new Operand(OPD_VARIABLE, BinOpRes.tmp_var_name);
+    auto e1 = new Operand(OPD_VARIABLE,exp1.tmp_var_name);
+    auto e2 = new Operand(OPD_VARIABLE,exp2.tmp_var_name);
 
-        int v1=get<int>(e1.val);
-        int v2=get<int>(e2.val);
-        int v=v1&&v2;
+    auto inst = new Instruction(IR_ADD,*BOR,*e1,*e2);
 
-        Var_Type ret;
-        ret.type=INT_TY;
-        ret.val=v;
+    insert_instruction(*inst,current_bb);
+    // if(operation=="ADD"){
 
-        return ret;
 
-    }else if("SUB"){
-        auto& e1=get<Var_Type>(exp1);
-        auto& e2=get<Var_Type>(exp2);
 
-        int v1=get<int>(e1.val);
-        int v2=get<int>(e2.val);
-        int v=v1-v2;
+    // }else if("AND"){
 
-        Var_Type ret;
-        ret.type=INT_TY;
-        ret.val=v;
 
-        return ret;
-    }
+    // }else if("SUB"){
 
-}
+    // }
+    
+}   
+// ir_Type create_binary(string operation, ir_Type exp1, ir_Type exp2, BasicBlock current_bb){
+//     if(operation=="ADD"){
+//         auto& e1=get<Var_Type>(exp1);
+//         auto& e2=get<Var_Type>(exp2);
+
+//         // int v1=get<int>(e1.val);
+//         // int v2=get<int>(e2.val);
+//         // int v=v1+v2;
+
+//         Var_Type ret;
+//         ret.type=INT_TY;
+//         ret.val=v;
+//         //inst 创建
+//         auto res = new Operand()
+//         return ret;
+
+//     }else if("AND"){
+//         auto& e1=get<Var_Type>(exp1);
+//         auto& e2=get<Var_Type>(exp2);
+
+//         int v1=get<int>(e1.val);
+//         int v2=get<int>(e2.val);
+//         int v=v1&&v2;
+
+//         Var_Type ret;
+//         ret.type=INT_TY;
+//         ret.val=v;
+
+//         return ret;
+
+//     }else if("SUB"){
+//         auto& e1=get<Var_Type>(exp1);
+//         auto& e2=get<Var_Type>(exp2);
+
+//         int v1=get<int>(e1.val);
+//         int v2=get<int>(e2.val);
+//         int v=v1-v2;
+
+//         Var_Type ret;
+//         ret.type=INT_TY;
+//         ret.val=v;
+
+//         return ret;
+//     }
+
+// }
 
 void create_branch(string cond, string true_label, string false_label, BasicBlock current_bb){
     Operand op1 = Operand(OPD_VARIABLE, cond);
@@ -294,21 +323,49 @@ ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb
         return create_constant(number, INT_TY);
 
     } else if (exp_type == ID_et) {
-        auto iter=symbol_table.get_Lval(expr.name());
-        
-        return create_load(iter,current_bb);
+        Var_Type tar;
+        tar.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());
+        tar.type = INT_TY;
+        tar.val = 0;//default
+        symbol_table.add_symbol(tar.tmp_var_name,tar);
+
+        Var_Type src;
+        src.tmp_var_name = expr.name();
+        src.type = INT_TY;
+        src.val = 0;//default
+        symbol_table.add_symbol(src.tmp_var_name,src);
+        //auto iter=symbol_table.get_Lval(expr.name());
+        create_load(tar,src,current_bb);
+        return tar;
     } else if (exp_type == BinOp_et) {
         auto operation=expr.name();
-        auto expr1_value=translate_expr(expr.children[0], symbol_table,current_bb);
-        auto expr2_value=translate_expr(expr.children[1], symbol_table,current_bb);
+        auto expr1_addr=translate_expr(expr.children[0], symbol_table,current_bb);
+        auto expr2_addr=translate_expr(expr.children[1], symbol_table,current_bb);
 
-        return create_binary(operation,expr1_value,expr2_value,current_bb);
+        Var_Type BinOpRes;
+        BinOpRes.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());
+        BinOpRes.val = 0;//default
+        BinOpRes.type = INT_TY;
+        symbol_table.add_symbol(BinOpRes.tmp_var_name,BinOpRes);
+
+        create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
+        return BinOpRes;
         
         // Handle BinOp_et case
     } else if (exp_type == Unary_ARRAY_et||exp_type == Unary_BinOp_et||exp_type == Unary_ID_et) {
         string U_TY=get_unary_type(expr);
         auto zero_exp=create_constant(0, INT_TY);
-        auto expr1_value= translate_expr(expr,symbol_table,current_bb);
+        auto expr1_value= get<Var_Type>(translate_expr(expr,symbol_table,current_bb));
+        
+        Var_Type BinOpRes;
+        BinOpRes.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());
+        BinOpRes.val = 0;//default
+        BinOpRes.type = INT_TY;
+        symbol_table.add_symbol(BinOpRes.tmp_var_name,BinOpRes);
+        //symbol_table.add_symbol(expr1_value.tmp_var_name,expr1_value);
+
+        create_binary("SUB",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+        return expr1_value;
         // Handle MINUS_et case
     } else if (exp_type == Call_et) {
         // Call ID, Args
@@ -392,6 +449,9 @@ int calculate_array_size(Node node){
     }
     return size;
 
+}
+void reverseVector(std::vector<Node>& params_) {
+    std::reverse(params_.begin(), params_.end());
 }
 BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current_bb){
     Expr_Stmt_type stmt_type=get_exprTpye_from_node(&stmt);
@@ -526,8 +586,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         bb_num++;
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label)
-        BasicBlock exit_bb;
+        exit_inst.push_back(exit_label);
+        BasicBlock exit_bb = BasicBlock{exit_inst, ex_label};
         exit_bb.inst_list = exit_inst;
         exit_bb.name = ex_label;
         bbs.push_back(exit_bb);
@@ -684,6 +744,44 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         //auto return_addr = symbol_table.lookup_func(cur_Func);
     } else if (stmt_type == FucDef_est) {
         // Handle function definition statement
+        string func_name = stmt.name();
+        BBs BBs_;
+        BasicBlock bb;
+        bb.name = "b" + to_string(bb_num++);
+        auto label_ = new Operand(OPD_VARIABLE, bb.name);
+        auto inst = new Instruction(IR_LABEL,*label_);
+        bb.inst_list.push_back(*inst);
+        BBs_.push_back(bb);
+        Func_BB_map.insert(pair(func_name, BBs_));
+
+        
+        std::regex pattern("FucDef (.*?)(INT|VOID)");//fname
+        std::smatch matches;
+        string tmp = stmt.name();
+        string name;
+        string ret_type_;
+        if (std::regex_search(tmp, matches, pattern)) {
+            name = matches[1].str() ;
+            ret_type_ = matches[2].str();
+
+        }//fname!
+        auto fname = new Operand(OPD_VARIABLE, name);
+        auto ret_type = new Operand(OPD_VARIABLE, ret_type_);
+        Node params = stmt.children[0];
+        vector<Node> params_ = params.children;
+
+        reverseVector(params_);
+        vector<Var_Type> args;
+        for(auto iter = params_.begin();iter!=params_.end();iter++){
+            Var_Type tmp;
+            tmp.tmp_var_name = iter->name();
+            tmp.type = INT_TY;
+            tmp.val = 0;//default
+            args.push_back(tmp);
+        }
+        auto args_ = new Operand(OPD_ARGS, args);
+        auto func_def_inst = new Instruction(IR_FUNCDEF, *fname,*args_,*ret_type);
+        insert_instruction(*func_def_inst, current_bb);
         
 
     } else {
