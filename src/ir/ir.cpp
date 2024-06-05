@@ -420,6 +420,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         Var_Type &var = symbol_table.lookup_var(ID);
         string addr_value = var.tmp_var_name;
 
+        // to do:判断类型，val or fun
         ir_Type val = translate_expr(stmt, symbol_table, current_bb);        
         string result_value = get<Var_Type>(val).tmp_var_name;
 
@@ -427,6 +428,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         return current_bb;  
     } else if (stmt_type == If_st) {
         // Handle if statement
+        BBs bbs = Func_BB_map[cur_Func];
+
         // new basic block
 
         // new EXIT basic block
@@ -447,7 +450,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         bb_num++;
         Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
         Instruction true_label = Instruction(IR_LABEL, tr_label_op);
-        true_inst.push_back(true_label)
+        true_inst.push_back(true_label);
         BasicBlock true_bb;
         true_bb.inst_list = true_inst;
         true_bb.name = tr_label;
@@ -455,6 +458,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
 
         // calculate condition expr in current basic block.
         Node expr = stmt.get(0);
+        // to do: 判断类型，val or fun
         ir_Type cond_value = translate_expr(expr, symbol_table, current_bb);
         string cond = cond_value.tmp_var_name;
         create_branch(cond, tr_label, ex_label, current_bb);
@@ -468,6 +472,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
 
     } else if (stmt_type == IfElse_st) {
         // Handle if-else statement
+        BBs bbs = Func_BB_map[cur_Func];
 
         // new EXIT basic block
         vector<Instruction> exit_inst;
@@ -475,7 +480,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         bb_num++;
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label)
+        exit_inst.push_back(exit_label);
         BasicBlock exit_bb;
         exit_bb.inst_list = exit_inst;
         exit_bb.name = ex_label;
@@ -488,7 +493,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         bb_num++;
         Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
         Instruction true_label = Instruction(IR_LABEL, tr_label_op);
-        true_inst.push_back(true_label)
+        true_inst.push_back(true_label);
         BasicBlock true_bb;
         true_bb.inst_list = true_inst;
         true_bb.name = tr_label;
@@ -500,7 +505,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         bb_num++;
         Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
         Instruction false_label = Instruction(IR_LABEL, fl_label_op);
-        false_inst.push_back(false_label)
+        false_inst.push_back(false_label);
         BasicBlock false_bb;
         false_bb.inst_list = false_inst;
         false_bb.name = fl_label;
@@ -522,14 +527,15 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         return exit_bb;
     } else if (stmt_type == While_st) {
         // Handle while statement
-        
+        BBs bbs = Func_BB_map[cur_Func];
+
         // new ENTRY basic block
         vector<Instruction> entry_inst;
         string et_label = "b" + to_string(bb_num);
         bb_num++;
         Operand et_label_op = Operand(OPD_VARIABLE, et_label);
         Instruction entry_label = Instruction(IR_LABEL, et_label_op);
-        entry_inst.push_back(entry_label)
+        entry_inst.push_back(entry_label);
         BasicBlock entry_bb;
         entry_bb.inst_list = entry_inst;
         entry_bb.name = et_label;
@@ -542,7 +548,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         bb_num++;
         Operand bd_label_op = Operand(OPD_VARIABLE, bd_label);
         Instruction body_label = Instruction(IR_LABEL, bd_label_op);
-        body_inst.push_back(body_label)
+        body_inst.push_back(body_label);
         BasicBlock body_bb;
         body_bb.inst_list = body_inst;
         body_bb.name = bd_label;
@@ -554,7 +560,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Tabel symbol_table,BasicBlock current
         bb_num++;
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label)
+        exit_inst.push_back(exit_label);
         BasicBlock exit_bb;
         exit_bb.inst_list = exit_inst;
         exit_bb.name = ex_label;

@@ -94,6 +94,7 @@ struct Func_Type {
     Type return_type;
     value return_val;
     std::vector<Type> args;
+    std::vector<std::string> tmp_arg_name;
     int arg_num;
 
     
@@ -103,6 +104,7 @@ struct Func_Type {
         return_type = f.return_type;
         return_val = f.return_val;
         args = f.args;
+        tmp_arg_name = f.tmp_arg_name;
         arg_num = f.arg_num;
     }
 
@@ -111,6 +113,7 @@ struct Func_Type {
             return_type = f.return_type;
             return_val = f.return_val;
             args = f.args;
+            tmp_arg_name = f.tmp_arg_name;
             arg_num = f.arg_num;
         }
         return *this;
@@ -130,7 +133,7 @@ struct Func_Type {
 // Func_BasicBlocks Func_BB_map;
 
 // unordered_map<string, std::vector<std::vector<Instruction>>> Func_BB_map;// GLOBAL, for func's basic blocks.
-unordered_map<string, std::vector<BBs>> Func_BB_map;// LOCAL, for func's basic blocks.
+unordered_map<string, BBs> Func_BB_map;// LOCAL, for func's basic blocks.
 string cur_Func;
 
 typedef std::variant<Var_Type, Func_Type, std::unordered_map<std::string, Var_Type>::iterator> ir_Type;//iterator to handel LVal
