@@ -1,0 +1,9 @@
+
+int main() {
+  int b;
+  int a[10];
+  a[2] = -(4+(11-6)-10);
+  b= -a[2];
+  putint(a[2]);
+  return 0;
+}
