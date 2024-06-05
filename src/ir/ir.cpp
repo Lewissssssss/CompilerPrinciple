@@ -421,7 +421,7 @@ int calculate_array_size(Node node){
     for(auto iter=array_size.begin();iter!=array_size.end();iter++){
         size *= *iter;
     }
-    return size;
+    return size; 
 
 }
 BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current_bb){
@@ -558,9 +558,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
         exit_inst.push_back(exit_label)
-        BasicBlock exit_bb;
-        exit_bb.inst_list = exit_inst;
-        exit_bb.name = ex_label;
+        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
         
         // new TRUE basic block
@@ -570,9 +568,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
         Instruction true_label = Instruction(IR_LABEL, tr_label_op);
         true_inst.push_back(true_label);
-        BasicBlock true_bb;
-        true_bb.inst_list = true_inst;
-        true_bb.name = tr_label;
+        BasicBlock true_bb = BasicBlock(true_inst, tr_label);
         bbs.push_back(true_bb);        
 
         // calculate condition expr in current basic block.
@@ -600,9 +596,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
         exit_inst.push_back(exit_label);
-        BasicBlock exit_bb;
-        exit_bb.inst_list = exit_inst;
-        exit_bb.name = ex_label;
+        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
         
 
@@ -613,9 +607,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
         Instruction true_label = Instruction(IR_LABEL, tr_label_op);
         true_inst.push_back(true_label);
-        BasicBlock true_bb;
-        true_bb.inst_list = true_inst;
-        true_bb.name = tr_label;
+        BasicBlock true_bb = BasicBlock(true_inst, tr_label);
         bbs.push_back(true_bb);  
 
         // new FALSE basic block
@@ -625,9 +617,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
         Instruction false_label = Instruction(IR_LABEL, fl_label_op);
         false_inst.push_back(false_label);
-        BasicBlock false_bb;
-        false_bb.inst_list = false_inst;
-        false_bb.name = fl_label;
+        BasicBlock false_bb = BasicBlock(false_inst, fl_label);
         bbs.push_back(false_bb);  
 
         Node Expr = stmt.get(0);
@@ -655,9 +645,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand et_label_op = Operand(OPD_VARIABLE, et_label);
         Instruction entry_label = Instruction(IR_LABEL, et_label_op);
         entry_inst.push_back(entry_label);
-        BasicBlock entry_bb;
-        entry_bb.inst_list = entry_inst;
-        entry_bb.name = et_label;
+        BasicBlock entry_bb = BasicBlock(entry_inst, et_label);
         bbs.push_back(entry_bb);
         
 
@@ -668,9 +656,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand bd_label_op = Operand(OPD_VARIABLE, bd_label);
         Instruction body_label = Instruction(IR_LABEL, bd_label_op);
         body_inst.push_back(body_label);
-        BasicBlock body_bb;
-        body_bb.inst_list = body_inst;
-        body_bb.name = bd_label;
+        BasicBlock body_bb = BasicBlock(body_inst, bd_label);
         bbs.push_back(body_bb);  
 
         // new EXIT basic block
@@ -680,9 +666,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
         exit_inst.push_back(exit_label);
-        BasicBlock exit_bb;
-        exit_bb.inst_list = exit_inst;
-        exit_bb.name = ex_label;
+        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
 
         // entry block of While should be separated.
@@ -709,8 +693,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
         create_store(return_value, return_addr, current_bb);
         create_jump(return_bb.name,current_bb);
-        BasicBlock end_block;
-        end_block.name = "EOF";
+        vector<Instruction> empty;
+        BasicBlock end_block = BasicBlock(empty, "EOF");
         return end_block;
         //auto return_addr = symbol_table.lookup_func(cur_Func);
     } else if (stmt_type == FucDef_est) {

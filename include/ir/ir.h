@@ -10,8 +10,7 @@
 typedef struct {
     std::vector<Instruction> inst_list;
     std::string name;
-
-    
+    BasicBlock(std::vector<Instruction> inst_list, std::string name) : inst_list(inst_list), name(name) {} 
 } BasicBlock;
 
 typedef std::vector<BasicBlock> BBs;
