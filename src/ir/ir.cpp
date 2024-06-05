@@ -315,27 +315,27 @@ void create_jump(string exit_bb, BasicBlock current_bb){
     // insert_instruction(new_inst, current_bb);
 }
 
-void create_function_call(Func_Type func, string res, Symbol_Table symbol_table, BasicBlock current_bb){
+void create_function_call(Func_Type func, string ID, string res, Symbol_Table symbol_table, BasicBlock current_bb){
     Operand result = Operand(OPD_VARIABLE, res);
-    Operand func_name = Operand(OPD_VARIABLE, func.f_name);
+    Operand func_name = Operand(OPD_VARIABLE, ID);
     vector<Var_Type> args;
     vector<string> arg_names = func.tmp_arg_name;
-    for(auto name : arg_names){ {
+    for(auto name : arg_names){ 
         Var_Type tmp = symbol_table.lookup_var(name);
         args.push_back(tmp);
     }
     Operand args_op = Operand(OPD_ARGS, args);
     Instruction new_inst = Instruction(IR_CALL, result, func_name, args_op);
-    current_bb.push_back(new_inst);
+    current_bb.inst_list.push_back(new_inst);
 }
 
 void create_store(string opd1, string opd2, BasicBlock current_bb){
-    string res = "res"
+    string res = "res";
     Operand result = Operand(OPD_VARIABLE, res);
     Operand op1 = Operand(OPD_VARIABLE, opd1);
     Operand op2 = Operand(OPD_VARIABLE, opd2);
     Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
-    current_bb.push_back(new_inst);
+    current_bb.inst_list.push_back(new_inst);
 }
 
 ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb){
@@ -403,14 +403,14 @@ ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb
             Type arg_temp = get<Var_Type>(translated_arg).type;
             func.args.push_back(arg_temp);
         }
-        string res_name = to_string(symbol_tabel.get_current_tbl_size());
+        string res_name = to_string(symbol_table.get_current_tbl_size());
         Var_Type res;
         res.type = func.return_type;
         res.val = func.return_val;
         res.tmp_var_name = res_name;
-        symbol_tabel.add_symbol(res_name, res);
+        symbol_table.add_symbol(res_name, res);
 
-        create_function_call(func, res_name, sybmbol_table, current_bb);
+        create_function_call(func, ID, res_name, symbol_table, current_bb);
         return res;
     }
     else if (exp_type == ARRAY_et) {
@@ -617,7 +617,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         bb_num++;
         Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
         Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label)
+        exit_inst.push_back(exit_label);
         BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
         
@@ -632,16 +632,16 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         bbs.push_back(true_bb);        
 
         // calculate condition expr in current basic block.
-        Node expr = stmt.get(0);
+        Node expr = *stmt.get(0);
         // to do: 判断类型，val or fun
         ir_Type cond_value = translate_expr(expr, symbol_table, current_bb);
-        string cond = cond_value.tmp_var_name;
+        string cond = get<Var_Type>(cond_value).tmp_var_name;
         create_branch(cond, tr_label, ex_label, current_bb);
 
         // translate true branch
-        Node true_stmt = stmt.get(1);
+        Node true_stmt = *stmt.get(1);
         BasicBlock true_bb = translate_stmt(true_stmt, symbol_table, true_bb);
-        create_jump(ex_label, tr_label);
+        create_jump(ex_label, true_bb);
 
         return exit_bb;
 
@@ -680,18 +680,18 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         BasicBlock false_bb = BasicBlock(false_inst, fl_label);
         bbs.push_back(false_bb);  
 
-        Node Expr = stmt.get(0);
+        Node Expr = *stmt.get(0);
         ir_Type cond_value = translate_expr(Expr, symbol_table, current_bb);
-        string cond = cond_value.tmp_var_name;
+        string cond = get<Var_Type>(cond_value).tmp_var_name;
         create_branch(cond, tr_label, fl_label, current_bb);
 
-        Node Stmt1 = stmt.get(1);
+        Node Stmt1 = *stmt.get(1);
         BasicBlock true_exit_bb = translate_stmt(Stmt1, symbol_table, true_bb);
-        create_jump(ex_label, true_exit_bb.name);
+        create_jump(ex_label, true_exit_bb);
 
-        Node Stmt2 = stmt.get(2);
+        Node Stmt2 = *stmt.get(2);
         BasicBlock false_exit_bb = translate_stmt(Stmt2, symbol_table, false_bb);
-        create_jump(ex_label, false_exit_bb.name);
+        create_jump(ex_label, false_exit_bb);
 
         return exit_bb;
     } else if (stmt_type == While_st) {
@@ -730,13 +730,13 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         bbs.push_back(exit_bb);
 
         // entry block of While should be separated.
-        Node Expr = stmt.get(0);
+        Node Expr = *stmt.get(0);
         create_jump(et_label, current_bb);
         ir_Type cond_value = translate_expr(Expr, symbol_table, entry_bb);
-        string cond = cond_value.tmp_var_name;
+        string cond = get<Var_Type>(cond_value).tmp_var_name;
         create_branch(cond, bd_label, ex_label, entry_bb);
 
-        Node stmt0 = stmt.get(1);
+        Node stmt0 = *stmt.get(1);
         BasicBlock body_exit_bb = translate_stmt(stmt0, symbol_table, body_bb);
         create_jump(et_label, body_exit_bb);
 
@@ -751,7 +751,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         create_alloca(return_addr,1,current_bb);
         symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
         auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
-        create_store(return_value, return_addr, current_bb);
+        create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
         create_jump(return_bb.name,current_bb);
         vector<Instruction> empty;
         BasicBlock end_block = BasicBlock(empty, "EOF");
@@ -761,11 +761,13 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         // Handle function definition statement
         string func_name = stmt.name();
         BBs BBs_;
-        BasicBlock bb;
-        bb.name = "b" + to_string(bb_num++);
-        auto label_ = new Operand(OPD_VARIABLE, bb.name);
+        vector<Instruction> insts;
+        string name = "b" + to_string(bb_num++);
+        auto label_ = new Operand(OPD_VARIABLE, name);
         auto inst = new Instruction(IR_LABEL,*label_);
-        bb.inst_list.push_back(*inst);
+        insts.push_back(*inst);
+        BasicBlock bb = BasicBlock(insts, name);
+
         BBs_.push_back(bb);
         Func_BB_map.insert(pair(func_name, BBs_));
 
@@ -797,6 +799,9 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         auto args_ = new Operand(OPD_ARGS, args);
         auto func_def_inst = new Instruction(IR_FUNCDEF, *fname,*args_,*ret_type);
         insert_instruction(*func_def_inst, current_bb);
+        
+        Func_Type ftmp;
+        symbol_table.add_symbol(name,ftmp);
         
 
     } else {
