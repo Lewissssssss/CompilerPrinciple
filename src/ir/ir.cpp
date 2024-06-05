@@ -278,14 +278,14 @@ void create_branch(string cond, string true_label, string false_label, BasicBloc
     Operand op2 = Operand(OPD_VARIABLE, true_label);
     Operand op3 = Operand(OPD_VARIABLE, false_label);
     Instruction new_inst = Instruction(IR_BRANCH, op1, op2, op3);
-    current_bb.push_back(new_inst);
+    current_bb.inst_list.push_back(new_inst);
     // insert_instruction(new_inst, current_bb);
 }
 
 void create_jump(string exit_bb, BasicBlock current_bb){
     Operand op1 = Operand(OPD_VARIABLE, exit_bb);
     Instruction new_inst = Instruction(IR_JUMP, op1);
-    current_bb.push_back(new_inst);
+    current_bb.inst_list.push_back(new_inst);
     // insert_instruction(new_inst, current_bb);
 }
 
