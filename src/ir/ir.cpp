@@ -315,7 +315,7 @@ void create_jump(string exit_bb, BasicBlock current_bb){
     // insert_instruction(new_inst, current_bb);
 }
 
-void create_function_call(Func_Type func, string res, Symbol_Tabel symbol_table, BasicBlock current_bb){
+void create_function_call(Func_Type func, string res, Symbol_Table symbol_table, BasicBlock current_bb){
     Operand result = Operand(OPD_VARIABLE, res);
     Operand func_name = Operand(OPD_VARIABLE, func.f_name);
     vector<Var_Type> args;
