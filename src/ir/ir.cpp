@@ -370,19 +370,19 @@ ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb
 
 
 }
-Var_Type create_alloca(Var_Type var, int size, BasicBlock current_bb){
+void create_alloca(Var_Type var, int size, BasicBlock current_bb){
     auto res = new Operand(OPD_VARIABLE, var.tmp_var_name);
     auto size_ = new Operand(OPD_CONSTANT, size);
     auto inst = new Instruction(IR_ALLOCATION, *res, *size_);
 
     insert_instruction(*inst, current_bb);
 
-    Var_Type tmp;
-    tmp.tmp_var_name="tmp"+var.tmp_var_name;
-    tmp.type = var.type;
-    return tmp;
+    // Var_Type tmp;
+    // tmp.tmp_var_name="tmp"+var.tmp_var_name;
+    // tmp.type = var.type;
+    // return tmp;
 
-}//alloca 重要的是size和name，type固定为 i32；size和name在vartype和value里分别找到
+}//alloca 重要的是size和name--->be like %1...，type固定为 i32；size和name在vartype和value里分别找到
 
 int calculate_array_size(Node node){
     vector<int>& array_size = node.array_size;
@@ -405,9 +405,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         tmp.type = INT_TY;
         tmp.val= 0;
         SYM_TBL.add_symbol(name, tmp);
+        create_alloca(tmp,1,current_bb);
         //auto var_type = SYM_TBL.lookup_var(name);
-        Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
-        SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
+        //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
+        //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         
         return current_bb;//??????why
 
@@ -427,24 +428,72 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
             int size = calculate_array_size(stmt);
-            Var_Type alloca_instr = create_alloca(tmp,size,current_bb);
-            SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
+            create_alloca(tmp,size,current_bb);
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
             // 处理 ARRAY 类型的逻辑
         } else if (type == Type::LIST_2) {
             // 处理 LIST_2 类型的逻辑
-            // TODO: 添加 LIST_2 类型的具体处理代码
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<int>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt);
+            create_alloca(tmp,size,current_bb);
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_3) {
             // 处理 LIST_3 类型的逻辑
-            // TODO: 添加 LIST_3 类型的具体处理代码
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<vector<int>>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt);
+            create_alloca(tmp,size,current_bb);
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
         } else if (type == Type::LIST_4) {
             // 处理 LIST_4 类型的逻辑
-            // TODO: 添加 LIST_4 类型的具体处理代码
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<vector<vector<int>>>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt);
+            create_alloca(tmp,size,current_bb);
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_5) {
             // 处理 LIST_5 类型的逻辑
-            // TODO: 添加 LIST_5 类型的具体处理代码
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<vector<vector<vector<int>>>>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt);
+            create_alloca(tmp,size,current_bb);
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else {
             // 处理其他类型的逻辑
-            // TODO: 添加其他类型的具体处理代码
+            assert(false);
         }
 
 
@@ -619,8 +668,23 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         return exit_bb;
     } else if (stmt_type == Return_st) {
         // Handle return statement
+        BasicBlock return_bb = Func_BB_map.find(cur_Func)->second.back();
+        Var_Type return_addr;
+        return_addr.tmp_var_name = "return_address";
+        return_addr.type = INT_TY;
+        return_addr.val = 0;//default
+        create_alloca(return_addr,1,current_bb);
+        symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
+        auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
+        create_store(return_value, return_addr, current_bb);
+        create_jump(return_bb.name,current_bb);
+        BasicBlock end_block;
+        end_block.name = "EOF";
+        return end_block;
+        //auto return_addr = symbol_table.lookup_func(cur_Func);
     } else if (stmt_type == FucDef_est) {
         // Handle function definition statement
+        
 
     } else {
         // Handle other cases or error
