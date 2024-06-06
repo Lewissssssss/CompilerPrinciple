@@ -70,9 +70,9 @@ class TABLE_LISTS{
 #undef ID
 class Node{
     public:
-        string type;  //其实表示的是name or value   EXP节点名字 IDENTIFIER
-        Type t;//类型
-        string ID;//变量ID
+        string type;  //expr or stmt
+        Type t; // 数据类型
+        string ID; // 变量名
         vector<int> array_size;
         vector<Node> children;
 

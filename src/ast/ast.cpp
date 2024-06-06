@@ -18,12 +18,6 @@ Type Node::get_type(){
 
 void Node::print(int layer){
     cout << string(layer*4, ' ') << this->type << endl;
-    // if(get_type() == ARRAY){
-    //     cout<<"ALALALALALALALALALAL"<<endl;
-    //     for (int size : this->array_size){
-    //         cout<<size<<endl;
-    //     }
-    // }
     for (Node child : this->children){
         child.print(layer + 1);
     }
@@ -189,7 +183,42 @@ void RUN_TIME_lib_Set(TABLE_LISTS &tables){
     tables.add_func("stoptime",stoptime_args);
 }
 
+void print_table(TABLE_LISTS &tables){
+    // for (TABLE table : tables.tables){
+    //     cout << endl << "VarTab: " << endl ;
+    //     for (auto it = table.v_table.begin(); it != table.v_table.end(); it++){
+    //         cout << it->first << " : " << it->second << endl;
+    //     }
+    //     for (const auto& pair : table.array_lenth) {
+    //         std::cout << "Array Name: " << pair.first << " Lengths: ";
+    //         for (int i : pair.second) {
+    //             std::cout << i << " ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    //     cout << endl;
+    // }
+    cout << endl << "FuncTab: " << endl;
 
+    for (const auto& pair : tables.f_table) {
+            std::cout << "Function Name: " << pair.first << std::endl;
+            std::cout << "Arguments Type: ";
+            for (const auto& arg : pair.second.args) {
+                std::cout << arg << " ";
+            }
+            std::cout << "\nArray Lengths for Args:\n";
+            int index = 0; // 如果需要跟踪外层向量的索引
+            for (const auto& lengths : pair.second.array_lenth) {
+                std::cout << "Sub-vector " << index++ << ": ";
+                for (auto& sub_vector : lengths) {
+                    std::cout << sub_vector << " ";       
+                    std::cout << std::endl;
+                }
+            }
+            std::cout << std::endl;
+        }
+
+}
 
 
 
