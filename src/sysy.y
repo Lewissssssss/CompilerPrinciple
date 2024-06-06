@@ -79,18 +79,19 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
                                 ty = INT_TY;
                         }else if( $2->children_size()==1){
                                 $$->get(0)->set_type(ARRAY);
-                                ty = ARRAY;}
+                                ty = ARRAY;
+                        }
                         else if($2->children_size()==2){
-                                
+                                $$->get(0)->set_type(LIST_2);
                                 ty = LIST_2;
                         } else if($2->children_size()==3){
-                                
+                                $$->get(0)->set_type(LIST_3);
                                 ty = LIST_3;
                         } else if($2->children_size()==4){
-                                
+                                $$->get(0)->set_type(LIST_4);
                                 ty = LIST_4;
                         } else {
-                                
+                                $$->get(0)->set_type(LIST_5);
                                 ty = LIST_5;
                         } 
                         tables.add_var($1->name(),ty);
@@ -115,12 +116,13 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
                                 $$->get(0)->set_type(ARRAY);
                                 ty = ARRAY;}
                         else if($2->children_size()==2){
-                                
+                                $$->get(0)->set_type(LIST_2);
                                 ty = LIST_2;
                         } else if($2->children_size()==3){
+                                $$->get(0)->set_type(LIST_3);
                                 ty = LIST_3;
                         } else if($2->children_size()==4){
-                                
+                                $$->get(0)->set_type(LIST_4);
                                 ty = LIST_4;
                         } else {
                                 
@@ -256,12 +258,16 @@ FuncFParam : INT ID { $$ = new Node($2->name());
                         temp_type_map[$2->name()] = ARRAY;
                 }
                 else if($5->children_size()==1){        
+                        $$->get(0)->set_type(LIST_2);
                         temp_type_map[$2->name()] = LIST_2;
-                }else if($5->children_size()==2){       
+                }else if($5->children_size()==2){     
+                        $$->get(0)->set_type(LIST_3);  
                         temp_type_map[$2->name()] = LIST_3;
-                }else if($5->children_size()==3){        
+                }else if($5->children_size()==3){ 
+                        $$->get(0)->set_type(LIST_4);       
                         temp_type_map[$2->name()] = LIST_4;
                 }else{
+                        $$->get(0)->set_type(LIST_5);
                         temp_type_map[$2->name()] = LIST_5;
                 }
         }

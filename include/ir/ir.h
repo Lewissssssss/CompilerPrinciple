@@ -127,6 +127,7 @@ public:
 };
 
 class Symbol_Table {
+
 public:
     std::stack<Field_Sym> Stack;
 
