@@ -1,4 +1,12 @@
 #include <ir/ir.h>
+
+
+extern int bb_num;
+
+extern std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
+extern std::string cur_Func;
+
+extern Symbol_Table SYM_TBL;
 bool canConvertToInt(const std::string& str) {
     if (str.empty()) {
         return false;
@@ -605,7 +613,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         // to do:判断类型，val or fun
         ir_Type val = translate_expr(stmt, symbol_table, current_bb);        
         string result_value = get<Var_Type>(val).tmp_var_name;
-
+        symbol_table.add_symbol(result_value, get<Var_Type>(val));
         create_store(result_value, addr_value, current_bb);
         return current_bb;  
     } else if (stmt_type == If_st) {
@@ -643,8 +651,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
 
         // translate true branch
         Node true_stmt = *stmt.get(1);
-        BasicBlock true_bb = translate_stmt(true_stmt, symbol_table, true_bb);
-        create_jump(ex_label, true_bb);
+        BasicBlock true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
+        create_jump(ex_label, true_bb_);
 
         return exit_bb;
 
@@ -768,27 +776,33 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
         string name = "b" + to_string(bb_num++);
         auto label_ = new Operand(OPD_VARIABLE, name);
         auto inst = new Instruction(IR_LABEL,*label_);
+        cout << "stmt_type == FucDef_est" << endl;
         insts.push_back(*inst);
         BasicBlock bb = BasicBlock(insts, name);
+        cout << "stmt_type == FucDef_est 1" << endl;
 
         BBs_.push_back(bb);
         Func_BB_map.insert(pair(func_name, BBs_));
 
+        cout << "stmt_type == FucDef_est 2" << endl;
         
         std::regex pattern("FucDef (.*?)(INT|VOID)");//fname
         std::smatch matches;
         string tmp = stmt.name();
-        string name;
+        string name_;
         string ret_type_;
         if (std::regex_search(tmp, matches, pattern)) {
-            name = matches[1].str() ;
+            name_ = matches[1].str() ;
             ret_type_ = matches[2].str();
 
         }//fname!
-        auto fname = new Operand(OPD_VARIABLE, name);
+        cout << "stmt_type == FucDef_est 3" << endl;
+
+        auto fname = new Operand(OPD_VARIABLE, name_);
         auto ret_type = new Operand(OPD_VARIABLE, ret_type_);
         Node params = stmt.children[0];
         vector<Node> params_ = params.children;
+        cout << "stmt_type == FucDef_est 4" << endl;
 
         reverseVector(params_);
         vector<Var_Type> args;
@@ -799,16 +813,46 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table symbol_table,BasicBlock current
             tmp.val = 0;//default
             args.push_back(tmp);
         }
+        cout << "stmt_type == FucDef_est 50" << endl;
+
         auto args_ = new Operand(OPD_ARGS, args);
         auto func_def_inst = new Instruction(IR_FUNCDEF, *fname,*args_,*ret_type);
         insert_instruction(*func_def_inst, current_bb);
-        
-        Func_Type ftmp;
-        symbol_table.add_symbol(name,ftmp);
-        
+        cout << "stmt_type == FucDef_est 51" << endl;
 
+        Func_Type ftmp;
+        ftmp.args =  vector<Type>{};
+        ftmp.arg_num = 0;
+        ftmp.return_type = INT_TY;
+        ftmp.return_val = 0;
+        cout << "stmt_type == FucDef_est 52" << endl;
+
+        symbol_table.add_symbol(name_,ftmp);
+
+        cout << "stmt_type == FucDef_est 5" << endl;
+
+        return bb;
     } else {
         // Handle other cases or error
+        assert(0);
     }
 
+}
+
+void traverseTree(Node node) {
+    Expr_Stmt_type node_type = get_exprTpye_from_node(&node);
+    // stmts
+    if (node_type >= 8 && node_type <= 16){
+        BasicBlock current_bb = BasicBlock(std::vector<Instruction>(), "bb" + std::to_string(bb_num));
+        bb_num++;
+        BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
+        for(auto inst : bb.inst_list) {
+            inst.print();
+        }
+    }
+    else {
+        for (auto child : node.children) {
+            traverseTree(child);
+        }
+    }
 }

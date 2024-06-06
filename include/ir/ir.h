@@ -1,3 +1,5 @@
+#ifndef IR_H
+#define IR_H
 #include <iostream>
 #include <stack>
 #include <ast/ast.h>
@@ -12,6 +14,7 @@
 
 
 enum Expr_Stmt_type {
+    // exp : 0~7
     INT_et,
     ID_et,
     BinOp_et,
@@ -20,6 +23,7 @@ enum Expr_Stmt_type {
     Unary_BinOp_et,
     Call_et,
     ARRAY_et,
+    // stmt : 8~16
     FucDef_est,
     VarDecl_st,
     VarDeclArray_st,
@@ -123,9 +127,9 @@ public:
 };
 
 class Symbol_Table {
-private:
-    std::stack<Field_Sym> Stack;
 public:
+    std::stack<Field_Sym> Stack;
+
     Symbol_Table() = default;
     Var_Type& lookup_var(const std::string& Identifier) {
         return Stack.top().lookup_var(Identifier);
@@ -137,7 +141,8 @@ public:
         Stack.top().add_symbol(Identifier, n);
     }
     void add_symbol(const std::string& Identifier, Func_Type n) {
-        Stack.top().add_symbol(Identifier, n);
+        auto save = new Func_Type(n);
+        Stack.top().add_symbol(Identifier, *save);
     }
     std::unordered_map<std::string, Var_Type>::iterator get_Lval(const std::string& identifier) {
         return Stack.top().get_Lval(identifier);
@@ -299,7 +304,7 @@ public:
             } else if (type == IR_CALL) {
                 inst = inst_call{res, opd1, opd2};
             }
-            assert(false);
+            else assert(false);
     }
         Instruction(inst_IR_type type, Operand opd1, Operand opd2) : type(type) {
             if (type == IR_LOAD) {
@@ -309,7 +314,7 @@ public:
             } else if (type == IR_OFFSET) {
             inst = inst_offset{opd1, opd2};
             }
-            assert(false);
+            else assert(false);
             }
         Instruction(inst_IR_type type, Operand res) : type(type) {
             if (type == IR_RETURN) {
@@ -319,7 +324,7 @@ public:
             } else if (type == IR_LABEL) {
             inst = inst_label{res};
             }
-            assert(false);
+            else assert(false);
         }
     void print(){
         if (type == IR_ADD){
@@ -505,13 +510,10 @@ struct BasicBlock{
 } ;
 
 typedef std::vector<BasicBlock> BBs;
-int bb_num = 0;
 
-std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
-std::string cur_Func;
-
-Symbol_Table SYM_TBL;
 bool canConvertToInt(const std::string& str);
 ir_Type translate_expr(Node expr, Symbol_Table symbol_table, BasicBlock current_bb);
 Expr_Stmt_type get_exprType_from_node(Node *node);
 BasicBlock translate_stmt(Node stmt, Symbol_Table symbol_table, BasicBlock current_bb);
+void traverseTree(Node node);
+#endif

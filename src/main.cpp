@@ -1,4 +1,5 @@
 #include "ast/ast.h"
+#include "ir/ir.h"
 extern FILE *yyin;
 // #include <fmt/core.h>
 #include <iostream>
@@ -7,6 +8,13 @@ extern int yyparse();
 
 Node root;
 TABLE_LISTS tables;
+
+int bb_num = 0;
+
+std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
+std::string cur_Func;
+
+Symbol_Table SYM_TBL;
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -26,9 +34,9 @@ int main(int argc, char **argv) {
 
 
   tables.END_SCOPE();
-  cout<<"begin output:"<<endl;
-  root.print(0);
- 
+
+  traverseTree(root);
+
   return res;
 }
 
