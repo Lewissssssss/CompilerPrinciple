@@ -77,6 +77,7 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
                                 $$->get(0)->array_size = array_length;//.push_back(atoi($2->get(i)->name().c_str()));
                         if($2->children_size()==0){
                                 ty = INT_TY;
+                                $$->get(0)->set_type(INT_TY);
                         }else if( $2->children_size()==1){
                                 $$->get(0)->set_type(ARRAY);
                                 ty = ARRAY;
@@ -112,6 +113,8 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
                                 $$->get(0)->array_size = array_length;//.push_back(atoi($2->get(i)->name().c_str()));
                         if($2->children_size()==0){
                                 ty = INT_TY;
+                                $$->get(0)->set_type(INT_TY);
+
                         }else if( $2->children_size()==1){
                                 $$->get(0)->set_type(ARRAY);
                                 ty = ARRAY;}

@@ -1,6 +1,6 @@
-#line 1 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 2 "/home/guming/compilers24spring/lab1/build/sysy.lex.cc"
 
-#line 3 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 4 "/home/guming/compilers24spring/lab1/build/sysy.lex.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -47,7 +47,6 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -156,7 +155,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-extern yy_size_t yyleng;
+extern int yyleng;
 
 extern FILE *yyin, *yyout;
 
@@ -199,7 +198,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -268,8 +267,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = NULL; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
-static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
-yy_size_t yyleng;
+static int yy_n_chars;		/* number of characters read into yy_ch_buf */
+int yyleng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = NULL;
@@ -296,7 +295,7 @@ static void yy_init_buffer ( YY_BUFFER_STATE b, FILE *file  );
 
 YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size  );
 YY_BUFFER_STATE yy_scan_string ( const char *yy_str  );
-YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, yy_size_t len  );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, int len  );
 
 void *yyalloc ( yy_size_t  );
 void *yyrealloc ( void *, yy_size_t  );
@@ -352,7 +351,7 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
  */
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
-	yyleng = (yy_size_t) (yy_cp - yy_bp); \
+	yyleng = (int) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
@@ -503,9 +502,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 1 "/home/guming/compilers24spring/lab1/src/sysy.l"
 #define YY_NO_INPUT 1
-#line 6 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 6 "/home/guming/compilers24spring/lab1/src/sysy.l"
 #define YYSTYPE Node*
 #include <stdio.h>
 #include <ast/ast.h>
@@ -514,9 +513,9 @@ using namespace std;
 #include "sysy.tab.hh"
 extern TABLE_LISTS tables;
 
-#line 517 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 517 "/home/guming/compilers24spring/lab1/build/sysy.lex.cc"
         
-#line 519 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 519 "/home/guming/compilers24spring/lab1/build/sysy.lex.cc"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -557,7 +556,7 @@ FILE *yyget_out ( void );
 
 void yyset_out  ( FILE * _out_str  );
 
-			yy_size_t yyget_leng ( void );
+			int yyget_leng ( void );
 
 char *yyget_text ( void );
 
@@ -624,7 +623,7 @@ static int input ( void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		yy_size_t n; \
+		int n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -733,10 +732,10 @@ YY_DECL
 		}
 
 	{
-#line 24 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 24 "/home/guming/compilers24spring/lab1/src/sysy.l"
 
 
-#line 739 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 739 "/home/guming/compilers24spring/lab1/build/sysy.lex.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -795,228 +794,228 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 26 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 26 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {BEGIN COMMENT ;printf("COMMENT\n");}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 27 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {BEGIN INITIAL ;printf("END_COMMENT\n");}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 28 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 28 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 30 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 30 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {BEGIN LINECOMMENT ;printf("LINECOMMENT\n");}
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 31 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 31 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {BEGIN INITIAL ;printf("END_LINECOMMENT\n");}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 32 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 32 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 34 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {printf( "CONST:%s\n",yytext ); yylval = new Node(string(yytext)); return INT_CONST; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 35 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 35 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return ADD; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 36 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 36 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return SUB; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 37 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 37 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return MUL; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 38 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 38 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return DIV; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 39 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 39 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return MOD; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 40 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 40 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return NOT; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 41 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 41 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return EQ; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 42 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 42 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return NE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 43 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 43 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return LT; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 44 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 44 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return LE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 45 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 45 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return GT; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 46 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 46 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return GE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 47 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 47 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return AND; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 48 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 48 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return OR; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 49 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 49 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return ASSIGN; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 50 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 50 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return SEMI; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 51 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 51 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {printf(",\n"); return COMMA; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 52 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 52 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return COLON; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 53 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 53 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return LP;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 54 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 54 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {return RP; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 55 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 55 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return LC;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 56 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 56 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return RC; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 57 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 57 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return LB; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 58 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 58 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {return RB; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 59 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 59 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return IF; printf("IF\n"); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 60 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 60 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return ELSE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 61 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 61 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return WHILE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 62 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 62 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return BREAK; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 63 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 63 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return CONTINUE; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 64 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 64 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {  return RETURN; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 65 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 65 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {printf("INT\n"); return INT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 66 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 66 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return CONST; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 67 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 67 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { return VOID; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 68 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 68 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { yylval = new Node(string(yytext)); printf("ID:%s\n",yytext); return ID; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 69 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 69 "/home/guming/compilers24spring/lab1/src/sysy.l"
 {; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 71 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 71 "/home/guming/compilers24spring/lab1/src/sysy.l"
 { ;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 74 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 74 "/home/guming/compilers24spring/lab1/src/sysy.l"
 ECHO;
 	YY_BREAK
-#line 1019 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 1019 "/home/guming/compilers24spring/lab1/build/sysy.lex.cc"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(LINECOMMENT):
@@ -1205,7 +1204,7 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -1219,7 +1218,7 @@ static int yy_get_next_buffer (void)
 
 			if ( b->yy_is_our_buffer )
 				{
-				yy_size_t new_size = b->yy_buf_size * 2;
+				int new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -1277,7 +1276,7 @@ static int yy_get_next_buffer (void)
 
 	if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
-		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+		int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
 		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc(
 			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
@@ -1380,7 +1379,7 @@ static int yy_get_next_buffer (void)
 
 		else
 			{ /* need more input */
-			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
+			int offset = (int) ((yy_c_buf_p) - (yytext_ptr));
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -1749,12 +1748,12 @@ YY_BUFFER_STATE yy_scan_string (const char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, yy_size_t  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, int  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	yy_size_t i;
+	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = (yy_size_t) (_yybytes_len + 2);
@@ -1796,7 +1795,7 @@ static void yynoreturn yy_fatal_error (const char* msg )
 	do \
 		{ \
 		/* Undo effects of setting up yytext. */ \
-        yy_size_t yyless_macro_arg = (n); \
+        int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
 		yytext[yyleng] = (yy_hold_char); \
 		(yy_c_buf_p) = yytext + yyless_macro_arg; \
@@ -1836,7 +1835,7 @@ FILE *yyget_out  (void)
 /** Get the length of the current token.
  * 
  */
-yy_size_t yyget_leng  (void)
+int yyget_leng  (void)
 {
         return yyleng;
 }
@@ -1986,6 +1985,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 74 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 74 "/home/guming/compilers24spring/lab1/src/sysy.l"
 
 

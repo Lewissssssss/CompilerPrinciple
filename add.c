@@ -1,8 +1,10 @@
 //test add
 int main(){
-    int a, b;
-    a = 10;
+    int a = 10;
+    int b = a;
+    // a = 10;
     b = -1;
-    putint(a+b);
+    // putint(a+b);
+    a = a + b;
     return 0;
 }
