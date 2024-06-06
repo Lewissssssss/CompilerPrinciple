@@ -553,11 +553,14 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle variable declaration statement
     } else if (stmt_type == VarDeclArray_st) {
-        Type type = stmt.get_type();
-        // cout << "stmt_type == VarDeclArray_st" << endl;
+        Type type = stmt.children[0].get_type();
+        //cout<<"type: "<<type<<endl;
+        //cout << "stmt_type == VarDeclArray_st" << endl;
         if (type == Type::ARRAY) {
-            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //cout<<"LALALALAALAL1"<<endl;
 
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //cout<<"LALALALAALAL2"<<endl;
             string name = (stmt.children)[0].name();
             Var_Type tmp;
             tmp.tmp_var_name = name;
@@ -566,10 +569,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
             // 处理 ARRAY 类型的逻辑
+            //cout<<"SAKJDASKJFASKJFAJ"<<endl;
         } else if (type == Type::LIST_2) {
             // 处理 LIST_2 类型的逻辑
             BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
@@ -582,7 +586,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_3) {
@@ -597,7 +601,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
         } else if (type == Type::LIST_4) {
@@ -612,7 +616,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_5) {
@@ -627,14 +631,14 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else {
             // 处理其他类型的逻辑
             assert(false);
         }
-
+        return current_bb;
 
         // Handle variable declaration array statement
     } else if (stmt_type == Expr_st) {
@@ -962,61 +966,153 @@ void init_libs() {
     ftmp6.return_val = 0;
     SYM_TBL.add_symbol("getarray", ftmp6);
 }
+void handle_global(Node node){
+    Expr_Stmt_type node_type = get_exprTpye_from_node(&node);
+    auto stmt_type = node_type;
+    auto stmt = node;
+    if (stmt_type == VarDecl_st) {
+        
+        cout << "stmt_type == VarDecl_st" << endl;
+        int num = stmt.children_size();
+        if(num == 1){
+            // cout<<"HEREhere1"<<endl;
 
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = INT_TY;
+            tmp.val= 0;
+            SYM_TBL.add_symbol(name, tmp);
+        
+            //create_alloca(tmp,1,current_bb);
+            cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
+        } else if (num == 2){
+            // cout<<"HEREhere2"<<endl;
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = INT_TY;
+            tmp.val= 0;
+            SYM_TBL.add_symbol(name, tmp);
+            
+            cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
+
+            //create_alloca(tmp,1,current_bb);
+
+            string name1 = "0";//(stmt.children)[1].name();//get the constant value to init assign
+            Var_Type tmp_;
+            tmp_.tmp_var_name = name1;
+            tmp_.type = INT_TY;
+            tmp_.val= stoi(name1);
+
+            tmp.val=tmp_.val;
+            //create_store(name1,name,current_bb);
+
+        }
+    }else{//array global declaration
+        Type type = stmt.children[0].get_type();
+        //cout<<"type: "<<type<<endl;
+        //cout << "stmt_type == VarDeclArray_st" << endl;
+        if (type == Type::ARRAY) {
+            //cout<<"LALALALAALAL1"<<endl;
+
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //cout<<"LALALALAALAL2"<<endl;
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<int> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+            //auto var_type = SYM_TBL.lookup_var(name);
+            int size = calculate_array_size(stmt.children[0]);
+            cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
+            //create_alloca(tmp,size,current_bb);
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
+            // 处理 ARRAY 类型的逻辑
+            //cout<<"SAKJDASKJFASKJFAJ"<<endl;
+        } else if (type == Type::LIST_2) {
+            // 处理 LIST_2 类型的逻辑
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<int>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt.children[0]);
+            cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
+        } else if (type == Type::LIST_3) {
+            // 处理 LIST_3 类型的逻辑
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<vector<int>>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt.children[0]);
+            cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
+        } else if (type == Type::LIST_4) {
+            // 处理 LIST_4 类型的逻辑
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<vector<vector<int>>>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt.children[0]);
+            cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
+        } else if (type == Type::LIST_5) {
+            // 处理 LIST_5 类型的逻辑
+            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+
+            string name = (stmt.children)[0].name();
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = type;
+            vector<vector<vector<vector<vector<int>>>>> tmp_;//default assignment
+            tmp.val= tmp_;
+            SYM_TBL.add_symbol(name, tmp);
+
+            int size = calculate_array_size(stmt.children[0]);
+            cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
+            //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
+        } else {
+            // 处理其他类型的逻辑
+            assert(false);
+        }
+
+    }
+}
+bool once = true;
 void traverseTree(Node node) {
     Expr_Stmt_type node_type = get_exprTpye_from_node(&node);
     // stmts
     if (node_type > 8 && node_type <= 16){
         if(cur_Func!=""){
             // cout<<"HERE"<<endl;
+
             BasicBlock current_bb = Func_BB_map.find(cur_Func)->second.back();
             // cout<<"HEREhere"<<endl;
             BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
         }else{
-            auto stmt_type = node_type;
-            auto stmt = node;
-            if (stmt_type == VarDecl_st) {
-                
-                cout << "stmt_type == VarDecl_st" << endl;
-                int num = stmt.children_size();
-                if(num == 1){
-                    // cout<<"HEREhere1"<<endl;
-
-                    string name = (stmt.children)[0].name();
-                    Var_Type tmp;
-                    tmp.tmp_var_name = name;
-                    tmp.type = INT_TY;
-                    tmp.val= 0;
-                    SYM_TBL.add_symbol(name, tmp);
-                
-                    //create_alloca(tmp,1,current_bb);
-                    cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
-                } else if (num == 2){
-                    // cout<<"HEREhere2"<<endl;
-
-                    string name = (stmt.children)[0].name();
-                    Var_Type tmp;
-                    tmp.tmp_var_name = name;
-                    tmp.type = INT_TY;
-                    tmp.val= 0;
-                    SYM_TBL.add_symbol(name, tmp);
-                    
-                    cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
-
-                    //create_alloca(tmp,1,current_bb);
-
-                    string name1 = "0";//(stmt.children)[1].name();//get the constant value to init assign
-                    Var_Type tmp_;
-                    tmp_.tmp_var_name = name1;
-                    tmp_.type = INT_TY;
-                    tmp_.val= stoi(name1);
-
-                    tmp.val=tmp_.val;
-                    //create_store(name1,name,current_bb);
-
-                }
-            }
-
+            handle_global(node);
         }
     }
     else if (node_type == 8){

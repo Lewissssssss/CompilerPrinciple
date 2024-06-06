@@ -69,7 +69,7 @@ class TABLE_LISTS{
         void END_SCOPE();
 };
 
-
+#undef ID
 class Node{
     public:
         string type;  //expr or stmt

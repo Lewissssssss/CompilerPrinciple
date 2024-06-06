@@ -1,4 +1,4 @@
-# Install script for directory: /home/guming/compilers24spring/lab1/third_party/fmt
+# Install script for directory: /Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,11 +27,6 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-# Install shared libraries without execute permission?
-if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
-  set(CMAKE_INSTALL_SO_NO_EXE "1")
-endif()
-
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
@@ -39,58 +34,66 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+  set(CMAKE_OBJDUMP "/Library/Developer/CommandLineTools/usr/bin/objdump")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/guming/compilers24spring/lab1/build/third_party/fmt/libfmt.a")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/libfmt.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfmt.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfmt.a")
+    execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfmt.a")
+  endif()
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/fmt" TYPE FILE FILES
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/args.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/chrono.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/color.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/compile.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/core.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/format.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/format-inl.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/os.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/ostream.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/printf.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/ranges.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/std.h"
-    "/home/guming/compilers24spring/lab1/third_party/fmt/include/fmt/xchar.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/args.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/chrono.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/color.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/compile.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/core.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/format.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/format-inl.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/os.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/ostream.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/printf.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/ranges.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/std.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/xchar.h"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES
-    "/home/guming/compilers24spring/lab1/build/third_party/fmt/fmt-config.cmake"
-    "/home/guming/compilers24spring/lab1/build/third_party/fmt/fmt-config-version.cmake"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/fmt-config.cmake"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/fmt-config-version.cmake"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets.cmake")
-    file(DIFFERENT EXPORT_FILE_CHANGED FILES
+    file(DIFFERENT _cmake_export_file_changed FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets.cmake"
-         "/home/guming/compilers24spring/lab1/build/third_party/fmt/CMakeFiles/Export/lib/cmake/fmt/fmt-targets.cmake")
-    if(EXPORT_FILE_CHANGED)
-      file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets-*.cmake")
-      if(OLD_CONFIG_FILES)
-        message(STATUS "Old export file \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets.cmake\" will be replaced.  Removing files [${OLD_CONFIG_FILES}].")
-        file(REMOVE ${OLD_CONFIG_FILES})
+         "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake")
+    if(_cmake_export_file_changed)
+      file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets-*.cmake")
+      if(_cmake_old_config_files)
+        string(REPLACE ";" ", " _cmake_old_config_files_text "${_cmake_old_config_files}")
+        message(STATUS "Old export file \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets.cmake\" will be replaced.  Removing files [${_cmake_old_config_files_text}].")
+        unset(_cmake_old_config_files_text)
+        file(REMOVE ${_cmake_old_config_files})
       endif()
+      unset(_cmake_old_config_files)
     endif()
+    unset(_cmake_export_file_changed)
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/home/guming/compilers24spring/lab1/build/third_party/fmt/CMakeFiles/Export/lib/cmake/fmt/fmt-targets.cmake")
-  if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^()$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/home/guming/compilers24spring/lab1/build/third_party/fmt/CMakeFiles/Export/lib/cmake/fmt/fmt-targets-noconfig.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake")
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^()$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets-noconfig.cmake")
   endif()
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/guming/compilers24spring/lab1/build/third_party/fmt/fmt.pc")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/fmt.pc")
 endif()
 

@@ -8,12 +8,16 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/guming/compilers24spring/lab1/third_party/fmt/src/format.cc" "third_party/fmt/CMakeFiles/fmt.dir/src/format.cc.o" "gcc" "third_party/fmt/CMakeFiles/fmt.dir/src/format.cc.o.d"
-  "/home/guming/compilers24spring/lab1/third_party/fmt/src/os.cc" "third_party/fmt/CMakeFiles/fmt.dir/src/os.cc.o" "gcc" "third_party/fmt/CMakeFiles/fmt.dir/src/os.cc.o.d"
+  "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/src/format.cc" "third_party/fmt/CMakeFiles/fmt.dir/src/format.cc.o" "gcc" "third_party/fmt/CMakeFiles/fmt.dir/src/format.cc.o.d"
+  "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/src/os.cc" "third_party/fmt/CMakeFiles/fmt.dir/src/os.cc.o" "gcc" "third_party/fmt/CMakeFiles/fmt.dir/src/os.cc.o.d"
   )
 
-# Targets to which this target links.
-set(CMAKE_TARGET_LINKED_INFO_FILES
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_FORWARD_LINKED_INFO_FILES
   )
 
 # Fortran module output directory.
