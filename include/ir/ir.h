@@ -9,21 +9,7 @@
 #include <regex>
 #include <algorithm>
 
-struct BasicBlock{
-    std::vector<Instruction> inst_list;
-    std::string name;
-    BasicBlock(std::vector<Instruction> inst_list, std::string name) : inst_list(inst_list), name(name) {}
-    BasicBlock& operator=(const BasicBlock& b){
-        if(this != &b){
-            inst_list = b.inst_list;
-            name = b.name;
-        }
-        return *this;
-    }
-} ;
 
-typedef std::vector<BasicBlock> BBs;
-int bb_num = 0;
 
 enum Expr_Stmt_type {
     INT_et,
@@ -98,8 +84,7 @@ struct Func_Type {
     }
 };
 
-std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
-std::string cur_Func;
+
 
 typedef std::variant<Var_Type, Func_Type, std::unordered_map<std::string, Var_Type>::iterator> ir_Type; // iterator to handle LVal
 
@@ -121,12 +106,15 @@ public:
         if (iter1 != Var_sym_tbl.end())
             return iter1->second;
         else std::cout << "Error in lookup_var!" << std::endl;
+        assert(false);
     }
     Func_Type& lookup_func(const std::string& Identifier) {
         auto iter2 = Func_sym_tbl.find(Identifier);
         if (iter2 != Func_sym_tbl.end())
             return iter2->second;
         else std::cout << "Error in lookup_func!" << std::endl;
+        assert(false);
+
     }
     std::unordered_map<std::string, Var_Type>::iterator get_Lval(const std::string& identifier) {
         return Var_sym_tbl.find(identifier);
@@ -157,14 +145,10 @@ public:
     Field_Sym& get_current_symbol_tbl() {
         return Stack.top();
     }
-    int get_current_tbl_size(){Stack.top().get_current_tbl_size();}
+    int get_current_tbl_size(){return Stack.top().get_current_tbl_size();}
 };
 
-Symbol_Table SYM_TBL;
-bool canConvertToInt(const std::string& str);
-ir_Type translate_expr(Node expr, Symbol_Table symbol_table, BasicBlock current_bb);
-Expr_Stmt_type get_exprType_from_node(Node *node);
-BasicBlock translate_stmt(Node stmt, Symbol_Table symbol_table, BasicBlock current_bb);
+
 
 enum OperandType {
     OPD_CONSTANT,
@@ -506,3 +490,28 @@ public:
     inst_IR_type type;
     inst_type inst;
 };
+
+struct BasicBlock{
+    std::vector<Instruction> inst_list;
+    std::string name;
+    BasicBlock(std::vector<Instruction> inst_list, std::string name) : inst_list(inst_list), name(name) {}
+    BasicBlock& operator=(const BasicBlock& b){
+        if(this != &b){
+            inst_list = b.inst_list;
+            name = b.name;
+        }
+        return *this;
+    }
+} ;
+
+typedef std::vector<BasicBlock> BBs;
+int bb_num = 0;
+
+std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
+std::string cur_Func;
+
+Symbol_Table SYM_TBL;
+bool canConvertToInt(const std::string& str);
+ir_Type translate_expr(Node expr, Symbol_Table symbol_table, BasicBlock current_bb);
+Expr_Stmt_type get_exprType_from_node(Node *node);
+BasicBlock translate_stmt(Node stmt, Symbol_Table symbol_table, BasicBlock current_bb);

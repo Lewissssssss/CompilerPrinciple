@@ -78,6 +78,8 @@ string get_unary_type(Node& expr){//不能handal极端复杂情况如 ++-------+
         return "NOT";
     }
     cout<<"err in get_unary_type, NOT UNARY!!!"<<endl;
+    assert(false);
+
 }
 
 
@@ -456,6 +458,7 @@ ir_Type translate_expr(Node expr,Symbol_Table symbol_table,BasicBlock current_bb
         return result;
     }
 
+    assert(false);
 
 }
 void create_alloca(Var_Type var, int size, BasicBlock current_bb){
