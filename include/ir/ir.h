@@ -118,7 +118,7 @@ public:
 };
 
 class Symbol_Table {
-private:
+public:
     std::stack<Field_Sym> Stack;
 public:
     Symbol_Table() = default;

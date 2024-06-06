@@ -24,11 +24,9 @@ int main(int argc, char **argv) {
   RUN_TIME_lib_Set(tables);
   int res = yyparse();
 
-
-  tables.END_SCOPE();
-  cout<<"begin output:"<<endl;
   root.print(0);
- 
+  tables.END_SCOPE();
+
   return res;
 }
 

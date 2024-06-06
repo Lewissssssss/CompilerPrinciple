@@ -8,7 +8,6 @@ project(compiler
 # CTest
 enable_testing()
 
-
 # settings
 # set to OFF to enable C mode
 set(CPP_MODE ON)
