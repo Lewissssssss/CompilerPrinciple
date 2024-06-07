@@ -10,6 +10,7 @@
 #include <vector>
 #include <regex>
 #include <algorithm>
+#include <cstdio>
 
 
 
@@ -486,17 +487,36 @@ public:
             inst_funcdef instr = get<inst_funcdef>(inst);
             string f_name = get<string>(instr.f_name.opd_type_);
             string return_type = get<string>(instr.return_type.opd_type_);
-            std::cout << "fn @" << f_name;
+            if(return_type == "INT"){
+                return_type = "i32";
+            }else if(return_type == "VOID"){
+                return_type = "()";
+            }
+            std::cout << "fn @" << f_name<<"(";
             vector<Var_Type> args = get<vector<Var_Type>>(instr.arg_types.opd_type_);
+            bool first = true; // 用于控制参数间的逗号
             for (auto arg : args) {
                 string name = arg.tmp_var_name;
                 if (arg.type == NONE) {
                     break;
                 }
-                //to do:判断参数类型
-                std::cout << " #" << name << "(i32)";
+                if (!first) {
+                    std::cout << ", ";
+                }
+                first = false;
+                // 判断参数类型并输出相应类型
+                std::string arg_type;
+                switch (arg.type) {
+                    case INT_TY:
+                        arg_type = "i32";
+                        break;
+                    default:
+                        arg_type = "i32*";
+                        break;
+                }
+                std::cout << " #" << name << ": " << arg_type;
             }
-            std::cout << " -> " << return_type << std::endl;
+            std::cout << ") -> " << return_type << std::endl;
         } else if(type == IR_CALL){
             inst_call instr = get<inst_call>(inst);
             string res = get<string>(instr.res.opd_type_);

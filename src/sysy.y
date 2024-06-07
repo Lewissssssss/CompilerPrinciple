@@ -144,7 +144,7 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
                         //                 cout <<"Table:" << j << endl;
                         //         }
                         // }
-                        print_table(tables);
+                        //print_table(tables);
 
                         cout << "error: redefined variable: "<< $1->name() << endl ;return 1;}
         }
@@ -320,7 +320,7 @@ LC_B : LC {tables.BEGIN_SCOPE();
                 }
         }
 RC_E : RC {
-                print_table(tables);
+                //print_table(tables);
                 tables.END_SCOPE();
                 // cout << "END_SCOPE: " << endl;
                 // print_table(tables);
@@ -339,7 +339,7 @@ Stmt : LVal ASSIGN Exp SEMI {$$ = new Node("AssignStmt"); $$->add(*$1); $$->add(
                 // cout << $1->name() << $1->get_type() << endl;
                 // cout << "$3: " << $3->name() << $3->get_type() << endl;
                 // print_table(tables);
-                print_table(tables);
+                //print_table(tables);
                 cout <<"ASSIGN: "  << $1->get_type() << " " << $3->get_type() << endl;
                 if($1->get_type()!=INT_TY || $3->get_type()!=INT_TY){
                         cout << "wrong type for AssignStmt" << endl;return 1;

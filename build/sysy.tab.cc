@@ -1638,7 +1638,7 @@ yyreduce:
                         //                 cout <<"Table:" << j << endl;
                         //         }
                         // }
-                        print_table(tables);
+                        //print_table(tables);
 
                         cout << "error: redefined variable: "<< (yyvsp[(1) - (2)])->name() << endl ;return 1;}
         ;}
@@ -1861,7 +1861,7 @@ yyreduce:
   case 25:
 #line 322 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {
-                print_table(tables);
+                //print_table(tables);
                 tables.END_SCOPE();
                 // cout << "END_SCOPE: " << endl;
                 // print_table(tables);
@@ -1906,7 +1906,7 @@ yyreduce:
                 // cout << $1->name() << $1->get_type() << endl;
                 // cout << "$3: " << $3->name() << $3->get_type() << endl;
                 // print_table(tables);
-                print_table(tables);
+                //print_table(tables);
                 cout <<"ASSIGN: "  << (yyvsp[(1) - (4)])->get_type() << " " << (yyvsp[(3) - (4)])->get_type() << endl;
                 if((yyvsp[(1) - (4)])->get_type()!=INT_TY || (yyvsp[(3) - (4)])->get_type()!=INT_TY){
                         cout << "wrong type for AssignStmt" << endl;return 1;

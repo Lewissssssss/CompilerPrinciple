@@ -913,7 +913,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
 void init_libs() {
 // fn @putint(#x: i32) -> ();
-    cout << "fn @putint #x(i32) -> VOID" << endl;
+    cout << "fn @putint( #x: i32) -> ()" << endl;
     Func_Type ftmp1;
     ftmp1.args =  vector<Type>{INT_TY};
     ftmp1.arg_num = 1;
@@ -922,7 +922,7 @@ void init_libs() {
     SYM_TBL.add_symbol("putint", ftmp1);
 
 // fn @putch(#x: i32) -> ();
-    cout << "fn @putch #x(i32) -> VOID" << endl;
+    cout << "fn @putch( #x: i32) -> ()" << endl;
     Func_Type ftmp2;
     ftmp2.args =  vector<Type>{INT_TY};
     ftmp2.arg_num = 1;
@@ -931,7 +931,7 @@ void init_libs() {
     SYM_TBL.add_symbol("putch", ftmp2);
 
 // fn @putarray(#n: i32, #arr: i32*) -> ();
-    cout << "fn @putarray #n(i32) #arr(i32*) -> VOID" << endl;
+    cout << "fn @putarray( #n: i32, #arr: i32*) -> ()" << endl;
     Func_Type ftmp3;
     ftmp3.args =  vector<Type>{INT_TY, ARRAY};
     ftmp3.arg_num = 21;
@@ -940,7 +940,7 @@ void init_libs() {
     SYM_TBL.add_symbol("putarray", ftmp3);
 
 // fn @getint() -> i32;
-    cout << "fn @getint -> INT" << endl;
+    cout << "fn @getint() -> i32" << endl;
     Func_Type ftmp4;
     ftmp4.args =  vector<Type>{};
     ftmp4.arg_num = 0;
@@ -949,7 +949,7 @@ void init_libs() {
     SYM_TBL.add_symbol("getint", ftmp4);
 
 // fn @getch() -> i32;
-    cout << "fn @getch -> INT" << endl;
+    cout << "fn @getch() -> i32" << endl;
     Func_Type ftmp5;
     ftmp5.args =  vector<Type>{};
     ftmp5.arg_num = 0;
@@ -958,7 +958,7 @@ void init_libs() {
     SYM_TBL.add_symbol("getch", ftmp5);
 
 // fn @getarray(#n: i32, #arr: i32*) -> ();
-    cout << "fn @getarray #n(i32) #arr(i32*) -> VOID" << endl;
+    cout << "fn @getarray( #n: i32, #arr: i32*) -> ()" << endl;
     Func_Type ftmp6;
     ftmp6.args =  vector<Type>{INT_TY, ARRAY};
     ftmp6.arg_num = 2;
