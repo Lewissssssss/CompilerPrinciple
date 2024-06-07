@@ -708,28 +708,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle if statement
         BBs bbs = Func_BB_map[cur_Func];
-
-        // new basic block
-
-        // new EXIT basic block
-        vector<Instruction> exit_inst;
-        string ex_label = "b" + to_string(bb_num);
+        string tr_label = "if_true_" + to_string(bb_num);
         bb_num++;
-        Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
-        Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label);
-        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
-        bbs.push_back(exit_bb);
-        
-        // new TRUE basic block
-        vector<Instruction> true_inst;
-        string tr_label = "b" + to_string(bb_num);
+        string ex_label = "if_exit_" + to_string(bb_num);
         bb_num++;
-        Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
-        Instruction true_label = Instruction(IR_LABEL, tr_label_op);
-        true_inst.push_back(true_label);
-        BasicBlock true_bb = BasicBlock(true_inst, tr_label);
-        bbs.push_back(true_bb);        
 
         // calculate condition expr in current basic block.
         Node expr = *stmt.get(0);
@@ -738,11 +720,37 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         string cond = get<Var_Type>(cond_value).tmp_var_name;
         create_branch(cond, tr_label, ex_label, current_bb);
 
-        // translate true branch
-        Node true_stmt = *stmt.get(1);
-        BasicBlock true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
-        create_jump(ex_label, true_bb_);
+        // new basic block
+        // new TRUE basic block
+        vector<Instruction> true_inst;
+        Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
+        Instruction true_label = Instruction(IR_LABEL, tr_label_op);
+        true_inst.push_back(true_label);
+        BasicBlock true_bb = BasicBlock(true_inst, tr_label);
+        bbs.push_back(true_bb);
 
+        // translate true branch
+        for (int i = 1; i < stmt.children_size(); i++) {
+            Node true_stmt = *stmt.get(i);
+            if (true_stmt.type == "Block") {
+                BasicBlock true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
+                for (auto child : true_stmt.children) {
+                    true_bb_ = translate_stmt(child, symbol_table, true_bb);
+                }
+            }
+            else {
+                BasicBlock true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
+            }
+        }
+        create_jump(ex_label, true_bb);
+
+        // new EXIT basic block
+        vector<Instruction> exit_inst;
+        Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
+        Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
+        exit_inst.push_back(exit_label);
+        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
+        bbs.push_back(exit_bb);
         return exit_bb;
 
     } else if (stmt_type == IfElse_st) {
@@ -853,7 +861,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         return_addr.tmp_var_name = "return_address";
         return_addr.type = INT_TY;
         return_addr.val = 0;//default
-        create_alloca(return_addr,1,current_bb);
+        // create_alloca(return_addr,1,current_bb);
         symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
         auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
         create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
@@ -918,6 +926,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         BasicBlock bb = BasicBlock(insts, name);
 
         BBs_.push_back(bb);
+        Var_Type return_addr;
+        return_addr.tmp_var_name = "return_address";
+        return_addr.type = INT_TY;
+        return_addr.val = 0;//default
+        create_alloca(return_addr,1, bb);
 
         symbol_table.add_symbol(name_,ftmp);
         cur_Func = name_;
