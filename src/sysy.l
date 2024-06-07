@@ -23,15 +23,15 @@ nondigit [a-zA-Z_]
 
 %%
 
-<INITIAL>"/*"		{BEGIN COMMENT ;printf("COMMENT\n");}
-<COMMENT>"*/"  {BEGIN INITIAL ;printf("END_COMMENT\n");}
+<INITIAL>"/*"		{BEGIN COMMENT ;}
+<COMMENT>"*/"  {BEGIN INITIAL ;}
 <COMMENT>.|\n     {;}
 
-<INITIAL>"//"            {BEGIN LINECOMMENT ;printf("LINECOMMENT\n");}
-<LINECOMMENT>\n {BEGIN INITIAL ;printf("END_LINECOMMENT\n");}
+<INITIAL>"//"            {BEGIN LINECOMMENT ;}
+<LINECOMMENT>\n {BEGIN INITIAL ;}
 <LINECOMMENT>[^\n]*  {;}
 
-{digit}+        {printf( "CONST:%s\n",yytext ); yylval = new Node(string(yytext)); return INT_CONST; }
+{digit}+        { yylval = new Node(string(yytext)); return INT_CONST; }
 "+"             { return ADD; }
 "-"             { return SUB; }
 "*"             { return MUL; }
@@ -48,7 +48,7 @@ nondigit [a-zA-Z_]
 "||"            { return OR; }
 "="             { return ASSIGN; }
 ";"             { return SEMI; }
-","             {printf(",\n"); return COMMA; }
+","             { return COMMA; }
 ":"             { return COLON; }
 "("             { return LP;}
 ")"             {return RP; }
@@ -56,16 +56,16 @@ nondigit [a-zA-Z_]
 "}"             { return RC; }
 "["             { return LB; }
 "]"             {return RB; }
-"if"            { return IF; printf("IF\n"); }
+"if"            { return IF; }
 "else"          { return ELSE; }
 "while"         { return WHILE; }
 "break"         { return BREAK; }
 "continue"      { return CONTINUE; }
 "return"        {  return RETURN; }
-"int"           {printf("INT\n"); return INT; }
+"int"           {return INT; }
 "const"         { return CONST; }
 "void"          { return VOID; }
-{nondigit}({nondigit}|{digit})*              { yylval = new Node(string(yytext)); printf("ID:%s\n",yytext); return ID; }
+{nondigit}({nondigit}|{digit})*              { yylval = new Node(string(yytext));  return ID; }
 {blank}         {; }
 
 .               { ;}

@@ -796,12 +796,12 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 26 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{BEGIN COMMENT ;printf("COMMENT\n");}
+{BEGIN COMMENT ;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 27 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{BEGIN INITIAL ;printf("END_COMMENT\n");}
+{BEGIN INITIAL ;}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
@@ -812,13 +812,13 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 30 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{BEGIN LINECOMMENT ;printf("LINECOMMENT\n");}
+{BEGIN LINECOMMENT ;}
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
 #line 31 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{BEGIN INITIAL ;printf("END_LINECOMMENT\n");}
+{BEGIN INITIAL ;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -828,7 +828,7 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 34 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{printf( "CONST:%s\n",yytext ); yylval = new Node(string(yytext)); return INT_CONST; }
+{ yylval = new Node(string(yytext)); return INT_CONST; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
@@ -913,7 +913,7 @@ YY_RULE_SETUP
 case 24:
 YY_RULE_SETUP
 #line 51 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{printf(",\n"); return COMMA; }
+{ return COMMA; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
@@ -953,7 +953,7 @@ YY_RULE_SETUP
 case 32:
 YY_RULE_SETUP
 #line 59 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{ return IF; printf("IF\n"); }
+{ return IF; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
@@ -983,7 +983,7 @@ YY_RULE_SETUP
 case 38:
 YY_RULE_SETUP
 #line 65 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{printf("INT\n"); return INT; }
+{return INT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
@@ -998,7 +998,7 @@ YY_RULE_SETUP
 case 41:
 YY_RULE_SETUP
 #line 68 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
-{ yylval = new Node(string(yytext)); printf("ID:%s\n",yytext); return ID; }
+{ yylval = new Node(string(yytext));  return ID; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */

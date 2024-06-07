@@ -521,14 +521,18 @@ public:
                         arg_type = "i32*";
                         break;
                 }
-                std::cout << " #" << name << ": " << arg_type;
+                std::cout << "#" << name << ": " << arg_type;
             }
             std::cout << ") -> " << return_type << " {" << std::endl;
         } else if(type == IR_CALL){
             inst_call instr = get<inst_call>(inst);
             string res = get<string>(instr.res.opd_type_);
+            
             string func = get<string>(instr.func.opd_type_);
-            std::cout << "  let %" << res << " = call @" << func;
+            // to do
+            if(func == "getint")
+                std::cout << "  let %" << res << ": i32 = call @" << func;
+            else std::cout << "  let %" << res << ": () = call @" << func;
             vector<Var_Type> args = get<vector<Var_Type>>(instr.args.opd_type_);
             for (auto arg : args){
                 string name = arg.tmp_var_name;

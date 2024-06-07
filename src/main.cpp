@@ -30,20 +30,20 @@ if(argc == 3){
         // 输出重定向到 output.txt
         //std::cout << "This will be written to the file output.txt" << std::endl;
   }
-  cout << "Parsing: " << argv[1] << endl;
+  //cout << "Parsing: " << argv[1] << endl;
   yyin = fopen(argv[1], "r");
   if (!yyin) {
     cout << "Cannot open file: " << argv[1] << endl;
     return 1;
   }
-  cout << "CompUnit" << endl;
+  //cout << "CompUnit" << endl;
   tables.BEGIN_SCOPE();
   RUN_TIME_lib_Set(tables);
   int res = yyparse();
 
 
   tables.END_SCOPE();
-  cout << "IR: "<<endl;
+  //cout << "IR: "<<endl;
   SYM_TBL.Stack.push(Field_Sym());//init symbol tbl
   //init_libs();
   traverseTree(root);

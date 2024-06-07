@@ -1,4 +1,4 @@
-int main(){
+int main(int aa,int bb){
     int a, b;
     a = getint();
     b = getint();
