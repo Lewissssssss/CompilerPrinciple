@@ -73,7 +73,7 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
                         Type ty;
                         vector<int> array_length;
                         array_length.clear();
-                        cout << "VarDef_param: " << $1->name()<< " " << $2->children_size() << endl;
+                        //cout << "VarDef_param: " << $1->name()<< " " << $2->children_size() << endl;
                         for(int i=0;i<$2->children_size();i++){
                                 array_length.push_back(atoi($2->get(i)->name().c_str()));
                                 $$->get(0)->array_size = array_length;//.push_back(atoi($2->get(i)->name().c_str()));
@@ -108,7 +108,7 @@ VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->
         |ID ConstGroup {$$ = new Node("VerDef");$$->add(*$1);
                 if(tables.get_var_in_scope($1->name())==NONE){
                         Type ty;
-                        cout << "VarDef_param: " << $1->name()<< " " << $2->children_size() << endl;
+                        //cout << "VarDef_param: " << $1->name()<< " " << $2->children_size() << endl;
                         array_length.clear();
                         for(int i=0;i<$2->children_size();i++){
                                 array_length.push_back(atoi($2->get(i)->name().c_str()));
@@ -310,7 +310,7 @@ LC_B : LC {tables.BEGIN_SCOPE();
                 }
                 temp_type_map.clear();  
                 // cout << "BEGIN_SCOPE: " << endl;
-                // print_table(tables)
+                // //print_table(tables)
 
                 if(is_func){
                         is_func = false;
@@ -323,7 +323,7 @@ RC_E : RC {
                 //print_table(tables);
                 tables.END_SCOPE();
                 // cout << "END_SCOPE: " << endl;
-                // print_table(tables);
+                // //print_table(tables);
                 // return_type.pop_back();
         }
 
@@ -366,7 +366,7 @@ Stmt : LVal ASSIGN Exp SEMI {$$ = new Node("AssignStmt"); $$->add(*$1); $$->add(
 Exp : LOrExp {$$ = $1;}
 
 LVal : ID {$$ = new Node("LVal" + $1->name()); $$->set_type(tables.get_var($1->name()));
-        cout <<"HERE: " << $1->name() << " " << $$ -> get_type() <<endl; 
+       // cout <<"HERE: " << $1->name() << " " << $$ -> get_type() <<endl; 
         $$->set_id($1->name());
         if(!tables.find_var($1->name())){
                 cout << "undefined variable: " << $1->name() << endl;return 1;
@@ -393,10 +393,10 @@ LVal : ID {$$ = new Node("LVal" + $1->name()); $$->set_type(tables.get_var($1->n
 
         cout << "ty: " << $1->name() << " " << ty << endl;
         $$->set_type(ty);
-        // cout <<"HERE: " << $1->name() <<" " << $$->get_type() <<endl;
+        //// cout <<"HERE: " << $1->name() <<" " << $$->get_type() <<endl;
         if(!tables.find_var($1->name())){
-                // cout << "Here" << endl;
-                // print_table(tables);
+                // //cout << "Here" << endl;
+                // //print_table(tables);
                 cout << "undefined variable: " << $1->name() << endl;return 1;
         }
         }
@@ -433,7 +433,7 @@ UnaryExp : PrimaryExp {$$ = $1;}
                 }
 
 
-                cout << "Here" << endl;
+                //cout << "Here" << endl;
                 for(int i=0;i<$3->children_size();i++){
                         // cout << "Param check " << i+1 << " " << params[i+1] << " " << $3->get(i)->get_type() << endl;
                         if(params[i+1]!=$3->get(i)->get_type()){
@@ -441,9 +441,9 @@ UnaryExp : PrimaryExp {$$ = $1;}
                                 cout << "wrong type of parameters" << endl;return 1;
                         }else{
                                 cout << "CHECK DIM_1: " << params[i+1] << " " << $3->get(i)->get_type() << endl;
-                                // print_table(tables);
+                                // //print_table(tables);
                                 if(params[i+1] >= 4){
-                                        cout << "HERE" << endl;
+                                        //cout << "HERE" << endl;
                                         vector<int> array_length = tables.get_func_array($1->name())[i];
                                         string id = $3->get(i)->get_id();
                                         vector<int> array_length2 = tables.get_var_array(id);

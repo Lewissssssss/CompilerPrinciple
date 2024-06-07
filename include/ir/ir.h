@@ -355,132 +355,132 @@ public:
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = add %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = add %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_SUB){
             // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = sub %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = sub %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_MUL){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = mul %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = mul %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_DIV){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = div %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = div %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_MOD){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = mod %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = mod %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_AND){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = and %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = and %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_OR){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = or %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = or %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_XOR){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = xor %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = xor %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_GT){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = gt %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = gt %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_LT){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = lt %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = lt %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_GE){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = ge %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = ge %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_LE){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = le %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = le %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_EQ){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = eq %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = eq %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_NE){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = ne %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = ne %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_LOAD){
             inst_load instr = get<inst_load>(inst);
             string res = get<string>(instr.target.opd_type_);
             string opd = get<string>(instr.source.opd_type_);
-            std::cout << "let %"<< res << " = load %" << opd << std::endl;
+            std::cout << "  let %"<< res << " = load %" << opd << std::endl;
         } else if(type == IR_STORE){
             inst_store instr = get<inst_store>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << " = store %" << opd1 << ", %" << opd2 << std::endl;
+            std::cout << "  let %"<< res << " = store %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_ALLOCATION){
             inst_allocation instr = get<inst_allocation>(inst);
             string res = get<string>(instr.res.opd_type_);
             value opd_ = get<value>(instr.ElementNum.opd_type_);
             int opd = get<int>(opd_);
-            std::cout << "let %"<< res << " = alloca i32, " << opd << std::endl;
+            std::cout << "  let %"<< res << " = alloca i32, " << opd << std::endl;
         } else if(type == IR_OFFSET){
             //to do
-        } else if(type == IR_RETURN){
+        } else if(type == IR_RETURN){            
             inst_return instr = get<inst_return>(inst);
             string res = get<string>(instr.res.opd_type_);
-            std::cout << "ret %"<< res << std::endl;
+            std::cout << "  ret %"<< res << std::endl << "}" << endl;
         } else if(type == IR_BRANCH){
             inst_branch instr = get<inst_branch>(inst);
             string cond = get<string>(instr.cond.opd_type_);
             string True_label = get<string>(instr.True_label.opd_type_);
             string False_label = get<string>(instr.False_label.opd_type_);
-            std::cout << "br %"<< cond << ", label %" << True_label << ", label %" << False_label << std::endl;
+            std::cout << "  br %"<< cond << ", label %" << True_label << ", label %" << False_label << std::endl;
 
         } else if(type == IR_JUMP){
             inst_jump instr = get<inst_jump>(inst);
             string label = get<string>(instr.dest.opd_type_);
-            std::cout << "jmp label %" << label << std::endl;
+            std::cout << "  jmp label %" << label << std::endl;
         } else if(type == IR_PANIC){
             //to do
         } else if(type == IR_FUNCDEF){
@@ -521,7 +521,7 @@ public:
             inst_call instr = get<inst_call>(inst);
             string res = get<string>(instr.res.opd_type_);
             string func = get<string>(instr.func.opd_type_);
-            std::cout << "let %" << res << " = call " << func;
+            std::cout << "  let %" << res << " = call " << func;
             vector<Var_Type> args = get<vector<Var_Type>>(instr.args.opd_type_);
             for (auto arg : args){
                 string name = arg.tmp_var_name;
