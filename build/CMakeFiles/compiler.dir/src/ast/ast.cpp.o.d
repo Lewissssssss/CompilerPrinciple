@@ -1,6 +1,6 @@
 CMakeFiles/compiler.dir/src/ast/ast.cpp.o: \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/src/ast/ast.cpp \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/include/ast/ast.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/src/ast/ast.cpp \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ast/ast.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__assert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config \

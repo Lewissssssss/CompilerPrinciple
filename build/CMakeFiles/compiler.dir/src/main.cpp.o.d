@@ -1,6 +1,6 @@
 CMakeFiles/compiler.dir/src/main.cpp.o: \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/src/main.cpp \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/include/ast/ast.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/src/main.cpp \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ast/ast.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__assert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config \
@@ -877,4 +877,10 @@ CMakeFiles/compiler.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/not_fn.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/pointer_to_binary_function.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/unary_negate.h
+  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/unary_negate.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ir/ir.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/stack \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/deque \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/cassert \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/regex

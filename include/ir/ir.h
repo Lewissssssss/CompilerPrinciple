@@ -1,3 +1,5 @@
+#ifndef IR_H
+#define IR_H
 #include <iostream>
 #include <stack>
 #include <ast/ast.h>
@@ -8,10 +10,12 @@
 #include <vector>
 #include <regex>
 #include <algorithm>
+#include <cstdio>
 
 
 
 enum Expr_Stmt_type {
+    // exp : 0~7
     INT_et,
     ID_et,
     BinOp_et,
@@ -20,6 +24,7 @@ enum Expr_Stmt_type {
     Unary_BinOp_et,
     Call_et,
     ARRAY_et,
+    // stmt : 8~16
     FucDef_est,
     VarDecl_st,
     VarDeclArray_st,
@@ -29,6 +34,7 @@ enum Expr_Stmt_type {
     IfElse_st,
     While_st,
     Return_st,
+    Block_st,
     useless_est,
 };
 
@@ -89,24 +95,33 @@ struct Func_Type {
 typedef std::variant<Var_Type, Func_Type, std::unordered_map<std::string, Var_Type>::iterator> ir_Type; // iterator to handle LVal
 
 class Field_Sym {
-private:
+// private:
+    
+public:
     std::unordered_map<std::string, Var_Type> Var_sym_tbl;
     std::unordered_map<std::string, Func_Type> Func_sym_tbl;
-public:
     Field_Sym() = default;
     Field_Sym(const Field_Sym& f) : Var_sym_tbl(f.Var_sym_tbl), Func_sym_tbl(f.Func_sym_tbl) {}
     void add_symbol(std::string Identifier, Var_Type value) {
-        Var_sym_tbl.insert_or_assign(Identifier, value);
+        auto save = new Var_Type(value);
+        Var_sym_tbl.insert_or_assign(Identifier, *save);
     }
     void add_symbol(std::string Identifier, Func_Type value) {
-        Func_sym_tbl.insert_or_assign(Identifier, value);
+        auto save = new Func_Type(value);
+                // cout << "    void add_symbol(const std::string& Identifier, Func_Type n)3" << endl;
+
+        Func_sym_tbl.insert_or_assign(Identifier, *save);
+                // cout << "    void add_symbol(const std::string& Identifier, Func_Type n)4" << endl;
+
     }
     Var_Type& lookup_var(const std::string& Identifier) {
         auto iter1 = Var_sym_tbl.find(Identifier);
         if (iter1 != Var_sym_tbl.end())
             return iter1->second;
-        else std::cout << "Error in lookup_var!" << std::endl;
-        assert(false);
+        else {
+            std::cout << "Error in lookup_var!" << std::endl;
+            assert(false);
+        }
     }
     Func_Type& lookup_func(const std::string& Identifier) {
         auto iter2 = Func_sym_tbl.find(Identifier);
@@ -125,8 +140,11 @@ public:
 class Symbol_Table {
 public:
     std::stack<Field_Sym> Stack;
-public:
-    Symbol_Table() = default;
+
+
+    Symbol_Table() {
+        Stack = stack<Field_Sym>{};
+    }
     Var_Type& lookup_var(const std::string& Identifier) {
         return Stack.top().lookup_var(Identifier);
     }
@@ -134,10 +152,16 @@ public:
         return Stack.top().lookup_func(Identifier);
     }
     void add_symbol(const std::string& Identifier, Var_Type n) {
-        Stack.top().add_symbol(Identifier, n);
+        auto save = new Var_Type(n);
+        Stack.top().add_symbol(Identifier, *save);
     }
     void add_symbol(const std::string& Identifier, Func_Type n) {
-        Stack.top().add_symbol(Identifier, n);
+        auto save = new Func_Type(n);
+        //cout << "    void add_symbol(const std::string& Identifier, Func_Type n)" << endl;
+
+        Stack.top().add_symbol(Identifier, *save);
+        //cout << "    void add_symbol(const std::string& Identifier, Func_Type n)2" << endl;
+
     }
     std::unordered_map<std::string, Var_Type>::iterator get_Lval(const std::string& identifier) {
         return Stack.top().get_Lval(identifier);
@@ -153,6 +177,7 @@ public:
 enum OperandType {
     OPD_CONSTANT,
     OPD_VARIABLE,
+    OPD_ARG,
     OPD_ARGS
 };
 
@@ -172,7 +197,7 @@ public:
     OperandType type_;
     std::variant<std::string, value, std::vector<Var_Type>> opd_type_;
 };
-
+bool is_a_tmp_param(Var_Type var);
 enum inst_IR_type {
     IR_ADD,
     IR_SUB, // sub & minus
@@ -278,7 +303,7 @@ public:
                          inst_offset, inst_return, inst_jump, inst_branch,
                          inst_panic, inst_funcdef, inst_call, inst_label> inst_type;
 
-    Instruction(inst_IR_type type, inst_type inst) : type(type), inst(inst) {}
+    Instruction(inst_IR_type type, inst_type inst) : type(type), inst(inst) {print();}
     Instruction(inst_IR_type type, Operand res, Operand opd1, Operand opd2) : type(type) {
         if(type == IR_ADD || type == IR_SUB ||
             type == IR_MUL || type == IR_DIV ||
@@ -299,7 +324,8 @@ public:
             } else if (type == IR_CALL) {
                 inst = inst_call{res, opd1, opd2};
             }
-            assert(false);
+            else assert(false);
+            print();
     }
         Instruction(inst_IR_type type, Operand opd1, Operand opd2) : type(type) {
             if (type == IR_LOAD) {
@@ -309,7 +335,8 @@ public:
             } else if (type == IR_OFFSET) {
             inst = inst_offset{opd1, opd2};
             }
-            assert(false);
+            else assert(false);
+            print();
             }
         Instruction(inst_IR_type type, Operand res) : type(type) {
             if (type == IR_RETURN) {
@@ -319,7 +346,8 @@ public:
             } else if (type == IR_LABEL) {
             inst = inst_label{res};
             }
-            assert(false);
+            else assert(false);
+            print();
         }
     void print(){
         if (type == IR_ADD){
@@ -328,155 +356,187 @@ public:
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= add %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = add %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_SUB){
             // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= sub %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = sub %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_MUL){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= mul %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = mul %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_DIV){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= div %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = div %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_MOD){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= mod %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = mod %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_AND){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= and %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = and %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_OR){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= or %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = or %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_XOR){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= xor %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = xor %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_GT){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= gt %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = gt %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_LT){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= lt %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = lt %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_GE){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= ge %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = ge %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_LE){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= le %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = le %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_EQ){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= eq %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = eq %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_NE){
                         // to do:判断opd的类型
             inst_binary instr = get<inst_binary>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= ne %" << opd1 << ", % " << opd2 << std::endl;
+            std::cout << "  let %"<< res << ": i32 = ne %" << opd1 << ": i32, %" << opd2 << ": i32" << std::endl;
         } else if(type == IR_LOAD){
             inst_load instr = get<inst_load>(inst);
             string res = get<string>(instr.target.opd_type_);
             string opd = get<string>(instr.source.opd_type_);
-            std::cout << "let %"<< res << "= load %" << opd << std::endl;
+            std::cout << "  let %"<< res << ": i32 = load %" << opd << ": i32*" << std::endl;
         } else if(type == IR_STORE){
             inst_store instr = get<inst_store>(inst);
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "let %"<< res << "= store %" << opd1 << ", % " << opd2 << std::endl;
+            if (instr.opd1.type_ == OPD_ARG) {
+                std::cout << "  let %"<< res << ": () = store #" << opd1 << ", %" << opd2 << ": i32*" << std::endl;
+            }
+            else if (instr.opd1.type_ == OPD_CONSTANT) {
+                std::cout << "  let %"<< res << ": () = store " << opd1 << ", %" << opd2 << ": i32*" << std::endl;
+            }
+            else std::cout << "  let %"<< res << ": () = store %" << opd1 << ": i32, %" << opd2 << ": i32*" << std::endl;
         } else if(type == IR_ALLOCATION){
             inst_allocation instr = get<inst_allocation>(inst);
             string res = get<string>(instr.res.opd_type_);
             value opd_ = get<value>(instr.ElementNum.opd_type_);
             int opd = get<int>(opd_);
-            std::cout << "let %"<< res << "= alloca i32, " << opd << std::endl;
+            std::cout << "  let %"<< res << ": i32* = alloca i32, " << opd << std::endl;
         } else if(type == IR_OFFSET){
             //to do
-        } else if(type == IR_RETURN){
+        } else if(type == IR_RETURN){            
             inst_return instr = get<inst_return>(inst);
             string res = get<string>(instr.res.opd_type_);
-            std::cout << "ret %"<< res << std::endl;
+            std::cout << "  ret %"<< res << ": i32" << std::endl << "}" << endl << endl;
         } else if(type == IR_BRANCH){
             inst_branch instr = get<inst_branch>(inst);
             string cond = get<string>(instr.cond.opd_type_);
             string True_label = get<string>(instr.True_label.opd_type_);
             string False_label = get<string>(instr.False_label.opd_type_);
-            std::cout << "br %"<< cond << ", label %" << True_label << ", label %" << False_label << std::endl;
+            std::cout << "  br %"<< cond << ": i32, label %" << True_label << ", label %" << False_label << std::endl;
 
         } else if(type == IR_JUMP){
             inst_jump instr = get<inst_jump>(inst);
             string label = get<string>(instr.dest.opd_type_);
-            std::cout << "jmp label %" << label << std::endl;
+            std::cout << "  jmp label %" << label << std::endl;
         } else if(type == IR_PANIC){
             //to do
         } else if(type == IR_FUNCDEF){
             inst_funcdef instr = get<inst_funcdef>(inst);
             string f_name = get<string>(instr.f_name.opd_type_);
             string return_type = get<string>(instr.return_type.opd_type_);
-            std::cout << "fn @" << f_name;
+            if(return_type == "INT"){
+                return_type = "i32";
+            }else if(return_type == "VOID"){
+                return_type = "()";
+            }
+            std::cout << "fn @" << f_name<<"(";
             vector<Var_Type> args = get<vector<Var_Type>>(instr.arg_types.opd_type_);
+            bool first = true; // 用于控制参数间的逗号
             for (auto arg : args) {
                 string name = arg.tmp_var_name;
-                //to do:判断参数类型
-                std::cout << " #" << name << "(i32)";
+                if (arg.type == NONE) {
+                    break;
+                }
+                if (!first) {
+                    std::cout << ", ";
+                }
+                first = false;
+                // 判断参数类型并输出相应类型
+                std::string arg_type;
+                switch (arg.type) {
+                    case INT_TY:
+                        arg_type = "i32";
+                        break;
+                    default:
+                        arg_type = "i32*";
+                        break;
+                }
+                std::cout << "#" << name << ": " << arg_type;
             }
-            std::cout << " -> " << return_type << std::endl;
+            std::cout << ") -> " << return_type << " {" << std::endl;
         } else if(type == IR_CALL){
             inst_call instr = get<inst_call>(inst);
             string res = get<string>(instr.res.opd_type_);
+            
             string func = get<string>(instr.func.opd_type_);
-            std::cout << "let %" << res << " = call " << func;
+            // to do
+            if(func == "getint")
+                std::cout << "  let %" << res << ": i32 = call @" << func;
+            else std::cout << "  let %" << res << ": () = call @" << func;
             vector<Var_Type> args = get<vector<Var_Type>>(instr.args.opd_type_);
             for (auto arg : args){
                 string name = arg.tmp_var_name;
-                std::cout << ", %" << name;
+                std::cout << ", %" << name << ": i32";
             }
             std::cout << std::endl;
         } else if(type == IR_LABEL){
@@ -505,13 +565,11 @@ struct BasicBlock{
 } ;
 
 typedef std::vector<BasicBlock> BBs;
-int bb_num = 0;
 
-std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
-std::string cur_Func;
-
-Symbol_Table SYM_TBL;
 bool canConvertToInt(const std::string& str);
-ir_Type translate_expr(Node expr, Symbol_Table symbol_table, BasicBlock current_bb);
+ir_Type translate_expr(Node expr, Symbol_Table& symbol_table, BasicBlock current_bb);
 Expr_Stmt_type get_exprType_from_node(Node *node);
-BasicBlock translate_stmt(Node stmt, Symbol_Table symbol_table, BasicBlock current_bb);
+BasicBlock translate_stmt(Node stmt, Symbol_Table& symbol_table, BasicBlock current_bb);
+void init_libs();
+void traverseTree(Node node);
+#endif

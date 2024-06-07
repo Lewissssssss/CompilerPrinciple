@@ -1,5 +1,5 @@
 CMakeFiles/compiler.dir/sysy.lex.cc.o: \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config_site \
@@ -89,7 +89,7 @@ CMakeFiles/compiler.dir/sysy.lex.cc.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/malloc/_ptrcheck.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_dev_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_mode_t.h \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/include/ast/ast.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ast/ast.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__assert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__verbose_abort \
@@ -878,7 +878,7 @@ CMakeFiles/compiler.dir/sysy.lex.cc.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/pointer_to_binary_function.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/unary_negate.h \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.tab.hh \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.tab.hh \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/unistd.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/unistd.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_posix_vdisable.h \

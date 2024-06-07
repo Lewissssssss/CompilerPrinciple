@@ -1,6 +1,6 @@
 CMakeFiles/compiler.dir/src/ir/ir.cpp.o: \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/src/ir/ir.cpp \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/include/ir/ir.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/src/ir/ir.cpp \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ir/ir.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__assert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config \
@@ -878,7 +878,7 @@ CMakeFiles/compiler.dir/src/ir/ir.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/pointer_to_binary_function.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/unary_negate.h \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/include/ast/ast.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ast/ast.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/cassert \

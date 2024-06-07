@@ -1,4 +1,4 @@
-# Install script for directory: /Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt
+# Install script for directory: /Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,7 +38,7 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/libfmt.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/libfmt.a")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfmt.a" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfmt.a")
     execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfmt.a")
@@ -47,26 +47,26 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/fmt" TYPE FILE FILES
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/args.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/chrono.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/color.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/compile.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/core.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/format.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/format-inl.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/os.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/ostream.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/printf.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/ranges.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/std.h"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include/fmt/xchar.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/args.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/chrono.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/color.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/compile.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/core.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/format.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/format-inl.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/os.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/ostream.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/printf.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/ranges.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/std.h"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include/fmt/xchar.h"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/fmt-config.cmake"
-    "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/fmt-config-version.cmake"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/fmt-config.cmake"
+    "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/fmt-config-version.cmake"
     )
 endif()
 
@@ -74,7 +74,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets.cmake")
     file(DIFFERENT _cmake_export_file_changed FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets.cmake"
-         "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake")
+         "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake")
     if(_cmake_export_file_changed)
       file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt/fmt-targets-*.cmake")
       if(_cmake_old_config_files)
@@ -87,13 +87,13 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
     endif()
     unset(_cmake_export_file_changed)
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake")
   if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^()$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets-noconfig.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/fmt" TYPE FILE FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets-noconfig.cmake")
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/fmt.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/fmt.pc")
 endif()
 

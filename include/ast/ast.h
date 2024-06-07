@@ -1,3 +1,5 @@
+#ifndef AST_H
+#define AST_H
 #include <iostream>
 #include <string>
 #include <vector>
@@ -90,3 +92,5 @@ class Node{
         void set_id(string id);
         string get_id();
 };
+
+#endif

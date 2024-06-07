@@ -1,6 +1,6 @@
-#line 1 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 1 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc"
 
-#line 3 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 3 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -503,9 +503,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 1 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 #define YY_NO_INPUT 1
-#line 6 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 6 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 #define YYSTYPE Node*
 #include <stdio.h>
 #include <ast/ast.h>
@@ -514,9 +514,9 @@ using namespace std;
 #include "sysy.tab.hh"
 extern TABLE_LISTS tables;
 
-#line 517 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 517 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc"
         
-#line 519 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 519 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -733,10 +733,10 @@ YY_DECL
 		}
 
 	{
-#line 24 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 24 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 
 
-#line 739 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 739 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -795,228 +795,228 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 26 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{BEGIN COMMENT ;printf("COMMENT\n");}
+#line 26 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{BEGIN COMMENT ;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{BEGIN INITIAL ;printf("END_COMMENT\n");}
+#line 27 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{BEGIN INITIAL ;}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 28 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 28 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 {;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 30 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{BEGIN LINECOMMENT ;printf("LINECOMMENT\n");}
+#line 30 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{BEGIN LINECOMMENT ;}
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 31 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{BEGIN INITIAL ;printf("END_LINECOMMENT\n");}
+#line 31 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{BEGIN INITIAL ;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 32 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 32 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 {;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{printf( "CONST:%s\n",yytext ); yylval = new Node(string(yytext)); return INT_CONST; }
+#line 34 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{ yylval = new Node(string(yytext)); return INT_CONST; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 35 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 35 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return ADD; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 36 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 36 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return SUB; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 37 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 37 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return MUL; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 38 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 38 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return DIV; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 39 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 39 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return MOD; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 40 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 40 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return NOT; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 41 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 41 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return EQ; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 42 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 42 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return NE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 43 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 43 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return LT; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 44 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 44 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return LE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 45 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 45 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return GT; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 46 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 46 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return GE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 47 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 47 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return AND; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 48 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 48 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return OR; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 49 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 49 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return ASSIGN; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 50 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 50 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return SEMI; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 51 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{printf(",\n"); return COMMA; }
+#line 51 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{ return COMMA; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 52 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 52 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return COLON; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 53 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 53 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return LP;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 54 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 54 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 {return RP; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 55 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 55 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return LC;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 56 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 56 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return RC; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 57 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 57 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return LB; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 58 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 58 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 {return RB; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 59 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{ return IF; printf("IF\n"); }
+#line 59 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{ return IF; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 60 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 60 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return ELSE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 61 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 61 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return WHILE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 62 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 62 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return BREAK; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 63 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 63 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return CONTINUE; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 64 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 64 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 {  return RETURN; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 65 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{printf("INT\n"); return INT; }
+#line 65 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{return INT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 66 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 66 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return CONST; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 67 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 67 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { return VOID; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 68 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
-{ yylval = new Node(string(yytext)); printf("ID:%s\n",yytext); return ID; }
+#line 68 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
+{ yylval = new Node(string(yytext));  return ID; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 69 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 69 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 {; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 71 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 71 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 { ;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 74 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 74 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 ECHO;
 	YY_BREAK
-#line 1019 "/Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.lex.cc"
+#line 1019 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.lex.cc"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(LINECOMMENT):
@@ -1986,6 +1986,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 74 "/Users/lyucheng_wu/Desktop/lab3/lab1/src/sysy.l"
+#line 74 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.l"
 
 

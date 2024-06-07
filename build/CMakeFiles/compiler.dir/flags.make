@@ -4,7 +4,7 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = -DFMT_HEADER_ONLY=1
 
-CXX_INCLUDES = -I/Users/lyucheng_wu/Desktop/lab3/lab1/include -I/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include
+CXX_INCLUDES = -I/Users/lyucheng_wu/GitHub/CompilerPrinciple/include -I/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include
 
 CXX_FLAGSarm64 = -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -Wall -Wno-register
 

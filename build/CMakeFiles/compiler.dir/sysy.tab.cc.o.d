@@ -1,5 +1,5 @@
 CMakeFiles/compiler.dir/sysy.tab.cc.o: \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/build/sysy.tab.cc \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.tab.cc \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config_site \
@@ -37,7 +37,7 @@ CMakeFiles/compiler.dir/sysy.tab.cc.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_off_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_ssize_t.h \
-  /Users/lyucheng_wu/Desktop/lab3/lab1/include/ast/ast.h \
+  /Users/lyucheng_wu/GitHub/CompilerPrinciple/include/ast/ast.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__assert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__verbose_abort \

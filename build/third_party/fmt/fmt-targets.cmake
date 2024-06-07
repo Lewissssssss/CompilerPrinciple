@@ -51,7 +51,7 @@ add_library(fmt::fmt STATIC IMPORTED)
 
 set_target_properties(fmt::fmt PROPERTIES
   INTERFACE_COMPILE_FEATURES "cxx_std_11"
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include"
 )
 
 # Create imported target fmt::fmt-header-only
@@ -60,14 +60,14 @@ add_library(fmt::fmt-header-only INTERFACE IMPORTED)
 set_target_properties(fmt::fmt-header-only PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "FMT_HEADER_ONLY=1"
   INTERFACE_COMPILE_FEATURES "cxx_std_11"
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/lyucheng_wu/Desktop/lab3/lab1/third_party/fmt/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/lyucheng_wu/GitHub/CompilerPrinciple/third_party/fmt/include"
 )
 
 # Import target "fmt::fmt" for configuration ""
 set_property(TARGET fmt::fmt APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
 set_target_properties(fmt::fmt PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_NOCONFIG "CXX"
-  IMPORTED_LOCATION_NOCONFIG "/Users/lyucheng_wu/Desktop/lab3/lab1/build/third_party/fmt/libfmt.a"
+  IMPORTED_LOCATION_NOCONFIG "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/third_party/fmt/libfmt.a"
   )
 
 # This file does not depend on other imported targets which have
