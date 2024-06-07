@@ -95,6 +95,12 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
     string name = node->name();
     
     if (canConvertToInt(name)) {
+        for (auto child : node->children) {
+            if ((child.type == "SUB" && child.children_size() == 0) || 
+                (child.type == "NOT" && child.children_size() == 0)) {
+                return Unary_ID_et;
+            }
+        }
         return INT_et;
     } 
     else if (startsWith(name, "LVal")) {
@@ -181,10 +187,10 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         if(node->ID == "FUNCTION" || node->children[0].type == "FuncRParams") {
             return Call_et;
         }
-        else if(node->get_type() == INT_TY){
+        else if(node->t == INT_TY){
             for (auto child : node->children) {
-                if ((child.name() == "SUB" && child.children_size() == 0) || 
-                    (child.name() == "NOT" && child.children_size() == 0)) {
+                if ((child.type == "SUB" && child.children_size() == 0) || 
+                    (child.type == "NOT" && child.children_size() == 0)) {
                     return Unary_ID_et;
                 }
             }
@@ -192,8 +198,8 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         }
         else{
             for (auto child : node->children) {
-                if ((child.name() == "SUB" && child.children_size() == 0) || 
-                    (child.name() == "NOT" && child.children_size() == 0)) {
+                if ((child.type == "SUB" && child.children_size() == 0) || 
+                    (child.type == "NOT" && child.children_size() == 0)) {
                     return Unary_ARRAY_et;
                 }
             }
@@ -716,7 +722,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         BBs bbs = Func_BB_map[cur_Func];
         string tr_label = "if_true_" + to_string(bb_num);
         bb_num++;
-        string ex_label = "if_exit_" + to_string(bb_num);
+        string ex_label = "if_exit_" + to_string(bb_num-1);
         bb_num++;
 
         // calculate condition expr in current basic block.
@@ -764,50 +770,51 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle if-else statement
         BBs bbs = Func_BB_map[cur_Func];
-
-        // new EXIT basic block
-        vector<Instruction> exit_inst;
-        string ex_label = "b" + to_string(bb_num);
+        string tr_label = "if_true_" + to_string(bb_num);
         bb_num++;
-        Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
-        Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label);
-        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
-        bbs.push_back(exit_bb);
-        
+        string fl_label = "if_else_" + to_string(bb_num-1);
+        bb_num++;
+        string ex_label = "if_exit_" + to_string(bb_num-2);
+        bb_num++;
+        // condition
+        Node Expr = *stmt.get(0);
+        ir_Type cond_value = translate_expr(Expr, symbol_table, current_bb);
+        string cond = get<Var_Type>(cond_value).tmp_var_name;
+        create_branch(cond, tr_label, fl_label, current_bb);
 
         // new TRUE basic block
         vector<Instruction> true_inst;
-        string tr_label = "b" + to_string(bb_num);
-        bb_num++;
         Operand tr_label_op = Operand(OPD_VARIABLE, tr_label);
         Instruction true_label = Instruction(IR_LABEL, tr_label_op);
         true_inst.push_back(true_label);
         BasicBlock true_bb = BasicBlock(true_inst, tr_label);
         bbs.push_back(true_bb);  
 
-        // new FALSE basic block
-        vector<Instruction> false_inst;
-        string fl_label = "b" + to_string(bb_num);
-        bb_num++;
-        Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
-        Instruction false_label = Instruction(IR_LABEL, fl_label_op);
-        false_inst.push_back(false_label);
-        BasicBlock false_bb = BasicBlock(false_inst, fl_label);
-        bbs.push_back(false_bb);  
-
-        Node Expr = *stmt.get(0);
-        ir_Type cond_value = translate_expr(Expr, symbol_table, current_bb);
-        string cond = get<Var_Type>(cond_value).tmp_var_name;
-        create_branch(cond, tr_label, fl_label, current_bb);
-
         Node Stmt1 = *stmt.get(1);
         BasicBlock true_exit_bb = translate_stmt(Stmt1, symbol_table, true_bb);
         create_jump(ex_label, true_exit_bb);
 
+
+        // new FALSE basic block
+        vector<Instruction> false_inst;
+        Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
+        Instruction false_label = Instruction(IR_LABEL, fl_label_op);
+        false_inst.push_back(false_label);
+        BasicBlock false_bb = BasicBlock(false_inst, fl_label);
+        bbs.push_back(false_bb); 
+
         Node Stmt2 = *stmt.get(2);
         BasicBlock false_exit_bb = translate_stmt(Stmt2, symbol_table, false_bb);
-        create_jump(ex_label, false_exit_bb);
+        create_jump(ex_label, false_exit_bb); 
+
+        // new EXIT basic block
+        vector<Instruction> exit_inst;
+        Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
+        Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
+        exit_inst.push_back(exit_label);
+        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
+        bbs.push_back(exit_bb);
+        
 
         return exit_bb;
     } else if (stmt_type == While_st) {
