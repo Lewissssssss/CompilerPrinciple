@@ -376,10 +376,16 @@ void create_function_call(Func_Type func, string ID, string res, Symbol_Table& s
     current_bb.inst_list.push_back(new_inst);
 }
 
-void create_store(string opd1, string opd2, BasicBlock current_bb){
+void create_store(string opd1, string opd2, BasicBlock current_bb, int opd1_type = 0){
     string res = "res";
     Operand result = Operand(OPD_VARIABLE, res);
     Operand op1 = Operand(OPD_VARIABLE, opd1);
+    if (opd1_type == 1) {
+        op1.type_ = OPD_ARG;
+    }
+    else if(opd1_type == 2){
+        op1.type_ = OPD_CONSTANT;
+    }
     Operand op2 = Operand(OPD_VARIABLE, opd2);
     Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
     current_bb.inst_list.push_back(new_inst);
@@ -932,7 +938,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 Var_Type tmp;
                 tmp.tmp_var_name = iter->tmp_var_name+".addr";
                 create_alloca(tmp,1,bb);
-                create_store(iter->tmp_var_name,tmp.tmp_var_name,bb);
+                create_store(iter->tmp_var_name,tmp.tmp_var_name,bb,1);
             }else{
                 //create_alloca(*iter,calculate_array_size())
             }

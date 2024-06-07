@@ -177,6 +177,7 @@ public:
 enum OperandType {
     OPD_CONSTANT,
     OPD_VARIABLE,
+    OPD_ARG,
     OPD_ARGS
 };
 
@@ -457,7 +458,10 @@ public:
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            std::cout << "  let %"<< res << " = store %" << opd1 << ", %" << opd2 << std::endl;
+            if (instr.opd1.type_ == OPD_ARG || instr.opd1.type_ == OPD_CONSTANT) {
+                std::cout << "  let %"<< res << " = store " << opd1 << ", %" << opd2 << std::endl;
+            }
+            else std::cout << "  let %"<< res << " = store %" << opd1 << ", %" << opd2 << std::endl;
         } else if(type == IR_ALLOCATION){
             inst_allocation instr = get<inst_allocation>(inst);
             string res = get<string>(instr.res.opd_type_);
