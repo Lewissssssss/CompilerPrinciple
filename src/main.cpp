@@ -19,10 +19,7 @@ Symbol_Table SYM_TBL;
 int main(int argc, char **argv) {
 
 
-  if (argc != 2) {
-    cout << "Usage: " << argv[0] << " filename" << endl;
-    return 1;
-  }else if(argc == 3){
+if(argc == 3){
       FILE* file = freopen(argv[2], "w", stdout);
 
       if (file == nullptr) {
