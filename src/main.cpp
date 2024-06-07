@@ -17,9 +17,21 @@ std::string cur_Func;
 Symbol_Table SYM_TBL;
 
 int main(int argc, char **argv) {
+  FILE* file = freopen("output.txt", "w", stdout);
+
+
   if (argc != 2) {
     cout << "Usage: " << argv[0] << " filename" << endl;
     return 1;
+  }else if(argc == 3){
+
+      if (file == nullptr) {
+            std::cerr << "Failed to open output.txt" << std::endl;
+            return 1;
+        }
+
+        // 输出重定向到 output.txt
+        //std::cout << "This will be written to the file output.txt" << std::endl;
   }
   cout << "Parsing: " << argv[1] << endl;
   yyin = fopen(argv[1], "r");
@@ -34,10 +46,12 @@ int main(int argc, char **argv) {
 
 
   tables.END_SCOPE();
+  cout << "IR: "<<endl;
   SYM_TBL.Stack.push(Field_Sym());//init symbol tbl
   //init_libs();
   traverseTree(root);
-
+  
+  if(argc == 2)fclose(file);
   return res;
 }
 

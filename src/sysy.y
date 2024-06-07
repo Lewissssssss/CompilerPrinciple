@@ -338,7 +338,7 @@ BlockItem : Decl {$$=$1; }| Stmt{$$=$1;}
 Stmt : LVal ASSIGN Exp SEMI {$$ = new Node("AssignStmt"); $$->add(*$1); $$->add(*$3);
                 // cout << $1->name() << $1->get_type() << endl;
                 // cout << "$3: " << $3->name() << $3->get_type() << endl;
-                // //print_table(tables);
+                // print_table(tables);
                 //print_table(tables);
                 cout <<"ASSIGN: "  << $1->get_type() << " " << $3->get_type() << endl;
                 if($1->get_type()!=INT_TY || $3->get_type()!=INT_TY){
