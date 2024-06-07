@@ -197,7 +197,7 @@ public:
     OperandType type_;
     std::variant<std::string, value, std::vector<Var_Type>> opd_type_;
 };
-
+bool is_a_tmp_param(Var_Type var);
 enum inst_IR_type {
     IR_ADD,
     IR_SUB, // sub & minus

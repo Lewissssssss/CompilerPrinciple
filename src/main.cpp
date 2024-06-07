@@ -13,7 +13,7 @@ int bb_num = 0;
 
 std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
 std::string cur_Func;
-
+std::vector<Var_Type> cur_params;
 Symbol_Table SYM_TBL;
 
 int main(int argc, char **argv) {

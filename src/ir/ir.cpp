@@ -5,7 +5,7 @@ extern int bb_num;
 
 extern std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
 extern std::string cur_Func;
-
+extern vector<Var_Type> cur_params;
 extern Symbol_Table SYM_TBL;
 bool canConvertToInt(const std::string& str) {
     if (str.empty()) {
@@ -232,8 +232,23 @@ ir_Type create_constant(int number, Type type){
 }
 
 void create_load(Var_Type target, Var_Type source, BasicBlock& current_bb){
-    auto tar = new Operand(OPD_VARIABLE, target.tmp_var_name);
-    auto src = new Operand(OPD_VARIABLE, source.tmp_var_name);
+
+    auto tar = new Operand;
+    auto src = new Operand;
+
+    if (is_a_tmp_param(target)) {
+        tar = new Operand(OPD_ARG, target.tmp_var_name);
+    } else {
+        tar = new Operand(OPD_VARIABLE, target.tmp_var_name);
+    }
+
+    if (is_a_tmp_param(source)) {
+        src = new Operand(OPD_ARG, source.tmp_var_name+".addr");
+    } else {
+        src = new Operand(OPD_VARIABLE, source.tmp_var_name);
+    }
+    // auto tar = new Operand(OPD_VARIABLE, target.tmp_var_name);
+    // auto src = new Operand(OPD_VARIABLE, source.tmp_var_name);
     auto inst = new Instruction(IR_LOAD, *tar,*src);
 
     insert_instruction(*inst, current_bb);
@@ -911,7 +926,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // create_alloca(return_addr,1,current_bb);
         symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
         auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
-        create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
+        if (get<Var_Type>(return_value).type == NONE){
+            create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb, 2);
+        }
+        else create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
         create_ret(return_addr.tmp_var_name, symbol_table, current_bb);
         vector<Instruction> empty;
         BasicBlock end_block = BasicBlock(empty, "EOF");
@@ -1000,6 +1018,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         symbol_table.add_symbol(name_,ftmp);
         cur_Func = name_;
+        cur_params = args;
         Func_BB_map.insert(pair(name_, BBs_));
         return bb;
     } else if (stmt_type == Block_st) {
@@ -1013,7 +1032,14 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
     }
 
 }
-
+bool is_a_tmp_param(Var_Type var){
+    for(auto iter = cur_params.begin();iter!=cur_params.end();iter++){
+        if(iter->tmp_var_name == var.tmp_var_name){
+            return true;
+        }
+        return false;
+    }
+}
 void init_libs() {
 // fn @putint(#x: i32) -> ();
     cout << "fn @putint( #x: i32) -> ()" << endl << endl;

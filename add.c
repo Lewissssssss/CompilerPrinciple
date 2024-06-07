@@ -1,7 +1,5 @@
-int main(int a1, int a2[][10]){
+int main(){
     int a, b;
-    b= -1;
-    a = -b;
     a = getint();
     b = getint();
     putint(a+b);
