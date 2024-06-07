@@ -947,7 +947,12 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             for(auto iter = params_.begin();iter!=params_.end();iter++){
                 Var_Type tmp;
                 tmp.tmp_var_name = iter->name();
-                tmp.type = INT_TY;
+                int childrensize=iter->children_size();
+                if(childrensize==0)
+                    tmp.type = INT_TY;
+                else
+                    tmp.type = ARRAY;//
+                //cout << iter->get_type();
                 tmp.val = 0;//default
                 args.push_back(tmp);
 
