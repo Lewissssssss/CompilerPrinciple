@@ -560,7 +560,7 @@ void reverseVector(std::vector<Node>& params_) {
 BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock current_bb){
     Expr_Stmt_type stmt_type=get_exprTpye_from_node(&stmt);
     if (stmt_type == VarDecl_st) {
-        // cout << "stmt_type == VarDecl_st" << endl;
+        //cout << "stmt_type == VarDecl_st" << endl;
         BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
 
         string name = (stmt.children)[0].name();
@@ -903,6 +903,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 tmp.type = INT_TY;
                 tmp.val = 0;//default
                 args.push_back(tmp);
+
+                symbol_table.add_symbol(tmp.tmp_var_name,tmp);
             }
         }
         else {
@@ -925,6 +927,18 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         insts.push_back(*inst);
         BasicBlock bb = BasicBlock(insts, name);
 
+        for(auto iter = args.begin();iter!=args.end();iter++){
+            if(iter->type == INT_TY){
+                Var_Type tmp;
+                tmp.tmp_var_name = iter->tmp_var_name+".addr";
+                create_alloca(tmp,1,bb);
+                create_store(iter->tmp_var_name,tmp.tmp_var_name,bb);
+            }else{
+                //create_alloca(*iter,calculate_array_size())
+            }
+                
+        }
+        
         BBs_.push_back(bb);
         Var_Type return_addr;
         return_addr.tmp_var_name = "return_address";
@@ -1144,7 +1158,7 @@ void traverseTree(Node node) {
     // stmts
     if (node_type > 8 && node_type <= 16){
         if(cur_Func!=""){
-            // cout<<"HERE"<<endl;
+             //cout<<"HERE"<<endl;
             
             BasicBlock current_bb = Func_BB_map.find(cur_Func)->second.back();
             // cout<<"HEREhere"<<endl;
@@ -1158,12 +1172,20 @@ void traverseTree(Node node) {
         BasicBlock current_bb = BasicBlock(std::vector<Instruction>(), "bb" + std::to_string(bb_num));
         bb_num++;
         BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
+        //cout<<"!@!@!@!@"<<endl;
+        bool first = true;
         for (auto child : node.children) {
-            // cout << "for (auto child : node.children)" << endl;
+            //cout << "for (auto child : node.children)" << endl;
+            if(node.children_size()!=1){
+                if(first) {first = false;continue;}//skip the first child of fucDef which is PArams.
+            }
+            
             traverseTree(child);
+            //cout<<"after"<<endl;
         }
     }
     else if (node_type == Block_st){
+        //cout<<"In block"<<endl;
         BasicBlock current_bb = Func_BB_map.find(cur_Func)->second.back();
         BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
         for (auto child : node.children) {

@@ -1563,7 +1563,7 @@ yyreduce:
                         Type ty;
                         vector<int> array_length;
                         array_length.clear();
-                        cout << "VarDef_param: " << (yyvsp[(1) - (4)])->name()<< " " << (yyvsp[(2) - (4)])->children_size() << endl;
+                        //cout << "VarDef_param: " << $1->name()<< " " << $2->children_size() << endl;
                         for(int i=0;i<(yyvsp[(2) - (4)])->children_size();i++){
                                 array_length.push_back(atoi((yyvsp[(2) - (4)])->get(i)->name().c_str()));
                                 (yyval)->get(0)->array_size = array_length;//.push_back(atoi($2->get(i)->name().c_str()));
@@ -1602,7 +1602,7 @@ yyreduce:
     {(yyval) = new Node("VerDef");(yyval)->add(*(yyvsp[(1) - (2)]));
                 if(tables.get_var_in_scope((yyvsp[(1) - (2)])->name())==NONE){
                         Type ty;
-                        cout << "VarDef_param: " << (yyvsp[(1) - (2)])->name()<< " " << (yyvsp[(2) - (2)])->children_size() << endl;
+                        //cout << "VarDef_param: " << $1->name()<< " " << $2->children_size() << endl;
                         array_length.clear();
                         for(int i=0;i<(yyvsp[(2) - (2)])->children_size();i++){
                                 array_length.push_back(atoi((yyvsp[(2) - (2)])->get(i)->name().c_str()));
@@ -1847,7 +1847,7 @@ yyreduce:
                 }
                 temp_type_map.clear();  
                 // cout << "BEGIN_SCOPE: " << endl;
-                // print_table(tables)
+                // //print_table(tables)
 
                 if(is_func){
                         is_func = false;
@@ -1864,7 +1864,7 @@ yyreduce:
                 //print_table(tables);
                 tables.END_SCOPE();
                 // cout << "END_SCOPE: " << endl;
-                // print_table(tables);
+                // //print_table(tables);
                 // return_type.pop_back();
         ;}
     break;
@@ -1975,7 +1975,7 @@ yyreduce:
   case 43:
 #line 368 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("LVal" + (yyvsp[(1) - (1)])->name()); (yyval)->set_type(tables.get_var((yyvsp[(1) - (1)])->name()));
-        cout <<"HERE: " << (yyvsp[(1) - (1)])->name() << " " << (yyval) -> get_type() <<endl; 
+       // cout <<"HERE: " << $1->name() << " " << $$ -> get_type() <<endl; 
         (yyval)->set_id((yyvsp[(1) - (1)])->name());
         if(!tables.find_var((yyvsp[(1) - (1)])->name())){
                 cout << "undefined variable: " << (yyvsp[(1) - (1)])->name() << endl;return 1;
@@ -2006,10 +2006,10 @@ yyreduce:
 
         cout << "ty: " << (yyvsp[(1) - (2)])->name() << " " << ty << endl;
         (yyval)->set_type(ty);
-        // cout <<"HERE: " << $1->name() <<" " << $$->get_type() <<endl;
+        //// cout <<"HERE: " << $1->name() <<" " << $$->get_type() <<endl;
         if(!tables.find_var((yyvsp[(1) - (2)])->name())){
-                // cout << "Here" << endl;
-                // print_table(tables);
+                // //cout << "Here" << endl;
+                // //print_table(tables);
                 cout << "undefined variable: " << (yyvsp[(1) - (2)])->name() << endl;return 1;
         }
         ;}
@@ -2081,7 +2081,7 @@ yyreduce:
                 }
 
 
-                cout << "Here" << endl;
+                //cout << "Here" << endl;
                 for(int i=0;i<(yyvsp[(3) - (4)])->children_size();i++){
                         // cout << "Param check " << i+1 << " " << params[i+1] << " " << $3->get(i)->get_type() << endl;
                         if(params[i+1]!=(yyvsp[(3) - (4)])->get(i)->get_type()){
@@ -2089,9 +2089,9 @@ yyreduce:
                                 cout << "wrong type of parameters" << endl;return 1;
                         }else{
                                 cout << "CHECK DIM_1: " << params[i+1] << " " << (yyvsp[(3) - (4)])->get(i)->get_type() << endl;
-                                // print_table(tables);
+                                // //print_table(tables);
                                 if(params[i+1] >= 4){
-                                        cout << "HERE" << endl;
+                                        //cout << "HERE" << endl;
                                         vector<int> array_length = tables.get_func_array((yyvsp[(1) - (4)])->name())[i];
                                         string id = (yyvsp[(3) - (4)])->get(i)->get_id();
                                         vector<int> array_length2 = tables.get_var_array(id);
