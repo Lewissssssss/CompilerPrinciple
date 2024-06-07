@@ -458,7 +458,10 @@ public:
             string res = get<string>(instr.res.opd_type_);
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
-            if (instr.opd1.type_ == OPD_ARG || instr.opd1.type_ == OPD_CONSTANT) {
+            if (instr.opd1.type_ == OPD_ARG) {
+                std::cout << "  let %"<< res << " = store #" << opd1 << ", %" << opd2 << std::endl;
+            }
+            else if (instr.opd1.type_ == OPD_CONSTANT) {
                 std::cout << "  let %"<< res << " = store " << opd1 << ", %" << opd2 << std::endl;
             }
             else std::cout << "  let %"<< res << " = store %" << opd1 << ", %" << opd2 << std::endl;

@@ -95,10 +95,22 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
     string name = node->name();
     
     if (canConvertToInt(name)) {
+        for (auto child : node->children) {
+            if ((child.type == "SUB" && child.children_size() == 0) || 
+                (child.type == "NOT" && child.children_size() == 0)) {
+                return Unary_ID_et;
+            }
+        }
         return INT_et;
     } 
     else if (startsWith(name, "LVal")) {
         // LVal ID
+        for (auto child : node->children) {
+            if ((child.type == "SUB" && child.children_size() == 0) || 
+                (child.type == "NOT" && child.children_size() == 0)) {
+                return Unary_ID_et;
+            }
+        }
         return ID_et;
     } 
     else if (startsWith(name, "FucDef")) {
@@ -181,10 +193,10 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         if(node->ID == "FUNCTION" || node->children[0].type == "FuncRParams") {
             return Call_et;
         }
-        else if(node->get_type() == INT_TY){
+        else if(node->t == INT_TY){
             for (auto child : node->children) {
-                if ((child.name() == "SUB" && child.children_size() == 0) || 
-                    (child.name() == "NOT" && child.children_size() == 0)) {
+                if ((child.type == "SUB" && child.children_size() == 0) || 
+                    (child.type == "NOT" && child.children_size() == 0)) {
                     return Unary_ID_et;
                 }
             }
@@ -192,8 +204,8 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         }
         else{
             for (auto child : node->children) {
-                if ((child.name() == "SUB" && child.children_size() == 0) || 
-                    (child.name() == "NOT" && child.children_size() == 0)) {
+                if ((child.type == "SUB" && child.children_size() == 0) || 
+                    (child.type == "NOT" && child.children_size() == 0)) {
                     return Unary_ARRAY_et;
                 }
             }
@@ -210,7 +222,7 @@ void insert_instruction(Instruction& inst, BasicBlock cur_block) {
 
 ir_Type create_constant(int number, Type type){
     Var_Type ret;
-    ret.type = type;
+    ret.type = NONE;
     value val;
     val = number;
     ret.val = val;
@@ -249,19 +261,23 @@ void create_binary(string operation,Var_Type BinOpRes, Var_Type exp1, Var_Type e
     auto e1 = new Operand(OPD_VARIABLE,exp1.tmp_var_name);
     auto e2 = new Operand(OPD_VARIABLE,exp2.tmp_var_name);
 
-    auto inst = new Instruction(IR_ADD,*BOR,*e1,*e2);
 
-    insert_instruction(*inst,current_bb);
-    // if(operation=="ADD"){
-
-
-
-    // }else if("AND"){
+    if(operation=="ADD"){
+        auto inst = new Instruction(IR_ADD,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
 
 
-    // }else if("SUB"){
+    }else if(operation=="AND"){
+        auto inst = new Instruction(IR_AND,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="SUB"){
+        //cout<<"IN SUB brc";
+        auto inst = new Instruction(IR_SUB,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }
+    
 
-    // }
+    
     
 }   
 // ir_Type create_binary(string operation, ir_Type exp1, ir_Type exp2, BasicBlock current_bb){
@@ -390,7 +406,9 @@ void create_store(string opd1, string opd2, BasicBlock current_bb, int opd1_type
     Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
     current_bb.inst_list.push_back(new_inst);
 }
-
+bool isDigitString(const std::string& s) {
+    return std::all_of(s.begin(), s.end(), ::isdigit);
+}
 ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_bb){
     Expr_Stmt_type exp_type=get_exprTpye_from_node(&expr);
     // cout << exp_type << endl;
@@ -445,9 +463,26 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         
         // Handle BinOp_et case
     } else if (exp_type == Unary_ARRAY_et||exp_type == Unary_BinOp_et||exp_type == Unary_ID_et) {
+        //cout<<"In UNARY!!!"<<endl;
         string U_TY=get_unary_type(expr);
         auto zero_exp=create_constant(0, INT_TY);
-        auto expr1_value= get<Var_Type>(translate_expr(expr,symbol_table,current_bb));
+        //auto expr1_value= get<Var_Type>(translate_expr(expr,symbol_table,current_bb));
+        Var_Type expr1_value;
+        //cout<<expr.name()<<endl;
+        if(isDigitString(expr.name())){
+            // expr1_value.tmp_var_name = expr.get_id();
+            // expr1_value.type = INT_TY;
+            // expr1_value.val = stoi(expr.get_id());
+            expr1_value = get<Var_Type>(create_constant(stoi(expr.name()),INT_TY));
+        }else{
+            string ID = expr.name();
+            std::regex pattern("LVal\\s*([a-zA-Z]+)");
+            std::smatch match;
+            if (std::regex_search(ID, match, pattern)){
+                ID = match[1];
+            }
+            expr1_value= symbol_table.lookup_var(ID);
+        }
         
         Var_Type BinOpRes;
         BinOpRes.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
@@ -457,7 +492,9 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         //symbol_table.add_symbol(expr1_value.tmp_var_name,expr1_value);
 
         create_binary("SUB",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
-        return expr1_value;
+        //cout<<"LALALAL"<<endl;
+        expr1_value.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());//signify it is a unary.
+        return BinOpRes;
         // Handle MINUS_et case
     } else if (exp_type == Call_et) {
         // Call ID, Args
@@ -707,7 +744,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
        
         string result_value = get<Var_Type>(val).tmp_var_name;
         symbol_table.add_symbol(result_value, get<Var_Type>(val));
-        create_store(result_value, addr_value, current_bb);
+        if (get<Var_Type>(val).type == NONE){
+            create_store(result_value, addr_value, current_bb,2);
+        }
+        else create_store(result_value, addr_value, current_bb);
         return current_bb;  
     } else if (stmt_type == If_st) {
         // cout << "stmt_type == If_st" << endl;
