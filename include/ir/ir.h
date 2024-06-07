@@ -469,7 +469,7 @@ public:
         } else if(type == IR_RETURN){            
             inst_return instr = get<inst_return>(inst);
             string res = get<string>(instr.res.opd_type_);
-            std::cout << "  ret %"<< res << std::endl << "}" << endl;
+            std::cout << "  ret %"<< res << std::endl << "}" << endl << endl;
         } else if(type == IR_BRANCH){
             inst_branch instr = get<inst_branch>(inst);
             string cond = get<string>(instr.cond.opd_type_);
@@ -516,7 +516,7 @@ public:
                 }
                 std::cout << " #" << name << ": " << arg_type;
             }
-            std::cout << ") -> " << return_type << std::endl;
+            std::cout << ") -> " << return_type << " {" << std::endl;
         } else if(type == IR_CALL){
             inst_call instr = get<inst_call>(inst);
             string res = get<string>(instr.res.opd_type_);
