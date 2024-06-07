@@ -17,13 +17,13 @@ std::string cur_Func;
 Symbol_Table SYM_TBL;
 
 int main(int argc, char **argv) {
-  FILE* file = freopen("output.txt", "w", stdout);
 
 
   if (argc != 2) {
     cout << "Usage: " << argv[0] << " filename" << endl;
     return 1;
   }else if(argc == 3){
+      FILE* file = freopen(argv[2], "w", stdout);
 
       if (file == nullptr) {
             std::cerr << "Failed to open output.txt" << std::endl;
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
   //init_libs();
   traverseTree(root);
   
-  if(argc == 2)fclose(file);
+  //if(argc == 3)fclose(file);
   return res;
 }
 
