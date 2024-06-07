@@ -327,10 +327,38 @@ void create_jump(string exit_bb, BasicBlock current_bb){
     // insert_instruction(new_inst, current_bb);
 }
 
-void create_ret(string exit_bb, BasicBlock current_bb){
-    Operand op1 = Operand(OPD_VARIABLE, exit_bb);
+void create_ret(string exit_bb, Symbol_Table& symbol_table, BasicBlock current_bb){
+    BBs bbs = Func_BB_map[cur_Func];
+
+    Instruction inst_jmp = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
+    current_bb.inst_list.push_back(inst_jmp);
+
+    Instruction inst_label = Instruction(IR_LABEL, Operand(OPD_VARIABLE, "after_return"));
+    vector<Instruction> label1 = {inst_label};
+    BasicBlock after_return = BasicBlock(label1, "after_return");
+    Instruction inst_jmp2 = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
+    after_return.inst_list.push_back(inst_jmp2);
+    bbs.push_back(after_return);
+
+    Instruction inst_label_exit = Instruction(IR_LABEL, Operand(OPD_VARIABLE, "exit"));
+    vector<Instruction> label2 = {inst_label_exit};
+    BasicBlock exit = BasicBlock(label2, "exit");
+    
+    Var_Type tar;
+    tar.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+    tar.type = INT_TY;
+    tar.val = 0;//default
+    symbol_table.add_symbol(tar.tmp_var_name,tar);
+
+    Var_Type return_addr = symbol_table.lookup_var("return_address");
+    create_load(tar, return_addr, exit);
+
+    Operand op1 = Operand(OPD_VARIABLE, tar.tmp_var_name);
     Instruction new_inst = Instruction(IR_RETURN, op1);
-    current_bb.inst_list.push_back(new_inst);
+    exit.inst_list.push_back(new_inst);
+
+    bbs.push_back(exit);
+
     // insert_instruction(new_inst, current_bb);
 }
 
@@ -553,14 +581,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle variable declaration statement
     } else if (stmt_type == VarDeclArray_st) {
-        Type type = stmt.children[0].get_type();
-        //cout<<"type: "<<type<<endl;
-        //cout << "stmt_type == VarDeclArray_st" << endl;
+        Type type = stmt.get_type();
+        // cout << "stmt_type == VarDeclArray_st" << endl;
         if (type == Type::ARRAY) {
-            //cout<<"LALALALAALAL1"<<endl;
-
             BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
-            //cout<<"LALALALAALAL2"<<endl;
+
             string name = (stmt.children)[0].name();
             Var_Type tmp;
             tmp.tmp_var_name = name;
@@ -569,11 +594,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
-            int size = calculate_array_size(stmt.children[0]);
+            int size = calculate_array_size(stmt);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
             // 处理 ARRAY 类型的逻辑
-            //cout<<"SAKJDASKJFASKJFAJ"<<endl;
         } else if (type == Type::LIST_2) {
             // 处理 LIST_2 类型的逻辑
             BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
@@ -586,7 +610,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt.children[0]);
+            int size = calculate_array_size(stmt);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_3) {
@@ -601,7 +625,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt.children[0]);
+            int size = calculate_array_size(stmt);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
         } else if (type == Type::LIST_4) {
@@ -616,7 +640,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt.children[0]);
+            int size = calculate_array_size(stmt);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_5) {
@@ -631,14 +655,14 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt.children[0]);
+            int size = calculate_array_size(stmt);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else {
             // 处理其他类型的逻辑
             assert(false);
         }
-        return current_bb;
+
 
         // Handle variable declaration array statement
     } else if (stmt_type == Expr_st) {
@@ -833,7 +857,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
         auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
         create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
-        create_ret(return_addr.tmp_var_name,current_bb);
+        create_ret(return_addr.tmp_var_name, symbol_table, current_bb);
         vector<Instruction> empty;
         BasicBlock end_block = BasicBlock(empty, "EOF");
         return end_block;
@@ -913,7 +937,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
 void init_libs() {
 // fn @putint(#x: i32) -> ();
-    cout << "fn @putint #x(i32) -> VOID" << endl;
+    cout << "fn @putint #x(i32) -> ()" << endl << endl;
     Func_Type ftmp1;
     ftmp1.args =  vector<Type>{INT_TY};
     ftmp1.arg_num = 1;
@@ -922,7 +946,7 @@ void init_libs() {
     SYM_TBL.add_symbol("putint", ftmp1);
 
 // fn @putch(#x: i32) -> ();
-    cout << "fn @putch #x(i32) -> VOID" << endl;
+    cout << "fn @putch #x(i32) -> ()" << endl << endl;
     Func_Type ftmp2;
     ftmp2.args =  vector<Type>{INT_TY};
     ftmp2.arg_num = 1;
@@ -931,7 +955,7 @@ void init_libs() {
     SYM_TBL.add_symbol("putch", ftmp2);
 
 // fn @putarray(#n: i32, #arr: i32*) -> ();
-    cout << "fn @putarray #n(i32) #arr(i32*) -> VOID" << endl;
+    cout << "fn @putarray #n(i32) #arr(i32*) -> ()" << endl << endl;
     Func_Type ftmp3;
     ftmp3.args =  vector<Type>{INT_TY, ARRAY};
     ftmp3.arg_num = 21;
@@ -940,7 +964,7 @@ void init_libs() {
     SYM_TBL.add_symbol("putarray", ftmp3);
 
 // fn @getint() -> i32;
-    cout << "fn @getint -> INT" << endl;
+    cout << "fn @getint -> i32" << endl << endl;
     Func_Type ftmp4;
     ftmp4.args =  vector<Type>{};
     ftmp4.arg_num = 0;
@@ -949,7 +973,7 @@ void init_libs() {
     SYM_TBL.add_symbol("getint", ftmp4);
 
 // fn @getch() -> i32;
-    cout << "fn @getch -> INT" << endl;
+    cout << "fn @getch -> i32" << endl << endl;
     Func_Type ftmp5;
     ftmp5.args =  vector<Type>{};
     ftmp5.arg_num = 0;
@@ -958,7 +982,7 @@ void init_libs() {
     SYM_TBL.add_symbol("getch", ftmp5);
 
 // fn @getarray(#n: i32, #arr: i32*) -> ();
-    cout << "fn @getarray #n(i32) #arr(i32*) -> VOID" << endl;
+    cout << "fn @getarray #n(i32) #arr(i32*) -> ()" << endl << endl;
     Func_Type ftmp6;
     ftmp6.args =  vector<Type>{INT_TY, ARRAY};
     ftmp6.arg_num = 2;
@@ -966,6 +990,7 @@ void init_libs() {
     ftmp6.return_val = 0;
     SYM_TBL.add_symbol("getarray", ftmp6);
 }
+
 void handle_global(Node node){
     Expr_Stmt_type node_type = get_exprTpye_from_node(&node);
     auto stmt_type = node_type;
