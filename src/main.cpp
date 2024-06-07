@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
   tables.END_SCOPE();
   SYM_TBL.Stack.push(Field_Sym());//init symbol tbl
-  init_libs();
+  //init_libs();
   traverseTree(root);
 
   return res;

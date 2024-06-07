@@ -972,7 +972,7 @@ void handle_global(Node node){
     auto stmt = node;
     if (stmt_type == VarDecl_st) {
         
-        cout << "stmt_type == VarDecl_st" << endl;
+        //cout << "stmt_type == VarDecl_st" << endl;
         int num = stmt.children_size();
         if(num == 1){
             // cout<<"HEREhere1"<<endl;
@@ -1107,7 +1107,7 @@ void traverseTree(Node node) {
     if (node_type > 8 && node_type <= 16){
         if(cur_Func!=""){
             // cout<<"HERE"<<endl;
-
+            
             BasicBlock current_bb = Func_BB_map.find(cur_Func)->second.back();
             // cout<<"HEREhere"<<endl;
             BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
@@ -1116,6 +1116,7 @@ void traverseTree(Node node) {
         }
     }
     else if (node_type == 8){
+        if(once){init_libs();once=false;}
         BasicBlock current_bb = BasicBlock(std::vector<Instruction>(), "bb" + std::to_string(bb_num));
         bb_num++;
         BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
