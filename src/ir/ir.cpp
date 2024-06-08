@@ -694,27 +694,6 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             
 
             create_alloca(tmp,1,current_bb);
-            string ttt = stmt.children[1].name();
-            if(isDigitString(ttt)){
-                create_store(ttt,tmp.tmp_var_name,current_bb,2);
-            }else{
-                Var_Type tt;
-                
-
-                string ID = ttt;
-                std::regex pattern("LVal\\s*([a-zA-Z]+)");
-                std::smatch match;
-                if (std::regex_search(ID, match, pattern)){
-                    ID = match[1];
-                }
-                tt.tmp_var_name = ID;
-                if(is_a_tmp_param(tt)){
-                    create_store(ID,tmp.tmp_var_name,current_bb,1);
-                }else{
-                    create_store(ID,tmp.tmp_var_name,current_bb,0);
-                }
-            }
-            
 
         }        //auto var_type = SYM_TBL.lookup_var(name);
         //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
@@ -1015,11 +994,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         else {
             BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, entry_bb);
         }
-        create_jump(ex_label, entry_bb);
-
-        Node stmt0 = *stmt.get(1);
-        BasicBlock body_exit_bb = translate_stmt(stmt0, symbol_table, body_bb);
-        create_jump(et_label, body_exit_bb);
+        create_jump(et_label, entry_bb);
 
         // new EXIT basic block
         vector<Instruction> exit_inst;
