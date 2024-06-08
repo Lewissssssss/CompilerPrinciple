@@ -1559,7 +1559,7 @@ yyreduce:
   case 10:
 #line 71 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("VerDef");(yyval)->add(*(yyvsp[(1) - (4)]));(yyval)->add(*(yyvsp[(4) - (4)]));
-//cout<<"EFAJBFKAJBFKJA"<<$4->name()<<endl;
+cout<<"EFAJBFKAJBFKJA"<<(yyvsp[(4) - (4)])->name()<<endl;
                 if(tables.get_var_in_scope((yyvsp[(1) - (4)])->name())==NONE){
                         Type ty;
                         vector<int> array_length;
