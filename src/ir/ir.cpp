@@ -277,12 +277,16 @@ void create_binary(string operation,Var_Type BinOpRes, Var_Type exp1, Var_Type e
 
     if (is_a_tmp_param(exp1)) {
         e1 = new Operand(OPD_ARG, exp1.tmp_var_name);
+    } else if (exp1.type == NONE) {
+        e1 = new Operand(OPD_CONSTANT, exp1.tmp_var_name);        
     } else {
         e1 = new Operand(OPD_VARIABLE, exp1.tmp_var_name);
     }
 
     if (is_a_tmp_param(exp2)) {
         e2 = new Operand(OPD_ARG, exp2.tmp_var_name+".addr");
+    } else if (exp2.type == NONE) {
+        e2 = new Operand(OPD_CONSTANT, exp2.tmp_var_name);        
     } else {
         e2 = new Operand(OPD_VARIABLE, exp2.tmp_var_name);
     }
@@ -712,10 +716,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             }
             
 
-        }
-
-
-        //auto var_type = SYM_TBL.lookup_var(name);
+        }        //auto var_type = SYM_TBL.lookup_var(name);
         //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
         //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
 
