@@ -1,11 +1,11 @@
 // Error at Line 6: Return type mismatch
-int main(){
-    int a=1;
-    int b;
+int main(int cc){
+    int a=cc;
+    int b=a;
     b=2;
     b=a+2929;
     if(a >b){
-        return;
+        return 0;
     }
     else
         return a;

@@ -69,6 +69,7 @@ VerDefGroup : VerDefGroup COMMA VarDef {$$ = $1; $$->add(*$3);delete $3;}
            |  {$$ = new Node("VerDefGroup"); }
 
 VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->add(*$4);
+//cout<<"EFAJBFKAJBFKJA"<<$4->name()<<endl;
                 if(tables.get_var_in_scope($1->name())==NONE){
                         Type ty;
                         vector<int> array_length;
@@ -154,6 +155,7 @@ ConstGroup :{$$ = new Node("ConstGroup");}
         |  LB INT_CONST RB ConstGroup {$$ = $4; $$->add(*$2);}
 
 InitVal : Exp {$$ = $1;
+//cout<<"Initval"<<$1->name()<<endl;
         if($1->get_type()!=INT_TY){
                 //cout << "wrong type for Initval" << endl;
                 
@@ -432,7 +434,9 @@ PrimaryExp : LP Exp RP {$$ = $2;}| LVal {$$ = $1; }| Number{$$ = $1;
                 // //cout << "Number: " << $1->name() << " " << $$->get_type()  << endl;
         }
 
-Number : INT_CONST{$$ = $1;}
+Number : INT_CONST{$$ = $1;
+//cout<<"ALSMALFMALFMAL"<<$1->name()<<endl;
+                }
 
 
 UnaryExp : PrimaryExp {$$ = $1;} 
