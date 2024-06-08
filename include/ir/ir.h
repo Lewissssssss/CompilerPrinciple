@@ -172,7 +172,7 @@ public:
     int get_current_tbl_size(){return Stack.top().get_current_tbl_size();}
 };
 
-
+extern Symbol_Table SYM_TBL;
 
 enum OperandType {
     OPD_CONSTANT,
@@ -708,16 +708,33 @@ public:
         } else if(type == IR_CALL){
             inst_call instr = get<inst_call>(inst);
             string res = get<string>(instr.res.opd_type_);
-            
             string func = get<string>(instr.func.opd_type_);
-            // to do
-            if(func == "getint")
+            Func_Type function = SYM_TBL.lookup_func(func);
+            if (function.return_type == INT_TY) {
                 std::cout << "  let %" << res << ": i32 = call @" << func;
-            else std::cout << "  let %" << res << ": () = call @" << func;
+            } else {
+                std::cout << "  let %" << res << ": () = call @" << func;
+            }
             vector<Var_Type> args = get<vector<Var_Type>>(instr.args.opd_type_);
             for (auto arg : args){
                 string name = arg.tmp_var_name;
-                std::cout << ", %" << name << ": i32";
+                if (arg.type == NONE) {
+                    std::cout << ", " << name << ": i32";
+                } else if (is_a_tmp_param(arg)) {
+                    std::cout << ", #" << name;
+                    if (arg.type == INT_TY) {
+                        std::cout << ": i32";
+                    } else {
+                        std::cout << ": i32*";
+                    }
+                } else {
+                    std::cout << ", %" << name;
+                    if (arg.type == INT_TY) {
+                        std::cout << ": i32";
+                    } else {
+                        std::cout << ": i32*";
+                    }
+                }
             }
             std::cout << std::endl;
         } else if(type == IR_LABEL){
