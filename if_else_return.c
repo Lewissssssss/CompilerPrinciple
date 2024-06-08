@@ -1,7 +1,7 @@
 // Error at Line 6: Return type mismatch
 int main(int cc){
     int a=cc;
-    int b=1;
+    int b=-a;
     b=!!a;
     int t[10];
     t[1] = 6;

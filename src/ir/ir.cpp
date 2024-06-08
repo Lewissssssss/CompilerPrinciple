@@ -675,6 +675,47 @@ int calculate_array_size(Node node){
 void reverseVector(std::vector<Node>& params_) {
     std::reverse(params_.begin(), params_.end());
 }
+Var_Type translate_unary(Node expr,Symbol_Table& symbol_table,BasicBlock current_bb){
+    string U_TY=get_unary_type(expr);
+        auto zero_exp=create_constant(0, INT_TY);
+        //auto expr1_value= get<Var_Type>(translate_expr(expr,symbol_table,current_bb));
+        Var_Type expr1_value;
+        //cout<<expr.name()<<endl;
+        if(isDigitString(expr.name())){
+            // expr1_value.tmp_var_name = expr.get_id();
+            // expr1_value.type = INT_TY;
+            // expr1_value.val = stoi(expr.get_id());
+            expr1_value = get<Var_Type>(create_constant(stoi(expr.name()),INT_TY));
+        }else{
+            string ID = expr.name();
+            std::regex pattern("LVal\\s*([a-zA-Z]+)");
+            std::smatch match;
+            if (std::regex_search(ID, match, pattern)){
+                ID = match[1];
+            }
+            expr1_value= symbol_table.lookup_var(ID);
+        }
+        
+        Var_Type BinOpRes;
+        BinOpRes.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+        BinOpRes.val = 0;//default
+        BinOpRes.type = INT_TY;
+        symbol_table.add_symbol(BinOpRes.tmp_var_name,BinOpRes);
+        //symbol_table.add_symbol(expr1_value.tmp_var_name,expr1_value);
+        if(U_TY == "ADD"){
+            create_binary("ADD",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+
+        }else if(U_TY == "SUB"){
+            create_binary("SUB",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+
+        }else if(U_TY == "NOT"){
+            create_binary("EQ",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+
+        }
+        //cout<<"LALALAL"<<endl;
+        expr1_value.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());//signify it is a unary.
+        return BinOpRes;
+}
 BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock current_bb){
     Expr_Stmt_type stmt_type=get_exprTpye_from_node(&stmt);
     if (stmt_type == VarDecl_st) {
@@ -703,9 +744,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
             create_alloca(tmp,1,current_bb);
             string ttt = stmt.children[1].name();
-            if(isDigitString(ttt)){
-                create_store(ttt,tmp.tmp_var_name,current_bb,2);
-            }else{
+            if(stmt.children[1].children_size()!=0){//UNARY?
+                auto tmptmp = translate_unary(stmt.children[1],symbol_table,current_bb);
+                ttt = tmptmp.tmp_var_name;
+
                 Var_Type tt;
                 
 
@@ -721,7 +763,28 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 }else{
                     create_store(ID,tmp.tmp_var_name,current_bb,0);
                 }
+            }else{
+                if(isDigitString(ttt)){
+                create_store(ttt,tmp.tmp_var_name,current_bb,2);
+                }else{
+                    Var_Type tt;
+                    
+
+                    string ID = ttt;
+                    std::regex pattern("LVal\\s*([a-zA-Z]+)");
+                    std::smatch match;
+                    if (std::regex_search(ID, match, pattern)){
+                        ID = match[1];
+                    }
+                    tt.tmp_var_name = ID;
+                    if(is_a_tmp_param(tt)){
+                        create_store(ID,tmp.tmp_var_name,current_bb,1);
+                    }else{
+                        create_store(ID,tmp.tmp_var_name,current_bb,0);
+                    }
+                }
             }
+            
         }        //auto var_type = SYM_TBL.lookup_var(name);
         //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
         //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
