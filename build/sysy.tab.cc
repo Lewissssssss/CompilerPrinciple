@@ -513,13 +513,13 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,    58,    58,    59,    60,    61,    63,    65,    68,    69,
-      71,   109,   153,   154,   156,   164,   167,   183,   225,   240,
-     283,   284,   287,   290,   315,   330,   338,   339,   340,   341,
-     344,   344,   346,   358,   359,   360,   361,   362,   363,   364,
-     365,   372,   380,   382,   391,   422,   422,   429,   429,   429,
-     435,   438,   439,   447,   488,   497,   497,   497,   499,   500,
-     503,   504,   512,   517,   523,   524,   525,   527,   528,   529,
-     530,   531,   533,   534,   535,   537,   538,   539,   540
+      71,   110,   154,   155,   157,   166,   169,   185,   227,   242,
+     285,   286,   289,   292,   317,   332,   340,   341,   342,   343,
+     346,   346,   348,   360,   361,   362,   363,   364,   365,   366,
+     367,   374,   382,   384,   393,   424,   424,   431,   431,   431,
+     437,   442,   443,   451,   492,   501,   501,   501,   503,   504,
+     507,   508,   516,   521,   527,   528,   529,   531,   532,   533,
+     534,   535,   537,   538,   539,   541,   542,   543,   544
 };
 #endif
 
@@ -1558,7 +1558,8 @@ yyreduce:
 
   case 10:
 #line 71 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval) = new Node("VerDef");(yyval)->add(*(yyvsp[(1) - (4)]));(yyval)->add(*(yyvsp[(3) - (4)]));
+    {(yyval) = new Node("VerDef");(yyval)->add(*(yyvsp[(1) - (4)]));(yyval)->add(*(yyvsp[(4) - (4)]));
+//cout<<"EFAJBFKAJBFKJA"<<$4->name()<<endl;
                 if(tables.get_var_in_scope((yyvsp[(1) - (4)])->name())==NONE){
                         Type ty;
                         vector<int> array_length;
@@ -1599,7 +1600,7 @@ yyreduce:
     break;
 
   case 11:
-#line 109 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 110 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("VerDef");(yyval)->add(*(yyvsp[(1) - (2)]));
                 if(tables.get_var_in_scope((yyvsp[(1) - (2)])->name())==NONE){
                         Type ty;
@@ -1647,18 +1648,19 @@ yyreduce:
     break;
 
   case 12:
-#line 153 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 154 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("ConstGroup");;}
     break;
 
   case 13:
-#line 154 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 155 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(4) - (4)]); (yyval)->add(*(yyvsp[(2) - (4)]));;}
     break;
 
   case 14:
-#line 156 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 157 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (1)]);
+//cout<<"Initval"<<$1->name()<<endl;
         if((yyvsp[(1) - (1)])->get_type()!=INT_TY){
                 //cout << "wrong type for Initval" << endl;
                 
@@ -1668,12 +1670,12 @@ yyreduce:
     break;
 
   case 15:
-#line 164 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 166 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (2)]); (yyval)->add(*(yyvsp[(2) - (2)])); ;}
     break;
 
   case 16:
-#line 167 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 169 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("FucDef "+(yyvsp[(2) - (4)])->name() + "INT" );
         if(tables.find_func((yyvsp[(2) - (4)])->name())){
                 //cout << "error: redefined function" << endl;
@@ -1693,7 +1695,7 @@ yyreduce:
     break;
 
   case 17:
-#line 183 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 185 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("FucDef "+(yyvsp[(2) - (5)])->name() +"INT" );(yyval)->add(*(yyvsp[(4) - (5)]));
         if(tables.find_func((yyvsp[(2) - (5)])->name())){
                 //cout << "error: redefined function" << endl;
@@ -1739,7 +1741,7 @@ yyreduce:
     break;
 
   case 18:
-#line 225 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 227 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("FucDef "+(yyvsp[(2) - (4)])->name() + "VOID" );
         if(tables.find_func((yyvsp[(2) - (4)])->name())){
                 //cout << "error: redefined function" << endl;
@@ -1758,7 +1760,7 @@ yyreduce:
     break;
 
   case 19:
-#line 240 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 242 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("FucDef "+(yyvsp[(2) - (5)])->name() + "VOID" );(yyval)->add(*(yyvsp[(4) - (5)]));
         if(tables.find_func((yyvsp[(2) - (5)])->name())){
                 //cout << "error: redefined function" << endl;
@@ -1803,24 +1805,24 @@ yyreduce:
     break;
 
   case 20:
-#line 283 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 285 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("FuncFParams"); (yyval)->add(*(yyvsp[(1) - (1)])); ;}
     break;
 
   case 21:
-#line 284 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 286 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = (yyvsp[(3) - (3)]); (yyval)->add(*(yyvsp[(1) - (3)])); ;}
     break;
 
   case 22:
-#line 287 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 289 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node((yyvsp[(2) - (2)])->name());  
                 temp_type_map[(yyvsp[(2) - (2)])->name()] = INT_TY;
         ;}
     break;
 
   case 23:
-#line 290 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 292 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node((yyvsp[(2) - (5)])->name()); (yyval)->add(*(yyvsp[(5) - (5)]));
                 
                 for(int i=0;i<(yyvsp[(5) - (5)])->children_size();i++){
@@ -1848,7 +1850,7 @@ yyreduce:
     break;
 
   case 24:
-#line 315 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 317 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {tables.BEGIN_SCOPE(); 
                 for(auto &[j,k]:temp_type_map){
                         tables.add_var(j,k);
@@ -1867,7 +1869,7 @@ yyreduce:
     break;
 
   case 25:
-#line 330 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 332 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {
                 //print_table(tables);
                 tables.END_SCOPE();
@@ -1878,38 +1880,38 @@ yyreduce:
     break;
 
   case 26:
-#line 338 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 340 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("Block"); ;}
     break;
 
   case 27:
-#line 339 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 341 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = (yyvsp[(2) - (3)]); (yyval)->rename("Block");;}
     break;
 
   case 28:
-#line 340 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 342 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("BlockItems"); (yyval)->add(*(yyvsp[(1) - (1)])); ;}
     break;
 
   case 29:
-#line 341 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 343 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = (yyvsp[(1) - (2)]); (yyval)->add(*(yyvsp[(2) - (2)])); 
         ;}
     break;
 
   case 30:
-#line 344 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 346 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]); ;}
     break;
 
   case 31:
-#line 344 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 346 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]);;}
     break;
 
   case 32:
-#line 346 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 348 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("AssignStmt"); (yyval)->add(*(yyvsp[(1) - (4)])); (yyval)->add(*(yyvsp[(3) - (4)]));
                 // //cout << $1->name() << $1->get_type() << endl;
                 // //cout << "$3: " << $3->name() << $3->get_type() << endl;
@@ -1925,42 +1927,42 @@ yyreduce:
     break;
 
   case 33:
-#line 358 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 360 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("ExpStmt"); (yyval)->add(*(yyvsp[(1) - (2)]));  ;}
     break;
 
   case 34:
-#line 359 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 361 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]);;}
     break;
 
   case 35:
-#line 360 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 362 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("IfStmt"); (yyval)->add(*(yyvsp[(3) - (5)])); (yyval)->add(*(yyvsp[(5) - (5)])); delete (yyvsp[(3) - (5)]); delete (yyvsp[(5) - (5)]); ;}
     break;
 
   case 36:
-#line 361 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 363 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("IfElseStmt"); (yyval)->add(*(yyvsp[(3) - (7)])); (yyval)->add(*(yyvsp[(5) - (7)])); (yyval)->add(*(yyvsp[(7) - (7)])); ;}
     break;
 
   case 37:
-#line 362 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 364 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("WhileStmt"); (yyval)->add(*(yyvsp[(3) - (5)])); (yyval)->add(*(yyvsp[(5) - (5)]));  ;}
     break;
 
   case 38:
-#line 363 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 365 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("BreakStmt");;}
     break;
 
   case 39:
-#line 364 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 366 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("ContinueStmt");;}
     break;
 
   case 40:
-#line 365 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 367 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("ReturnStmt");
                 if(tables.get_return_type()!=VOID_TY){
                         //cout << "wrong return type" << endl;
@@ -1971,7 +1973,7 @@ yyreduce:
     break;
 
   case 41:
-#line 372 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 374 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)= new Node("ReturenStmt"); (yyval)->add(*(yyvsp[(2) - (3)]));
                 if(tables.get_return_type()!=INT_TY || (yyvsp[(2) - (3)])->get_type()!=INT_TY){
                         //cout << "wrong return type" << endl;
@@ -1982,12 +1984,12 @@ yyreduce:
     break;
 
   case 42:
-#line 380 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 382 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (1)]);;}
     break;
 
   case 43:
-#line 382 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 384 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("LVal" + (yyvsp[(1) - (1)])->name()); (yyval)->set_type(tables.get_var((yyvsp[(1) - (1)])->name()));
        // //cout <<"HERE: " << $1->name() << " " << $$ -> get_type() <<endl; 
         (yyval)->set_id((yyvsp[(1) - (1)])->name());
@@ -2000,7 +2002,7 @@ yyreduce:
     break;
 
   case 44:
-#line 391 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 393 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(2) - (2)]);(yyval)->rename("LVal" + (yyvsp[(1) - (2)])->name()) ;
         Type ty;
         (yyval)->set_id((yyvsp[(1) - (2)])->name());
@@ -2035,12 +2037,12 @@ yyreduce:
     break;
 
   case 45:
-#line 422 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 424 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = new Node("Exps");;}
     break;
 
   case 46:
-#line 422 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 424 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (4)]);(yyval)->add(*(yyvsp[(3) - (4)])); 
         if((yyvsp[(3) - (4)])->get_type()!=INT_TY){
                 //cout << "wrong type for Exps" << endl;
@@ -2050,17 +2052,17 @@ yyreduce:
     break;
 
   case 47:
-#line 429 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 431 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(2) - (3)]);;}
     break;
 
   case 48:
-#line 429 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 431 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
   case 49:
-#line 429 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 431 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (1)]);
 
                 (yyval)->set_type(INT_TY);
@@ -2069,17 +2071,19 @@ yyreduce:
     break;
 
   case 50:
-#line 435 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval) = (yyvsp[(1) - (1)]);;}
+#line 437 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval) = (yyvsp[(1) - (1)]);
+//cout<<"ALSMALFMALFMAL"<<$1->name()<<endl;
+                ;}
     break;
 
   case 51:
-#line 438 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 442 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (1)]);;}
     break;
 
   case 52:
-#line 439 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 443 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (3)]);
                 if(!tables.find_func((yyvsp[(1) - (3)])->name())){
                         //cout << "undefined function" << endl;
@@ -2091,7 +2095,7 @@ yyreduce:
     break;
 
   case 53:
-#line 447 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 451 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(1) - (4)]);(yyval)->add(*(yyvsp[(3) - (4)]));
                 if(!tables.find_func((yyvsp[(1) - (4)])->name())){
                         //cout << "undefined function" << endl;
@@ -2136,7 +2140,7 @@ yyreduce:
     break;
 
   case 54:
-#line 488 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 492 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval) = (yyvsp[(2) - (2)]);(yyval)->add(*(yyvsp[(1) - (2)]));
                 // //cout << "UnaryOp: " << $1->name() << " " << $2->get_type() << endl;
                 if((yyvsp[(2) - (2)])->get_type()!=INT_TY){
@@ -2148,37 +2152,37 @@ yyreduce:
     break;
 
   case 55:
-#line 497 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 501 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("ADD"); ;}
     break;
 
   case 56:
-#line 497 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 501 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("SUB") ;;}
     break;
 
   case 57:
-#line 497 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 501 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("NOT") ;;}
     break;
 
   case 58:
-#line 499 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 503 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     { (yyval) = new Node("FuncRParams"); (yyval)->add(*(yyvsp[(1) - (1)]));(yyval)->set_type((yyvsp[(1) - (1)])->get_type()); delete (yyvsp[(1) - (1)]);;}
     break;
 
   case 59:
-#line 500 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 504 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)= (yyvsp[(3) - (3)]); (yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->rename("FuncRParams");;}
     break;
 
   case 60:
-#line 503 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 507 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]);;}
     break;
 
   case 61:
-#line 504 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 508 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("MUL");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); 
         if((yyvsp[(3) - (3)])->get_type()!=INT_TY)
                {
@@ -2190,7 +2194,7 @@ yyreduce:
     break;
 
   case 62:
-#line 512 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 516 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("DIV");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)]));
         if((yyvsp[(3) - (3)])->get_type()!=INT_TY)
                { //cout << "wrong type for MulExp" << endl;
@@ -2199,7 +2203,7 @@ yyreduce:
     break;
 
   case 63:
-#line 517 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 521 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("MOD");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)]));
         if((yyvsp[(3) - (3)])->get_type()!=INT_TY)
                { //cout << "wrong type for MulExp" << endl;
@@ -2208,83 +2212,83 @@ yyreduce:
     break;
 
   case 64:
-#line 523 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval)=(yyvsp[(1) - (1)]);;}
-    break;
-
-  case 65:
-#line 524 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval)=new Node("ADD");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
-    break;
-
-  case 66:
-#line 525 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval)=new Node("SUB");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
-    break;
-
-  case 67:
 #line 527 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]);;}
     break;
 
-  case 68:
+  case 65:
 #line 528 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval)=new Node("ADD");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
+    break;
+
+  case 66:
+#line 529 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval)=new Node("SUB");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
+    break;
+
+  case 67:
+#line 531 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval)=(yyvsp[(1) - (1)]);;}
+    break;
+
+  case 68:
+#line 532 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("LT");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
     break;
 
   case 69:
-#line 529 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 533 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("GT");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
     break;
 
   case 70:
-#line 530 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 534 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("LE");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
     break;
 
   case 71:
-#line 531 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 535 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("GE");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
     break;
 
   case 72:
-#line 533 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval)=(yyvsp[(1) - (1)]);;}
-    break;
-
-  case 73:
-#line 534 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval)=new Node("EQ");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
-    break;
-
-  case 74:
-#line 535 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
-    {(yyval)=new Node("NE");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
-    break;
-
-  case 75:
 #line 537 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]);;}
     break;
 
-  case 76:
+  case 73:
 #line 538 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval)=new Node("EQ");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
+    break;
+
+  case 74:
+#line 539 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval)=new Node("NE");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY);;}
+    break;
+
+  case 75:
+#line 541 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+    {(yyval)=(yyvsp[(1) - (1)]);;}
+    break;
+
+  case 76:
+#line 542 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("AND");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)])); (yyval)->set_type(INT_TY); ;}
     break;
 
   case 77:
-#line 539 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 543 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=(yyvsp[(1) - (1)]);;}
     break;
 
   case 78:
-#line 540 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 544 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
     {(yyval)=new Node("OR");(yyval)->add(*(yyvsp[(1) - (3)]));(yyval)->add(*(yyvsp[(3) - (3)]));(yyval)->set_type(INT_TY);;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 2288 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.tab.cc"
+#line 2292 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/build/sysy.tab.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2498,7 +2502,7 @@ yyreturn:
 }
 
 
-#line 542 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
+#line 546 "/Users/lyucheng_wu/GitHub/CompilerPrinciple/src/sysy.y"
 
 
 void yyerror(const char *s) {

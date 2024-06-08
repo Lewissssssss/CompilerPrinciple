@@ -690,6 +690,27 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             
 
             create_alloca(tmp,1,current_bb);
+            string ttt = stmt.children[1].name();
+            if(isDigitString(ttt)){
+                create_store(ttt,tmp.tmp_var_name,current_bb,2);
+            }else{
+                Var_Type tt;
+                
+
+                string ID = ttt;
+                std::regex pattern("LVal\\s*([a-zA-Z]+)");
+                std::smatch match;
+                if (std::regex_search(ID, match, pattern)){
+                    ID = match[1];
+                }
+                tt.tmp_var_name = ID;
+                if(is_a_tmp_param(tt)){
+                    create_store(ID,tmp.tmp_var_name,current_bb,1);
+                }else{
+                    create_store(ID,tmp.tmp_var_name,current_bb,0);
+                }
+            }
+            
 
         }
 
