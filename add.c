@@ -1,8 +1,6 @@
-int main(int aa,int bb){
-    int a, b;
-    int c = 114;
-    a = getint();
-    b = getint();
-    putint(a+b);
+// Error at Line 6: Return type mismatch
+int main(){
+    int arr[10][10];
+    arr[2][3]=1;
     return 0;
 }

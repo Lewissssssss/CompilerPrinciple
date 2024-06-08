@@ -105,13 +105,23 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
     } 
     else if (startsWith(name, "LVal")) {
         // LVal ID
-        for (auto child : node->children) {
-            if ((child.type == "SUB" && child.children_size() == 0) || 
-                (child.type == "NOT" && child.children_size() == 0)) {
-                return Unary_ID_et;
+        if(node->t == INT_TY){
+            for (auto child : node->children) {
+                if ((child.type == "SUB" && child.children_size() == 0) || 
+                    (child.type == "NOT" && child.children_size() == 0)) {
+                    return Unary_ID_et;
+                }
+                else {
+                    // cout<<"INASDASDA"<<endl;
+                    return ARRAY_et;
+                }
             }
+            // cout<<"ININTTY"<<endl;
+            return ID_et;
+        } else {
+            // cout<<"INASDASDA"<<endl;
+            return ARRAY_et;
         }
-        return ID_et;
     } 
     else if (startsWith(name, "FucDef")) {
         // FucDef ID returnType(VOID or INT)
@@ -472,6 +482,18 @@ void create_store(string opd1, string opd2, BasicBlock current_bb, int opd1_type
 bool isDigitString(const std::string& s) {
     return std::all_of(s.begin(), s.end(), ::isdigit);
 }
+void create_offset(string arr_ids, string arr_name,vector<string> ids,Symbol_Table symbol_table){
+    auto var = symbol_table.lookup_var(arr_name);
+    auto vec = var.val;
+    vector<int> size=get<1>(var.val);
+     cout<<" let %"<<arr_ids<<": i32* = offset i32, %"<<arr_name<<": i32*";
+    int sz=ids.size();
+    for(int i=0;i<sz;i++){
+        cout<<", ["<<ids[i]<<" < "<<to_string(size[i])<<"]";
+    }
+    cout<<endl;
+
+}
 ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_bb){
     Expr_Stmt_type exp_type=get_exprTpye_from_node(&expr);
     // cout << exp_type << endl;
@@ -608,45 +630,69 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
     }
     else if (exp_type == ARRAY_et) {
         // ID[Idx1]..[IdxN]
-        string ID = expr.get_id();
-        Var_Type &array = symbol_table.lookup_var(ID);
+        //cout<<"cur node"<<expr.name()<<endl;
+        string ID1 = expr.get_id();
+        Var_Type &array = symbol_table.lookup_var(ID1);
         Type array_type = array.type;
         value array_value = array.val;
         int result_temp;
         Var_Type result;
+        vector<string> idxs;
+        string ids;
+        for(auto iter = expr.children.begin();iter!=expr.children.end();iter++){
+            idxs.push_back(iter->name());
+            //cout<<"LALALA"<<endl;
+            ids+="["+iter->name()+"]";
+        }
+        string ID = expr.name();
+        std::regex pattern("LVal\\s*([a-zA-Z]+)");
+        std::smatch match;
+        if (std::regex_search(ID, match, pattern)){
+            ID = match[1];
+        }
+        result.tmp_var_name = ID+ids;
         result.type = INT_TY;
-        if (array_type == ARRAY){
-            int idx1 = atoi(expr.get(0)->name().c_str());
-            result_temp = get<1>(array_value)[idx1];
-        }
-        else if(array_type ==LIST_2){
-            int idx1 = atoi(expr.get(0)->name().c_str());            
-            int idx2 = atoi(expr.get(1)->name().c_str());
-            result_temp = get<2>(array_value)[idx1][idx2];
-        }
-        else if(array_type ==LIST_3){
-            int idx1 = atoi(expr.get(0)->name().c_str());
-            int idx2 = atoi(expr.get(1)->name().c_str());
-            int idx3 = atoi(expr.get(2)->name().c_str());
-            result_temp = get<3>(array_value)[idx1][idx2][idx3];
-        }
-        else if(array_type ==LIST_4){
-            int idx1 = atoi(expr.get(0)->name().c_str());
-            int idx2 = atoi(expr.get(1)->name().c_str());
-            int idx3 = atoi(expr.get(2)->name().c_str());
-            int idx4 = atoi(expr.get(3)->name().c_str());
-            result_temp = get<4>(array_value)[idx1][idx2][idx3][idx4];
-        }
-        else if(array_type ==LIST_5){
-            int idx1 = atoi(expr.get(0)->name().c_str());
-            int idx2 = atoi(expr.get(1)->name().c_str());
-            int idx3 = atoi(expr.get(2)->name().c_str());
-            int idx4 = atoi(expr.get(3)->name().c_str());
-            int idx5 = atoi(expr.get(4)->name().c_str());
-            result_temp = get<5>(array_value)[idx1][idx2][idx3][idx4][idx5];
-        }
-        result.val = result_temp;
+        result.val = 0;//default
+        symbol_table.add_symbol(result.tmp_var_name,result);
+        //cout<<expr.name()<<endl;
+                        //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
+        create_offset(result.tmp_var_name, ID1, idxs,symbol_table);//ASDASDA
+
         return result;
+
+        // result.type = INT_TY;
+        // if (array_type == ARRAY){
+        //     int idx1 = atoi(expr.get(0)->name().c_str());
+        //     result_temp = get<1>(array_value)[idx1];
+        // }
+        // else if(array_type ==LIST_2){
+        //     int idx1 = atoi(expr.get(0)->name().c_str());            
+        //     int idx2 = atoi(expr.get(1)->name().c_str());
+        //     result_temp = get<2>(array_value)[idx1][idx2];
+        // }
+        // else if(array_type ==LIST_3){
+        //     int idx1 = atoi(expr.get(0)->name().c_str());
+        //     int idx2 = atoi(expr.get(1)->name().c_str());
+        //     int idx3 = atoi(expr.get(2)->name().c_str());
+        //     result_temp = get<3>(array_value)[idx1][idx2][idx3];
+        // }
+        // else if(array_type ==LIST_4){
+        //     int idx1 = atoi(expr.get(0)->name().c_str());
+        //     int idx2 = atoi(expr.get(1)->name().c_str());
+        //     int idx3 = atoi(expr.get(2)->name().c_str());
+        //     int idx4 = atoi(expr.get(3)->name().c_str());
+        //     result_temp = get<4>(array_value)[idx1][idx2][idx3][idx4];
+        // }
+        // else if(array_type ==LIST_5){
+        //     int idx1 = atoi(expr.get(0)->name().c_str());
+        //     int idx2 = atoi(expr.get(1)->name().c_str());
+        //     int idx3 = atoi(expr.get(2)->name().c_str());
+        //     int idx4 = atoi(expr.get(3)->name().c_str());
+        //     int idx5 = atoi(expr.get(4)->name().c_str());
+        //     result_temp = get<5>(array_value)[idx1][idx2][idx3][idx4][idx5];
+        // }
+        // result.val = result_temp;
+        // return result;
     }
 }
 void create_alloca(Var_Type var, int size, BasicBlock current_bb){
@@ -805,6 +851,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.tmp_var_name = name;
             tmp.type = type;
             vector<int> tmp_;//default assignment
+            tmp_ = stmt.children[0].array_size;//add this size
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
@@ -823,7 +870,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
-            vector<vector<int>> tmp_;//default assignment
+            vector<int> tmp_;//default assignment
+            tmp_ = stmt.children[0].array_size;//add this size
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
@@ -838,7 +886,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
-            vector<vector<vector<int>>> tmp_;//default assignment
+            vector<int> tmp_;//default assignment
+            tmp_ = stmt.children[0].array_size;//add this size
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
@@ -853,7 +902,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
-            vector<vector<vector<vector<int>>>> tmp_;//default assignment
+            vector<int> tmp_;//default assignment
+            tmp_ = stmt.children[0].array_size;//add this size
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
@@ -868,7 +918,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
-            vector<vector<vector<vector<vector<int>>>>> tmp_;//default assignment
+            vector<int> tmp_;//default assignment
+            tmp_ = stmt.children[0].array_size;//add this size
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
@@ -905,7 +956,15 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             ID = match[1];
         }
         Var_Type &var = symbol_table.lookup_var(ID);
-        string addr_value = var.tmp_var_name;
+        string addr_value;
+        // cout << stmt.children[0].children_size() << endl;
+        if (stmt.children[0].children_size() == 0){
+            addr_value = var.tmp_var_name;
+        } else {
+            ir_Type res_  = translate_expr(stmt.children[0], symbol_table, current_bb);
+            addr_value = get<Var_Type>(res_).tmp_var_name;
+        }
+        
         // 调用函数赋值
         if (!startsWith(stmt.children[1].type, "LVal")){
             stmt.children[1].ID = "FUNCTION";
@@ -1010,7 +1069,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, true_bb);
         }
         create_jump(ex_label, true_bb);
-        cout << "here" << endl;
+        //cout << "here" << endl;
         // new FALSE basic block
         vector<Instruction> false_inst;
         Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
@@ -1213,7 +1272,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // Handle other cases or error
         assert(0);
     }
-
+    return current_bb;
 }
 
 bool is_a_tmp_param(Var_Type var){
