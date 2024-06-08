@@ -472,16 +472,16 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = mod " << opd1;
+                std::cout << "  let %"<< res << ": i32 = rem " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = mod #" << opd1;
+                std::cout << "  let %"<< res << ": i32 = rem #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = mod %" << opd1;
+                std::cout << "  let %"<< res << ": i32 = rem %" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {

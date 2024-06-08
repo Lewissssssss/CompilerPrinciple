@@ -448,8 +448,14 @@ void create_function_call(Func_Type func, string ID, string res, Symbol_Table& s
     vector<string> arg_names = func.tmp_arg_name;
     for(int i = 0; i < arg_names.size(); i++){
         string name = arg_names[i]; 
-        Var_Type tmp = symbol_table.lookup_var(name);
+        Var_Type tmp;
         tmp.type = func.args[i];
+        if (tmp.type == NONE) {
+            tmp.tmp_var_name = name;
+        }
+        else {
+            tmp = symbol_table.lookup_var(name);  
+        }
         args.push_back(tmp);
     }
     Operand args_op = Operand(OPD_ARGS, args);
@@ -527,7 +533,20 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         //     cout << "first:" << i.first << endl;
         // }
 
-        create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
+        if (holds_alternative<Var_Type>(expr1_addr)){
+            if(holds_alternative<Var_Type>(expr2_addr)){ // var + var
+                create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
+            } else { // var + func
+
+            }
+        } else {
+            if(holds_alternative<Var_Type>(expr2_addr)){ //func + var
+
+            } else { //func + func
+
+            }
+        }
+
         return BinOpRes;
         
         // Handle BinOp_et case
@@ -734,7 +753,6 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.tmp_var_name = name;
             tmp.type = INT_TY;
             tmp.val= 0;
-
             SYM_TBL.add_symbol(name, tmp);
             
 
@@ -910,6 +928,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
         }
+
+        // for (auto i : symbol_table.Stack.top().Var_sym_tbl){
+        //     cout << "first:" << i.first << endl;
+        // }
+
         Var_Type &var = symbol_table.lookup_var(ID);
         string addr_value = var.tmp_var_name;
         // 调用函数赋值
@@ -963,7 +986,12 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             if (true_stmt.type == "Block") {
                 BasicBlock true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
                 for (auto child : true_stmt.children) {
-                    true_bb_ = translate_stmt(child, symbol_table, true_bb);
+                    if (startsWith(child.type, "INT")) {
+                        for (int i = 0; i < child.children_size(); i++) {
+                            true_bb_ = translate_stmt(child.children[i], symbol_table, true_bb);
+                        }
+                    }
+                    else true_bb_ = translate_stmt(child, symbol_table, true_bb);                
                 }
             }
             else {
@@ -1011,7 +1039,12 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, true_bb);
             for (int i = 0; i < true_stmts.children_size(); i++) {
                 Node true_stmt = true_stmts.children[i];
-                true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
+                if (startsWith(true_stmt.type, "INT")) {
+                    for (int i = 0; i < true_stmt.children_size(); i++) {
+                        true_bb_ = translate_stmt(true_stmt.children[i], symbol_table, true_bb);
+                    }
+                }
+                else true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
             }
         }
         else {
@@ -1032,7 +1065,12 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             BasicBlock false_bb_ = translate_stmt(false_stmts, symbol_table, false_bb);
             for (int i = 0; i < false_stmts.children_size(); i++) {
                 Node false_stmt = false_stmts.children[i];
-                false_bb_ = translate_stmt(false_stmt, symbol_table, false_bb);
+                if (startsWith(false_stmt.type, "INT")) {
+                    for (int i = 0; i < false_stmt.children_size(); i++) {
+                        false_bb_ = translate_stmt(false_stmt.children[i], symbol_table, false_bb);
+                    }
+                }
+                else false_bb_ = translate_stmt(false_stmt, symbol_table, false_bb);
             }
         }
         else {
@@ -1088,14 +1126,19 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         Node true_stmts = stmt.children[1];
         if (true_stmts.type == "Block") {
-            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, entry_bb);
+            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, body_bb);
             for (int i = 0; i < true_stmts.children_size(); i++) {
                 Node true_stmt = true_stmts.children[i];
-                true_bb_ = translate_stmt(true_stmt, symbol_table, entry_bb);
+                if (startsWith(true_stmt.type, "INT")) {
+                    for (int i = 0; i < true_stmt.children_size(); i++) {
+                        true_bb_ = translate_stmt(true_stmt.children[i], symbol_table, body_bb);
+                    }
+                }
+                else true_bb_ = translate_stmt(true_stmt, symbol_table, body_bb);
             }
         }
         else {
-            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, entry_bb);
+            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, body_bb);
         }
         create_jump(et_label, entry_bb);
 
@@ -1217,10 +1260,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         SYM_TBL.Stack.push(st);
         return current_bb;
     }
-     else {
-        // Handle other cases or error
-        assert(0);
-    }
+    //  else {
+    //     // Handle other cases or error
+    //     assert(0);
+    // }
     return current_bb;
 }
 
