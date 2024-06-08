@@ -85,9 +85,9 @@ string get_unary_type(Node& expr){//不能handal极端复杂情况如 ++-------+
     if(first_NOT&&Not%2!=0){
         return "NOT";
     }
-    cout<<"err in get_unary_type, NOT UNARY!!!"<<endl;
-    assert(false);
-
+    // cout<<"err in get_unary_type, NOT UNARY!!!"<<endl;
+    // assert(false);
+    return "ADD";
 }
 
 
@@ -553,8 +553,16 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         BinOpRes.type = INT_TY;
         symbol_table.add_symbol(BinOpRes.tmp_var_name,BinOpRes);
         //symbol_table.add_symbol(expr1_value.tmp_var_name,expr1_value);
+        if(U_TY == "ADD"){
+            create_binary("ADD",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
 
-        create_binary("SUB",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+        }else if(U_TY == "SUB"){
+            create_binary("SUB",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+
+        }else if(U_TY == "NOT"){
+            create_binary("EQ",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
+
+        }
         //cout<<"LALALAL"<<endl;
         expr1_value.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());//signify it is a unary.
         return BinOpRes;
@@ -703,10 +711,12 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle variable declaration statement
     } else if (stmt_type == VarDeclArray_st) {
-        Type type = stmt.get_type();
+        Type type = stmt.children[0].get_type();
+        //cout<<"ARRAY: "<<type<<endl;
         // cout << "stmt_type == VarDeclArray_st" << endl;
         if (type == Type::ARRAY) {
             BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+                    //cout<<"here: "<<type<<endl;
 
             string name = (stmt.children)[0].name();
             Var_Type tmp;
@@ -716,8 +726,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
+                    //cout<<"herehrere: "<<type<<endl;
+
             create_alloca(tmp,size,current_bb);
+            //cout<<"PASS ALLOCA"<<endl;
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
             // 处理 ARRAY 类型的逻辑
         } else if (type == Type::LIST_2) {
@@ -732,7 +745,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_3) {
@@ -747,7 +760,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
         } else if (type == Type::LIST_4) {
@@ -762,7 +775,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_5) {
@@ -777,14 +790,14 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.val= tmp_;
             SYM_TBL.add_symbol(name, tmp);
 
-            int size = calculate_array_size(stmt);
+            int size = calculate_array_size(stmt.children[0]);
             create_alloca(tmp,size,current_bb);
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else {
             // 处理其他类型的逻辑
             assert(false);
         }
-
+        return current_bb;
 
         // Handle variable declaration array statement
     } else if (stmt_type == Expr_st) {
@@ -1326,10 +1339,10 @@ void traverseTree(Node node) {
     // stmts
     if (node_type > 8 && node_type <= 16){
         if(cur_Func!=""){
-             //cout<<"HERE"<<endl;
+            //cout<<"HERE"<<endl;
             
             BasicBlock current_bb = Func_BB_map.find(cur_Func)->second.back();
-            // cout<<"HEREhere"<<endl;
+             //cout<<"HEREhere"<<endl;
             BasicBlock bb = translate_stmt(node, SYM_TBL, current_bb);
         }else{
             handle_global(node);
