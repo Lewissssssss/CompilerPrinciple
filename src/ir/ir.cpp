@@ -552,8 +552,29 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
     } else if (exp_type == BinOp_et) {
         // cout << "exp_type == BinOp_et" << endl;
         auto operation=expr.name();
+
         auto expr1_addr=translate_expr(expr.children[0], symbol_table,current_bb);
         auto expr2_addr=translate_expr(expr.children[1], symbol_table,current_bb);
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(expr1_addr);
+        if(get<int>(get<Var_Type>(expr1_addr).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(expr1_addr),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+        }
+        Var_Type Lval_tmp2;
+        Lval_tmp2 = get<Var_Type>(expr2_addr);
+        if(get<int>(get<Var_Type>(expr2_addr).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp2.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp2.type=INT_TY;
+            create_load(Lval_tmp2,get<Var_Type>(expr1_addr),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp2.tmp_var_name,Lval_tmp2);
+        }
 
         Var_Type BinOpRes;
         BinOpRes.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
@@ -566,7 +587,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         // }
 
 
-        create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
+        create_binary(operation,BinOpRes,Lval_tmp1,Lval_tmp2,current_bb);
 
         return BinOpRes;
         
@@ -844,13 +865,28 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             create_alloca(tmp,1,current_bb);
 
             Var_Type res = get<Var_Type>(translate_expr(stmt.children[1],symbol_table,current_bb));
-            if (res.type == NONE) {
-                create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb, 2);
-            } else if (is_a_tmp_param(res)) {
-                create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb, 1);
-            } else {
-                create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb);
+
+             if(get<int>(res.val)==999){
+                Var_Type Lval_tmp;
+                //cout<<"QIUQIU"<<endl;
+                Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+                Lval_tmp.type=INT_TY;
+                create_load(Lval_tmp,res,current_bb);
+                symbol_table.add_symbol(Lval_tmp.tmp_var_name,Lval_tmp);
+
+
+                create_store(Lval_tmp.tmp_var_name,tmp.tmp_var_name,current_bb);
+                
+            }else{
+                if (res.type == NONE) {
+                    create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb, 2);
+                } else if (is_a_tmp_param(res)) {
+                    create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb, 1);
+                } else {
+                    create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb);
+                }
             }
+
 
         //     string ttt = stmt.children[1].name();
         //     if(stmt.children[1].children_size()!=0){//UNARY?
@@ -1042,16 +1078,36 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // cout << "stmt_type == Assign_st1" << endl;
         // to do:判断类型，val or fun
         ir_Type val = translate_expr(stmt.children[1], symbol_table, current_bb); 
+
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(val);
+        if(get<int>(get<Var_Type>(val).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(val),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+
+            string result_value = Lval_tmp1.tmp_var_name;
+ 
+            symbol_table.add_symbol(result_value, Lval_tmp1);
+            create_store(result_value, addr_value, current_bb);
+            
+        }else{
+            string result_value = get<Var_Type>(val).tmp_var_name;
+            if (get<Var_Type>(val).type == NONE){
+                create_store(result_value, addr_value, current_bb,2);
+            }
+            else {
+                symbol_table.add_symbol(result_value, get<Var_Type>(val));
+                create_store(result_value, addr_value, current_bb);
+            }
+        }
+
         // cout << "stmt_type == Assign_st2" << endl;
        
-        string result_value = get<Var_Type>(val).tmp_var_name;
-        if (get<Var_Type>(val).type == NONE){
-            create_store(result_value, addr_value, current_bb,2);
-        }
-        else {
-            symbol_table.add_symbol(result_value, get<Var_Type>(val));
-            create_store(result_value, addr_value, current_bb);
-        }
+
         return current_bb;  
     } else if (stmt_type == If_st) {
         // cout << "stmt_type == If_st" << endl;
@@ -1067,7 +1123,21 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         Node expr = *stmt.get(0);
         // to do: 判断类型，val or fun
         ir_Type cond_value = translate_expr(expr, symbol_table, current_bb);
-        string cond = get<Var_Type>(cond_value).tmp_var_name;
+        
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(cond_value);
+        if(get<int>(get<Var_Type>(cond_value).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+        }
+
+
+
+        string cond = Lval_tmp1.tmp_var_name;
         create_branch(cond, tr_label, ex_label, current_bb);
 
         // new basic block
@@ -1122,7 +1192,20 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // condition
         Node Expr = *stmt.get(0);
         ir_Type cond_value = translate_expr(Expr, symbol_table, current_bb);
-        string cond = get<Var_Type>(cond_value).tmp_var_name;
+
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(cond_value);
+        if(get<int>(get<Var_Type>(cond_value).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+        }
+
+
+        string cond = Lval_tmp1.tmp_var_name;
         create_branch(cond, tr_label, fl_label, current_bb);
 
         // new TRUE basic block
@@ -1212,7 +1295,19 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // entry block of While should be separated.
         Node Expr = *stmt.get(0);
         ir_Type cond_value = translate_expr(Expr, symbol_table, entry_bb);
-        string cond = get<Var_Type>(cond_value).tmp_var_name;
+
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(cond_value);
+        if(get<int>(get<Var_Type>(cond_value).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+        }
+
+        string cond = Lval_tmp1.tmp_var_name;
         create_branch(cond, bd_label, ex_label, entry_bb);
 
         // new BODY basic block
@@ -1260,10 +1355,25 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // create_alloca(return_addr,1,current_bb);
         symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
         auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
-        if (get<Var_Type>(return_value).type == NONE){
-            create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb, 2);
+
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(return_value);
+        if(get<int>(get<Var_Type>(return_value).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(return_value),current_bb);
+
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+            create_store(Lval_tmp1.tmp_var_name, return_addr.tmp_var_name, current_bb);
+        }else{
+            if (get<Var_Type>(return_value).type == NONE){
+                create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb, 2);
+            }
+            else create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
         }
-        else create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
+
+
         create_ret(return_addr.tmp_var_name, symbol_table, current_bb);
         vector<Instruction> empty;
         BasicBlock end_block = BasicBlock(empty, "EOF");
