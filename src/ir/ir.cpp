@@ -631,10 +631,26 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
                     arg.ID = "FUNCTION";
                 }
                 ir_Type translated_arg = translate_expr(arg, symbol_table, current_bb);
-                Type arg_type = get<Var_Type>(translated_arg).type;
-                func.args.push_back(arg_type);
-                string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
-                func.tmp_arg_name.push_back(arg_temp);
+                Var_Type Lval_tmp;
+                //cout<<"SHITSHITSHIT!"<<endl;
+                if(get<int>(get<Var_Type>(translated_arg).val)==999){
+                    //cout<<"QIUQIU"<<endl;
+                    Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+                    Lval_tmp.type=INT_TY;
+                    create_load(Lval_tmp,get<Var_Type>(translated_arg),current_bb);
+                    Type arg_type = Lval_tmp.type;
+                    func.args.push_back(arg_type);
+                    string arg_temp = Lval_tmp.tmp_var_name;
+                    func.tmp_arg_name.push_back(arg_temp);
+                    symbol_table.add_symbol(Lval_tmp.tmp_var_name,Lval_tmp);
+                }else{
+                    //cout<<"WTFWTF"<<endl;
+                    Type arg_type = get<Var_Type>(translated_arg).type;
+                    func.args.push_back(arg_type);
+                    string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
+                    func.tmp_arg_name.push_back(arg_temp);
+                }
+
             }
         }
         func.arg_num = func.args.size();
@@ -667,7 +683,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         for(auto iter = expr.children.begin();iter!=expr.children.end();iter++){
             idxs.push_back(iter->name());
             //cout<<"LALALA"<<endl;
-            ids+="["+iter->name()+"]";
+            ids+=""+iter->name()+"";
         }
         string ID = expr.name();
         std::regex pattern("LVal\\s*([a-zA-Z]+)");
@@ -677,11 +693,16 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         }
         result.tmp_var_name = ID+ids;
         result.type = INT_TY;
-        result.val = 0;//default
+        result.val = 999;//default for array, magical number 999 to signify
         symbol_table.add_symbol(result.tmp_var_name,result);
         //cout<<expr.name()<<endl;
                         //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
         create_offset(result.tmp_var_name, ID1, idxs,symbol_table);//ASDASDA
+        // Var_Type arr_tmp;
+        // arr_tmp.tmp_var_name = symbol_table.get_current_tbl_size();
+        // arr_tmp.type = INT_TY;
+        // symbol_table.add_symbol(arr_tmp.tmp_var_name,arr_tmp);
+        // create_load(arr_tmp,result,current_bb);
 
         return result;
 
@@ -735,6 +756,7 @@ void create_alloca(Var_Type var, int size, BasicBlock current_bb){
 }//alloca 重要的是size和name--->be like %1...，type固定为 i32；size和name在vartype和value里分别找到
 
 int calculate_array_size(Node node){
+    //cout<<"INARRAYSIZE"<<node.name()<<endl;
     vector<int>& array_size = node.array_size;
     int size = 1;
     for(auto iter=array_size.begin();iter!=array_size.end();iter++){
@@ -1295,6 +1317,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 Var_Type tmp;
                 tmp.tmp_var_name = iter->tmp_var_name+".addr";
                 create_alloca(tmp,1,bb);
+                symbol_table.add_symbol(tmp.tmp_var_name,tmp);
                 create_store(iter->tmp_var_name,tmp.tmp_var_name,bb,1);
             }else{
                 //create_alloca(*iter,calculate_array_size())
