@@ -11,7 +11,7 @@
 #include <regex>
 #include <algorithm>
 #include <cstdio>
-
+using namespace std;
 
 
 enum Expr_Stmt_type {

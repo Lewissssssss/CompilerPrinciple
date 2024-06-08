@@ -273,8 +273,20 @@ void create_load(Var_Type target, Var_Type source, BasicBlock& current_bb){
 // }//load重要的就是target and source
 void create_binary(string operation,Var_Type BinOpRes, Var_Type exp1, Var_Type exp2, BasicBlock current_bb){
     auto BOR = new Operand(OPD_VARIABLE, BinOpRes.tmp_var_name);
-    auto e1 = new Operand(OPD_VARIABLE,exp1.tmp_var_name);
-    auto e2 = new Operand(OPD_VARIABLE,exp2.tmp_var_name);
+    auto e1 = new Operand;
+    auto e2 = new Operand;
+
+    if (is_a_tmp_param(exp1)) {
+        e1 = new Operand(OPD_ARG, exp1.tmp_var_name);
+    } else {
+        e1 = new Operand(OPD_VARIABLE, exp1.tmp_var_name);
+    }
+
+    if (is_a_tmp_param(exp2)) {
+        e2 = new Operand(OPD_ARG, exp2.tmp_var_name+".addr");
+    } else {
+        e2 = new Operand(OPD_VARIABLE, exp2.tmp_var_name);
+    }
 
 
     if(operation=="ADD"){
@@ -288,6 +300,39 @@ void create_binary(string operation,Var_Type BinOpRes, Var_Type exp1, Var_Type e
     }else if(operation=="SUB"){
         //cout<<"IN SUB brc";
         auto inst = new Instruction(IR_SUB,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="GT"){
+        auto inst = new Instruction(IR_GT,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="GE"){
+        auto inst = new Instruction(IR_GE,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="DIV"){
+        auto inst = new Instruction(IR_DIV,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="EQ"){
+        auto inst = new Instruction(IR_EQ,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="LE"){
+        auto inst = new Instruction(IR_LE,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="LT"){
+        auto inst = new Instruction(IR_LT,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="MOD"){
+        auto inst = new Instruction(IR_MOD,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="MUL"){
+        auto inst = new Instruction(IR_MUL,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="NE"){
+        auto inst = new Instruction(IR_NE,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="OR"){
+        auto inst = new Instruction(IR_OR,*BOR,*e1,*e2);
+        insert_instruction(*inst,current_bb);
+    }else if(operation=="XOR"){
+        auto inst = new Instruction(IR_XOR,*BOR,*e1,*e2);
         insert_instruction(*inst,current_bb);
     }
     
@@ -622,15 +667,30 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
 
         string name = (stmt.children)[0].name();
-        Var_Type tmp;
-        tmp.tmp_var_name = name;
-        tmp.type = INT_TY;
-        tmp.val= 0;
+        if(stmt.children_size()==1){
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = INT_TY;
+            tmp.val= 0;
 
-        SYM_TBL.add_symbol(name, tmp);
-        
+            SYM_TBL.add_symbol(name, tmp);
+            
 
-        create_alloca(tmp,1,current_bb);
+            create_alloca(tmp,1,current_bb);
+        }else if(stmt.children_size()==2){
+            Var_Type tmp;
+            tmp.tmp_var_name = name;
+            tmp.type = INT_TY;
+            tmp.val= 0;
+
+            SYM_TBL.add_symbol(name, tmp);
+            
+
+            create_alloca(tmp,1,current_bb);
+
+        }
+
+
         //auto var_type = SYM_TBL.lookup_var(name);
         //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
         //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
