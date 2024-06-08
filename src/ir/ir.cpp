@@ -531,6 +531,16 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
         }
+
+
+        // Var_Type src = symbol_table.lookup_var(ID);
+        // if (src.tmp_var_name == "NOT_FOUND") {
+        //     src.tmp_var_name = ID;
+        //     src.type = INT_TY;
+        //     src.val = 0;//default
+        // } else {
+
+        // }
         Var_Type src;
         src.tmp_var_name = ID;
         src.type = INT_TY;
@@ -555,19 +565,8 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         //     cout << "first:" << i.first << endl;
         // }
 
-        if (holds_alternative<Var_Type>(expr1_addr)){
-            if(holds_alternative<Var_Type>(expr2_addr)){ // var + var
-                create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
-            } else { // var + func
 
-            }
-        } else {
-            if(holds_alternative<Var_Type>(expr2_addr)){ //func + var
-
-            } else { //func + func
-
-            }
-        }
+        create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
 
         return BinOpRes;
         
@@ -592,6 +591,14 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
                 ID = match[1];
             }
             expr1_value= symbol_table.lookup_var(ID);
+            Var_Type expr1_temp;
+            expr1_temp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            expr1_temp.type = INT_TY;
+            expr1_temp.val = 0;//default
+            symbol_table.add_symbol(expr1_temp.tmp_var_name,expr1_temp);
+            create_load(expr1_temp, expr1_value,current_bb);
+            expr1_value = expr1_temp;
+            
         }
         
         Var_Type BinOpRes;
@@ -835,47 +842,58 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             
 
             create_alloca(tmp,1,current_bb);
-            string ttt = stmt.children[1].name();
-            if(stmt.children[1].children_size()!=0){//UNARY?
-                auto tmptmp = translate_unary(stmt.children[1],symbol_table,current_bb);
-                ttt = tmptmp.tmp_var_name;
 
-                Var_Type tt;
+            Var_Type res = get<Var_Type>(translate_expr(stmt.children[1],symbol_table,current_bb));
+            if (res.type == NONE) {
+                create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb, 2);
+            } else if (is_a_tmp_param(res)) {
+                create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb, 1);
+            } else {
+                create_store(res.tmp_var_name,tmp.tmp_var_name,current_bb);
+            }
+
+        //     string ttt = stmt.children[1].name();
+        //     if(stmt.children[1].children_size()!=0){//UNARY?
+        //         // auto tmptmp = translate_unary(stmt.children[1],symbol_table,current_bb);
+        //         // ttt = tmptmp.tmp_var_name;
+
+        //         // Var_Type tt;
                 
 
-                string ID = ttt;
-                std::regex pattern("LVal\\s*([a-zA-Z]+)");
-                std::smatch match;
-                if (std::regex_search(ID, match, pattern)){
-                    ID = match[1];
-                }
-                tt.tmp_var_name = ID;
-                if(is_a_tmp_param(tt)){
-                    create_store(ID,tmp.tmp_var_name,current_bb,1);
-                }else{
-                    create_store(ID,tmp.tmp_var_name,current_bb,0);
-                }
-            }else{
-                if(isDigitString(ttt)){
-                create_store(ttt,tmp.tmp_var_name,current_bb,2);
-                }else{
-                    Var_Type tt;
-                    
+        //         // string ID = ttt;
+        //         // std::regex pattern("LVal\\s*([a-zA-Z]+)");
+        //         // std::smatch match;
+        //         // if (std::regex_search(ID, match, pattern)){
+        //         //     ID = match[1];
+        //         // }
+        //         // tt.tmp_var_name = ID;
+        //         // if(is_a_tmp_param(tt)){
+        //         //     create_store(ID,tmp.tmp_var_name,current_bb,1);
+        //         // }else{
+        //         //     create_store(ID,tmp.tmp_var_name,current_bb,0);
+        //         // }
 
-                    string ID = ttt;
-                    std::regex pattern("LVal\\s*([a-zA-Z]+)");
-                    std::smatch match;
-                    if (std::regex_search(ID, match, pattern)){
-                        ID = match[1];
-                    }
-                    tt.tmp_var_name = ID;
-                    if(is_a_tmp_param(tt)){
-                        create_store(ID,tmp.tmp_var_name,current_bb,1);
-                    }else{
-                        create_store(ID,tmp.tmp_var_name,current_bb,0);
-                    }
-                }
-            }
+        //     }else{
+        //         if(isDigitString(ttt)){
+        //             create_store(ttt,tmp.tmp_var_name,current_bb,2);
+        //         }else{
+        //             Var_Type tt;
+                    
+        //             string ID = ttt;
+        //             std::regex pattern("LVal\\s*([a-zA-Z]+)");
+        //             std::smatch match;
+        //             if (std::regex_search(ID, match, pattern)){
+        //                 ID = match[1];
+        //             }
+
+        //             tt.tmp_var_name = ID;
+        //             if(is_a_tmp_param(tt)){
+        //                 create_store(ID,tmp.tmp_var_name,current_bb,1);
+        //             }else{
+        //                 create_store(ID,tmp.tmp_var_name,current_bb,0);
+        //             }
+        //         }
+        //     }
             
         }        //auto var_type = SYM_TBL.lookup_var(name);
         //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
