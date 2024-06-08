@@ -120,7 +120,10 @@ public:
             return iter1->second;
         else {
             std::cout << "Error in lookup_var!" << std::endl;
-            assert(false);
+            Var_Type v;
+            v.tmp_var_name = "NOT_FOUND";
+            return v;
+            // assert(false);
         }
     }
     Func_Type& lookup_func(const std::string& Identifier) {
