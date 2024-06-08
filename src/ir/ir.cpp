@@ -250,7 +250,6 @@ void create_load(Var_Type target, Var_Type source, BasicBlock& current_bb){
     // auto tar = new Operand(OPD_VARIABLE, target.tmp_var_name);
     // auto src = new Operand(OPD_VARIABLE, source.tmp_var_name);
     auto inst = new Instruction(IR_LOAD, *tar,*src);
-
     insert_instruction(*inst, current_bb);
 }//load重要的就是target and source   
 
@@ -568,15 +567,19 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         if (expr.children_size() > 0){
             std::vector<Node> Args = expr.children[0].children;
             for (auto arg : Args) {
-            // string arg_string = arg->name();
-            if (!startsWith(arg.type, "LVal")){
-                arg.ID = "FUNCTION";
+                // string arg_string = arg->name();
+                if (!startsWith(arg.type, "LVal")){
+                    arg.ID = "FUNCTION";
+                }
+                ir_Type translated_arg = translate_expr(arg, symbol_table, current_bb);
+                Type arg_type = get<Var_Type>(translated_arg).type;
+                func.args.push_back(arg_type);
+                string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
+                func.tmp_arg_name.push_back(arg_temp);
             }
-            ir_Type translated_arg = translate_expr(arg, symbol_table, current_bb);
-            string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
-            func.tmp_arg_name.push_back(arg_temp);
         }
-        }
+        func.arg_num = func.args.size();
+        // cout << "exp_type == Call_et3" << endl;  
         // cout << "exp_type == Call_et4" << endl;
         string res_name = to_string(symbol_table.get_current_tbl_size());
         Var_Type res;
@@ -899,11 +902,19 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         BasicBlock true_bb = BasicBlock(true_inst, tr_label);
         bbs.push_back(true_bb);  
 
-        Node Stmt1 = *stmt.get(1);
-        BasicBlock true_exit_bb = translate_stmt(Stmt1, symbol_table, true_bb);
-        create_jump(ex_label, true_exit_bb);
-
-
+        Node true_stmts = stmt.children[1];
+        if (true_stmts.type == "Block") {
+            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, true_bb);
+            for (int i = 0; i < true_stmts.children_size(); i++) {
+                Node true_stmt = true_stmts.children[i];
+                true_bb_ = translate_stmt(true_stmt, symbol_table, true_bb);
+            }
+        }
+        else {
+            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, true_bb);
+        }
+        create_jump(ex_label, true_bb);
+        cout << "here" << endl;
         // new FALSE basic block
         vector<Instruction> false_inst;
         Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
@@ -912,9 +923,18 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         BasicBlock false_bb = BasicBlock(false_inst, fl_label);
         bbs.push_back(false_bb); 
 
-        Node Stmt2 = *stmt.get(2);
-        BasicBlock false_exit_bb = translate_stmt(Stmt2, symbol_table, false_bb);
-        create_jump(ex_label, false_exit_bb); 
+        Node false_stmts = stmt.children[2];
+        if (false_stmts.type == "Block") {
+            BasicBlock false_bb_ = translate_stmt(false_stmts, symbol_table, false_bb);
+            for (int i = 0; i < false_stmts.children_size(); i++) {
+                Node false_stmt = false_stmts.children[i];
+                false_bb_ = translate_stmt(false_stmt, symbol_table, false_bb);
+            }
+        }
+        else {
+            BasicBlock false_bb_ = translate_stmt(true_stmts, symbol_table, false_bb);
+        }
+        create_jump(ex_label, false_bb); 
 
         // new EXIT basic block
         vector<Instruction> exit_inst;
@@ -931,37 +951,20 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle while statement
         BBs bbs = Func_BB_map[cur_Func];
+        string et_label = "while_cond_" + to_string(bb_num);
+        bb_num++;
+        string bd_label = "while_body_" + to_string(bb_num-1);
+        bb_num++;
+        string ex_label = "while_exit_" + to_string(bb_num-2);
+        bb_num++;
 
         // new ENTRY basic block
         vector<Instruction> entry_inst;
-        string et_label = "b" + to_string(bb_num);
-        bb_num++;
         Operand et_label_op = Operand(OPD_VARIABLE, et_label);
         Instruction entry_label = Instruction(IR_LABEL, et_label_op);
         entry_inst.push_back(entry_label);
         BasicBlock entry_bb = BasicBlock(entry_inst, et_label);
         bbs.push_back(entry_bb);
-        
-
-        // new BODY basic block
-        vector<Instruction> body_inst;
-        string bd_label = "b" + to_string(bb_num);
-        bb_num++;
-        Operand bd_label_op = Operand(OPD_VARIABLE, bd_label);
-        Instruction body_label = Instruction(IR_LABEL, bd_label_op);
-        body_inst.push_back(body_label);
-        BasicBlock body_bb = BasicBlock(body_inst, bd_label);
-        bbs.push_back(body_bb);  
-
-        // new EXIT basic block
-        vector<Instruction> exit_inst;
-        string ex_label = "b" + to_string(bb_num);
-        bb_num++;
-        Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
-        Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
-        exit_inst.push_back(exit_label);
-        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
-        bbs.push_back(exit_bb);
 
         // entry block of While should be separated.
         Node Expr = *stmt.get(0);
@@ -970,10 +973,39 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         string cond = get<Var_Type>(cond_value).tmp_var_name;
         create_branch(cond, bd_label, ex_label, entry_bb);
 
+
+        // new BODY basic block
+        vector<Instruction> body_inst;
+        Operand bd_label_op = Operand(OPD_VARIABLE, bd_label);
+        Instruction body_label = Instruction(IR_LABEL, bd_label_op);
+        body_inst.push_back(body_label);
+        BasicBlock body_bb = BasicBlock(body_inst, bd_label);
+        bbs.push_back(body_bb);  
+
+        Node true_stmts = stmt.children[1];
+        if (true_stmts.type == "Block") {
+            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, entry_bb);
+            for (int i = 1; i < true_stmts.children_size(); i++) {
+                Node true_stmt = true_stmts.children[i];
+                true_bb_ = translate_stmt(true_stmt, symbol_table, entry_bb);
+            }
+        }
+        else {
+            BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, entry_bb);
+        }
+        create_jump(ex_label, entry_bb);
+
         Node stmt0 = *stmt.get(1);
         BasicBlock body_exit_bb = translate_stmt(stmt0, symbol_table, body_bb);
         create_jump(et_label, body_exit_bb);
 
+        // new EXIT basic block
+        vector<Instruction> exit_inst;
+        Operand ex_label_op = Operand(OPD_VARIABLE, ex_label);
+        Instruction exit_label = Instruction(IR_LABEL, ex_label_op);
+        exit_inst.push_back(exit_label);
+        BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
+        bbs.push_back(exit_bb);
         return exit_bb;
     } else if (stmt_type == Return_st) {
         // cout << "stmt_type == Return_st" << endl;
@@ -1030,7 +1062,6 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                     tmp.type = INT_TY;
                 else
                     tmp.type = ARRAY;//
-                //cout << iter->get_type();
                 tmp.val = 0;//default
                 args.push_back(tmp);
 
@@ -1092,6 +1123,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
     }
 
 }
+
 bool is_a_tmp_param(Var_Type var){
     for(auto iter = cur_params.begin();iter!=cur_params.end();iter++){
         if(iter->tmp_var_name == var.tmp_var_name){
@@ -1100,6 +1132,7 @@ bool is_a_tmp_param(Var_Type var){
         return false;
     }
 }
+
 void init_libs() {
 // fn @putint(#x: i32) -> ();
     cout << "fn @putint(#x: i32) -> ();" << endl << endl;
