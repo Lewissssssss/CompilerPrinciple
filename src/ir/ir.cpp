@@ -959,6 +959,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         string ex_label = "while_exit_" + to_string(bb_num-2);
         bb_num++;
 
+        create_jump(et_label, current_bb);
+
         // new ENTRY basic block
         vector<Instruction> entry_inst;
         Operand et_label_op = Operand(OPD_VARIABLE, et_label);
@@ -969,11 +971,9 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // entry block of While should be separated.
         Node Expr = *stmt.get(0);
-        create_jump(et_label, current_bb);
         ir_Type cond_value = translate_expr(Expr, symbol_table, entry_bb);
         string cond = get<Var_Type>(cond_value).tmp_var_name;
         create_branch(cond, bd_label, ex_label, entry_bb);
-
 
         // new BODY basic block
         vector<Instruction> body_inst;
@@ -986,7 +986,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         Node true_stmts = stmt.children[1];
         if (true_stmts.type == "Block") {
             BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, entry_bb);
-            for (int i = 1; i < true_stmts.children_size(); i++) {
+            for (int i = 0; i < true_stmts.children_size(); i++) {
                 Node true_stmt = true_stmts.children[i];
                 true_bb_ = translate_stmt(true_stmt, symbol_table, entry_bb);
             }

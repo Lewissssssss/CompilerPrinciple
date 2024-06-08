@@ -68,7 +68,7 @@ VarDecl : INT VarDef VerDefGroup SEMI {$$ = $3; $$->add(*$2); $$->rename("INT Va
 VerDefGroup : VerDefGroup COMMA VarDef {$$ = $1; $$->add(*$3);delete $3;}
            |  {$$ = new Node("VerDefGroup"); }
 
-VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->add(*$3);
+VarDef : ID ConstGroup ASSIGN InitVal {$$ = new Node("VerDef");$$->add(*$1);$$->add(*$4);
                 if(tables.get_var_in_scope($1->name())==NONE){
                         Type ty;
                         vector<int> array_length;
