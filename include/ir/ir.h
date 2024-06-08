@@ -356,14 +356,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = add " << opd1;
+                std::cout << "  let %"<< res << " = add " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = add #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = add %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -375,14 +375,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = sub " << opd1;
+                std::cout << "  let %"<< res << " = sub " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = sub #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = sub %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -394,14 +394,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = mul " << opd1;
+                std::cout << "  let %"<< res << " = mul " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = mul #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = mul %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -413,14 +413,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = div " << opd1;
+                std::cout << "  let %"<< res << " = div " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = div #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = div %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -432,14 +432,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = mod " << opd1;
+                std::cout << "  let %"<< res << " = mod " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = mod #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = mod %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -451,14 +451,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = and " << opd1;
+                std::cout << "  let %"<< res << " = and " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = and #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = and %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -470,14 +470,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = or " << opd1;
+                std::cout << "  let %"<< res << " = or " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = or #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = or %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -489,14 +489,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = xor " << opd1;
+                std::cout << "  let %"<< res << " = xor " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = xor #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = xor %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -508,14 +508,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = gt " << opd1;
+                std::cout << "  let %"<< res << " = gt " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = gt #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = gt %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -527,14 +527,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = lt " << opd1;
+                std::cout << "  let %"<< res << " = lt " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = lt #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = lt %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -546,14 +546,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = ge " << opd1;
+                std::cout << "  let %"<< res << " = ge " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = ge #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = ge %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -565,14 +565,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = le " << opd1;
+                std::cout << "  let %"<< res << " = le " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = le #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = le %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -584,14 +584,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = eq " << opd1;
+                std::cout << "  let %"<< res << " = eq " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = eq #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = eq %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {
@@ -603,14 +603,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = ne " << opd1;
+                std::cout << "  let %"<< res << " = ne " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = ne #" << opd1;
             } else {
                 std::cout << "  let %"<< res << ": i32 = ne %" << opd1;
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << ": i32" << std::endl;
+                std::cout << ": i32, " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
             } else {

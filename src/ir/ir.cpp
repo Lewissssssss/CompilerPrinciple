@@ -947,7 +947,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             BasicBlock true_bb_ = translate_stmt(true_stmts, symbol_table, true_bb);
         }
         create_jump(ex_label, true_bb);
-        cout << "here" << endl;
+        // cout << "here" << endl;
         // new FALSE basic block
         vector<Instruction> false_inst;
         Operand fl_label_op = Operand(OPD_VARIABLE, fl_label);
