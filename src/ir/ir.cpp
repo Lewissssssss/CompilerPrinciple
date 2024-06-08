@@ -446,8 +446,10 @@ void create_function_call(Func_Type func, string ID, string res, Symbol_Table& s
     Operand func_name = Operand(OPD_VARIABLE, ID);
     vector<Var_Type> args;
     vector<string> arg_names = func.tmp_arg_name;
-    for(auto name : arg_names){ 
+    for(int i = 0; i < arg_names.size(); i++){
+        string name = arg_names[i]; 
         Var_Type tmp = symbol_table.lookup_var(name);
+        tmp.type = func.args[i];
         args.push_back(tmp);
     }
     Operand args_op = Operand(OPD_ARGS, args);
@@ -520,6 +522,10 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         BinOpRes.val = 0;//default
         BinOpRes.type = INT_TY;
         symbol_table.add_symbol(BinOpRes.tmp_var_name,BinOpRes);
+
+        // for (auto i : symbol_table.Stack.top().Var_sym_tbl){
+        //     cout << "first:" << i.first << endl;
+        // }
 
         create_binary(operation,BinOpRes,get<Var_Type>(expr1_addr),get<Var_Type>(expr2_addr),current_bb);
         return BinOpRes;
@@ -917,11 +923,13 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // cout << "stmt_type == Assign_st2" << endl;
        
         string result_value = get<Var_Type>(val).tmp_var_name;
-        symbol_table.add_symbol(result_value, get<Var_Type>(val));
         if (get<Var_Type>(val).type == NONE){
             create_store(result_value, addr_value, current_bb,2);
         }
-        else create_store(result_value, addr_value, current_bb);
+        else {
+            symbol_table.add_symbol(result_value, get<Var_Type>(val));
+            create_store(result_value, addr_value, current_bb);
+        }
         return current_bb;  
     } else if (stmt_type == If_st) {
         // cout << "stmt_type == If_st" << endl;
@@ -1213,7 +1221,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // Handle other cases or error
         assert(0);
     }
-
+    return current_bb;
 }
 
 bool is_a_tmp_param(Var_Type var){

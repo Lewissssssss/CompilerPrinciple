@@ -356,18 +356,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = add " << opd1;
+                std::cout << "  let %"<< res << ": i32 = add " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = add #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = add %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_SUB){
             inst_binary instr = get<inst_binary>(inst);
@@ -375,18 +385,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = sub " << opd1;
+                std::cout << "  let %"<< res << ": i32 = sub " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = sub #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = sub %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_MUL){
             inst_binary instr = get<inst_binary>(inst);
@@ -394,18 +414,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = mul " << opd1;
+                std::cout << "  let %"<< res << ": i32 = mul " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = mul #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = mul %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_DIV){
             inst_binary instr = get<inst_binary>(inst);
@@ -413,18 +443,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = div " << opd1;
+                std::cout << "  let %"<< res << ": i32 = div " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = div #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = div %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_MOD){
             inst_binary instr = get<inst_binary>(inst);
@@ -432,18 +472,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = mod " << opd1;
+                std::cout << "  let %"<< res << ": i32 = mod " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = mod #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = mod %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_AND){
             inst_binary instr = get<inst_binary>(inst);
@@ -451,18 +501,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = and " << opd1;
+                std::cout << "  let %"<< res << ": i32 = and " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = and #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = and %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_OR){
             inst_binary instr = get<inst_binary>(inst);
@@ -470,18 +530,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = or " << opd1;
+                std::cout << "  let %"<< res << ": i32 = or " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = or #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = or %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_XOR){
             inst_binary instr = get<inst_binary>(inst);
@@ -489,18 +559,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = xor " << opd1;
+                std::cout << "  let %"<< res << ": i32 = xor " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = xor #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = xor %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_GT){
             inst_binary instr = get<inst_binary>(inst);
@@ -508,18 +588,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = gt " << opd1;
+                std::cout << "  let %"<< res << ": i32 = gt " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = gt #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = gt %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_LT){
             inst_binary instr = get<inst_binary>(inst);
@@ -527,18 +617,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = lt " << opd1;
+                std::cout << "  let %"<< res << ": i32 = lt " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = lt #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = lt %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_GE){
             inst_binary instr = get<inst_binary>(inst);
@@ -546,18 +646,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = ge " << opd1;
+                std::cout << "  let %"<< res << ": i32 = ge " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = ge #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = ge %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_LE){
             inst_binary instr = get<inst_binary>(inst);
@@ -565,18 +675,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = le " << opd1;
+                std::cout << "  let %"<< res << ": i32 = le " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = le #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = le %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_EQ){
             inst_binary instr = get<inst_binary>(inst);
@@ -584,18 +704,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = eq " << opd1;
+                std::cout << "  let %"<< res << ": i32 = eq " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = eq #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = eq %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_NE){
             inst_binary instr = get<inst_binary>(inst);
@@ -603,18 +733,28 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << " = ne " << opd1;
+                std::cout << "  let %"<< res << ": i32 = ne " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
                 std::cout << "  let %"<< res << ": i32 = ne #" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             } else {
                 std::cout << "  let %"<< res << ": i32 = ne %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32";
+                } else {
+                    cout << ": i32*";
+                }
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
-                std::cout << ": i32, " << opd2 << std::endl;
+                std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
-                std::cout << ": i32, #" << opd2 << ": i32" << std::endl;
+                std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ": i32, %" << opd2 << ": i32" << std::endl;
+                std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_LOAD){
             inst_load instr = get<inst_load>(inst);
@@ -719,7 +859,7 @@ public:
             for (auto arg : args){
                 string name = arg.tmp_var_name;
                 if (arg.type == NONE) {
-                    std::cout << ", " << name << ": i32";
+                    std::cout << ", " << name;
                 } else if (is_a_tmp_param(arg)) {
                     std::cout << ", #" << name;
                     if (arg.type == INT_TY) {
@@ -729,6 +869,7 @@ public:
                     }
                 } else {
                     std::cout << ", %" << name;
+                    //cout << endl << SYM_TBL.lookup_var(name).type << endl;
                     if (arg.type == INT_TY) {
                         std::cout << ": i32";
                     } else {
