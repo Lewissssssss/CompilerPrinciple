@@ -526,6 +526,8 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         // } else {
 
         // }
+
+
         Var_Type src;
         src.tmp_var_name = ID;
         src.type = INT_TY;
@@ -555,7 +557,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
             //cout<<"QIUQIU"<<endl;
             Lval_tmp2.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp2.type=INT_TY;
-            create_load(Lval_tmp2,get<Var_Type>(expr1_addr),current_bb);
+            create_load(Lval_tmp2,get<Var_Type>(expr2_addr),current_bb);
 
             symbol_table.add_symbol(Lval_tmp2.tmp_var_name,Lval_tmp2);
         }
@@ -1392,7 +1394,6 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                     tmp.type = ARRAY;//
                 tmp.val = 0;//default
                 args.push_back(tmp);
-
                 symbol_table.add_symbol(tmp.tmp_var_name,tmp);
             }
         }
@@ -1458,8 +1459,9 @@ bool is_a_tmp_param(Var_Type var){
         if(iter->tmp_var_name == var.tmp_var_name){
             return true;
         }
-        return false;
     }
+    return false;
+
 }
 
 void init_libs() {
