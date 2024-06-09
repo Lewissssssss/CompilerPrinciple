@@ -7,6 +7,8 @@ extern std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's ba
 extern std::string cur_Func;
 extern vector<Var_Type> cur_params;
 extern Symbol_Table SYM_TBL;
+extern std::set<std::string> GLOBALs;
+
 bool canConvertToInt(const std::string& str) {
     if (str.empty()) {
         return false;
@@ -451,6 +453,7 @@ void create_function_call(Func_Type func, string ID, string res, Symbol_Table& s
             tmp.tmp_var_name = name;
         }
         else {
+            //cout<<"YOU?"<<endl;
             tmp = symbol_table.lookup_var(name);  
         }
         args.push_back(tmp);
@@ -478,9 +481,13 @@ bool isDigitString(const std::string& s) {
     return std::all_of(s.begin(), s.end(), ::isdigit);
 }
 void create_offset(string arr_ids, string arr_name,vector<string> ids,Symbol_Table symbol_table){
+    //cout<<"YOU??"<<endl;
     auto var = symbol_table.lookup_var(arr_name);
     auto vec = var.val;
     vector<int> size=get<1>(var.val);
+    if(SYM_TBL.lookup_var(arr_name).is_GLOBAL)
+        cout<<" let %"<<arr_ids<<": i32* = offset i32, @"<<arr_name<<": i32*";
+    else
      cout<<" let %"<<arr_ids<<": i32* = offset i32, %"<<arr_name<<": i32*";
     int sz=ids.size();
     for(int i=0;i<sz;i++){
@@ -527,11 +534,13 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
 
         // }
         Var_Type src;
-        src.tmp_var_name = ID;
-        src.type = INT_TY;
-        src.val = 0;//default
-        symbol_table.add_symbol(src.tmp_var_name,src);
+        // src.tmp_var_name = ID;
+        // src.type = INT_TY;
+        // src.val = 0;//default
+        // symbol_table.add_symbol(src.tmp_var_name,src);
+        src = symbol_table.lookup_var(ID);
         //auto iter=symbol_table.get_Lval(expr.name());
+        //cout<<"111"<<endl;
         create_load(tar,src,current_bb);
         return tar;
     } else if (exp_type == BinOp_et) {
@@ -545,6 +554,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
             //cout<<"QIUQIU"<<endl;
             Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp1.type=INT_TY;
+            //cout<<222<<endl;
             create_load(Lval_tmp1,get<Var_Type>(expr1_addr),current_bb);
 
             symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
@@ -595,6 +605,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
             if (std::regex_search(ID, match, pattern)){
                 ID = match[1];
             }
+            //cout<<"FUFUFUF"<<endl;
             expr1_value= symbol_table.lookup_var(ID);
             Var_Type expr1_temp;
             expr1_temp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
@@ -646,12 +657,15 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
                     //cout<<"QIUQIU"<<endl;
                     Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
                     Lval_tmp.type=INT_TY;
-                    create_load(Lval_tmp,get<Var_Type>(translated_arg),current_bb);
+                    //cout<<333;
+                    
+                    //cout<<"OVER"<<endl;
                     Type arg_type = Lval_tmp.type;
                     func.args.push_back(arg_type);
                     string arg_temp = Lval_tmp.tmp_var_name;
                     func.tmp_arg_name.push_back(arg_temp);
                     symbol_table.add_symbol(Lval_tmp.tmp_var_name,Lval_tmp);
+                    create_load(Lval_tmp,get<Var_Type>(translated_arg),current_bb);
                 }else{
                     //cout<<"WTFWTF"<<endl;
                     Type arg_type = get<Var_Type>(translated_arg).type;
@@ -677,6 +691,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         // ID[Idx1]..[IdxN]
         //cout<<"cur node"<<expr.name()<<endl;
         string ID1 = expr.get_id();
+        //cout<<"ARRAY_et"<<endl;
         Var_Type &array = symbol_table.lookup_var(ID1);
         Type array_type = array.type;
         value array_value = array.val;
@@ -685,9 +700,15 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         vector<string> idxs;
         string ids;
         for(auto iter = expr.children.begin();iter!=expr.children.end();iter++){
-            idxs.push_back(iter->name());
+            string ID2 = iter->name();
+            std::regex pattern("LVal\\s*([a-zA-Z]+)");
+            std::smatch match;
+            if (std::regex_search(ID2, match, pattern)){
+                ID2 = match[1];
+            }
+            idxs.push_back(ID2);
             //cout<<"LALALA"<<endl;
-            ids+=""+iter->name()+"";
+            ids+=""+ID2+"";
         }
         string ID = expr.name();
         std::regex pattern("LVal\\s*([a-zA-Z]+)");
@@ -791,6 +812,7 @@ Var_Type translate_unary(Node expr,Symbol_Table& symbol_table,BasicBlock current
             if (std::regex_search(ID, match, pattern)){
                 ID = match[1];
             }
+            //cout<<"FUCKY OU"<<endl;
             expr1_value= symbol_table.lookup_var(ID);
         }
         
@@ -848,6 +870,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 //cout<<"QIUQIU"<<endl;
                 Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
                 Lval_tmp.type=INT_TY;
+                //cout<<444<<endl;
                 create_load(Lval_tmp,res,current_bb);
                 symbol_table.add_symbol(Lval_tmp.tmp_var_name,Lval_tmp);
 
@@ -993,7 +1016,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         // for (auto i : symbol_table.Stack.top().Var_sym_tbl){
         //     cout << "first:" << i.first << endl;
         // }
-
+        //cout<<"MAYBE"<<endl;
         Var_Type &var = symbol_table.lookup_var(ID);
         string addr_value;
         // cout << stmt.children[0].children_size() << endl;
@@ -1380,6 +1403,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 tmp.tmp_var_name = iter->tmp_var_name+".addr";
                 create_alloca(tmp,1,bb);
                 symbol_table.add_symbol(tmp.tmp_var_name,tmp);
+                //cout<<111<<endl;
                 create_store(iter->tmp_var_name,tmp.tmp_var_name,bb,1);
             }else{
                 //create_alloca(*iter,calculate_array_size())
@@ -1492,8 +1516,12 @@ void handle_global(Node node){
             tmp.tmp_var_name = name;
             tmp.type = INT_TY;
             tmp.val= 0;
+            tmp.is_GLOBAL = true;
+            //cout<<"TMP "<<tmp.is_GLOBAL<<endl;
+            //cout<<"GLOBAL DECL "<<tmp.tmp_var_name<<endl;
             SYM_TBL.add_symbol(name, tmp);
-        
+            //cout<<"WFT"<<SYM_TBL.lookup_var(name).is_GLOBAL<<endl;
+            GLOBALs.insert(name);
             //create_alloca(tmp,1,current_bb);
             cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
         } else if (num == 2){
@@ -1504,8 +1532,9 @@ void handle_global(Node node){
             tmp.tmp_var_name = name;
             tmp.type = INT_TY;
             tmp.val= 0;
+            tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-            
+            GLOBALs.insert(name);
             cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
 
             //create_alloca(tmp,1,current_bb);
@@ -1535,7 +1564,9 @@ void handle_global(Node node){
             tmp.type = type;
             vector<int> tmp_;//default assignment
             tmp.val= stmt.children[0].array_size;//maigc number to signify array
+            tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
+            //GLOBALs.insert(name);
             //auto var_type = SYM_TBL.lookup_var(name);
             //cout<<"AREUOK"<<" "<<name<<endl;
             int size = calculate_array_size(stmt.children[0]);
@@ -1555,7 +1586,9 @@ void handle_global(Node node){
             tmp.type = type;
             vector<vector<int>> tmp_;//default assignment
             tmp.val= stmt.children[0].array_size;
+            tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
+            GLOBALs.insert(name);
             //cout<<"here"<<endl;
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
@@ -1570,8 +1603,9 @@ void handle_global(Node node){
             tmp.type = type;
             vector<vector<vector<int>>> tmp_;//default assignment
             tmp.val= stmt.children[0].array_size;
+            tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-
+            GLOBALs.insert(name);
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
@@ -1585,8 +1619,9 @@ void handle_global(Node node){
             tmp.type = type;
             vector<vector<vector<vector<int>>>> tmp_;//default assignment
             tmp.val= stmt.children[0].array_size;
+            tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-
+            GLOBALs.insert(name);
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
@@ -1600,8 +1635,9 @@ void handle_global(Node node){
             tmp.type = type;
             vector<vector<vector<vector<vector<int>>>>> tmp_;//default assignment
             tmp.val= stmt.children[0].array_size;
+            tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-
+            GLOBALs.insert(name);
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);

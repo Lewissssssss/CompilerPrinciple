@@ -11,6 +11,7 @@
 #include <regex>
 #include <algorithm>
 #include <cstdio>
+#include <set>
 using namespace std;
 
 
@@ -48,16 +49,18 @@ typedef std::variant<
     > value;
 
 struct Var_Type {
+    bool is_GLOBAL = false;//defualt not a global, only global sets this filed
     Type type;
     value val;
     std::string tmp_var_name; // 类似%1
     Var_Type() {}
-    Var_Type(const Var_Type &v) : type(v.type), val(v.val), tmp_var_name(v.tmp_var_name) {}
+    Var_Type(const Var_Type &v) : type(v.type), val(v.val), tmp_var_name(v.tmp_var_name),is_GLOBAL(v.is_GLOBAL) {}
     Var_Type& operator=(const Var_Type& v) {
         if (this != &v) {
             type = v.type;
             val = v.val;
             tmp_var_name = v.tmp_var_name;
+            is_GLOBAL = v.is_GLOBAL;
         }
         return *this;
     }
@@ -102,11 +105,11 @@ public:
     std::unordered_map<std::string, Func_Type> Func_sym_tbl;
     Field_Sym() = default;
     Field_Sym(const Field_Sym& f) : Var_sym_tbl(f.Var_sym_tbl), Func_sym_tbl(f.Func_sym_tbl) {}
-    void add_symbol(std::string Identifier, Var_Type value) {
+    void add_symbol(std::string Identifier, Var_Type& value) {
         auto save = new Var_Type(value);
         Var_sym_tbl.insert_or_assign(Identifier, *save);
     }
-    void add_symbol(std::string Identifier, Func_Type value) {
+    void add_symbol(std::string Identifier, Func_Type& value) {
         auto save = new Func_Type(value);
                 // cout << "    void add_symbol(const std::string& Identifier, Func_Type n)3" << endl;
 
@@ -119,7 +122,8 @@ public:
         if (iter1 != Var_sym_tbl.end())
             return iter1->second;
         else {
-            std::cout << "Error in lookup_var!" << std::endl;
+            std::cout << "Error in lookup_var! var_name: " << Identifier<<std::endl;
+            //assert(false);
             Var_Type v;
             v.type = VOID_TY;
             v.tmp_var_name = "NOT_FOUND";
@@ -162,11 +166,12 @@ public:
     Func_Type& lookup_func(const std::string& Identifier) {
         return Stack.top().lookup_func(Identifier);
     }
-    void add_symbol(const std::string& Identifier, Var_Type n) {
+    void add_symbol(const std::string& Identifier, Var_Type& n) {
         auto save = new Var_Type(n);
+        //cout<<"QAQAQAQAQ "<<save->tmp_var_name<<save->is_GLOBAL<<endl;
         Stack.top().add_symbol(Identifier, *save);
     }
-    void add_symbol(const std::string& Identifier, Func_Type n) {
+    void add_symbol(const std::string& Identifier, Func_Type& n) {
         auto save = new Func_Type(n);
         //cout << "    void add_symbol(const std::string& Identifier, Func_Type n)" << endl;
 
@@ -367,28 +372,70 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = add " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = add " << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = add " << opd1;
+                }
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = add #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = add #" << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = add #" << opd1;
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = add %" << opd1;
-                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
-                    cout << ": i32";
-                } else {
-                    cout << ": i32*";
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL){
+                        std::cout << "  let @"<< res << ": i32 = add @" << opd1;
+                        if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                            cout << ": i32";
+                        } else {
+                            cout << ": i32*";
+                        }
+                    }else{
+                        std::cout << "  let @"<< res << ": i32 = add %" << opd1;
+                        if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                            cout << ": i32";
+                        } else {
+                            cout << ": i32*";
+                        }
+                    }
+
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL){
+                        std::cout << "  let %"<< res << ": i32 = add @" << opd1;
+                        if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                            cout << ": i32";
+                        } else {
+                            cout << ": i32*";
+                        }                        
+                    }else{
+                        std::cout << "  let %"<< res << ": i32 = add %" << opd1;
+                        if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                            cout << ": i32";
+                        } else {
+                            cout << ": i32*";
+                        }
+                    }
+
                 }
+
             }
             if (instr.opd2.type_ == OPD_CONSTANT) {
                 std::cout << ", " << opd2 << std::endl;
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
+                    std::cout << ", @" << opd2 << ": i32" << std::endl;
+                }else
+                    std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_SUB){
             inst_binary instr = get<inst_binary>(inst);
@@ -396,16 +443,31 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = sub " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = sub " << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = sub " << opd1;
+                }
+                //std::cout << "  let %"<< res << ": i32 = sub " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = sub #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = sub #" << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = sub #" << opd1;
+                }
+                //std::cout << "  let %"<< res << ": i32 = sub #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = sub %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = sub %" << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = sub %" << opd1;
+                }
+
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -417,7 +479,12 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
+                    std::cout << ", @" << opd2 << ": i32" << std::endl;
+                }else{
+                    std::cout << ", %" << opd2 << ": i32" << std::endl;
+                }
+                
             }
         } else if(type == IR_MUL){
             inst_binary instr = get<inst_binary>(inst);
@@ -425,16 +492,31 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = mul " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = mul " << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = mul " << opd1;
+                }
+                
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = mul #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let %"<< res << ": i32 = mul #" << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = mul #" << opd1;
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = mul %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = mul %" << opd1;
+                }else{
+                    std::cout << "  let %"<< res << ": i32 = mul %" << opd1;
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -446,6 +528,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
+                    std::cout << ", @" << opd2 << ": i32" << std::endl;
+                }else
                 std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_DIV){
@@ -454,8 +539,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = div " << opd1;
+                }else
                 std::cout << "  let %"<< res << ": i32 = div " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = div #" << opd1;
+                }else
                 std::cout << "  let %"<< res << ": i32 = div #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
@@ -463,6 +554,9 @@ public:
                     cout << ": i32*";
                 }
             } else {
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = div %" << opd1;
+                }else
                 std::cout << "  let %"<< res << ": i32 = div %" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
@@ -475,6 +569,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
+                    std::cout << ", @" << opd2 << ": i32" << std::endl;
+                }else
                 std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_MOD){
@@ -483,8 +580,14 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = rem " << opd1;
+                }else
                 std::cout << "  let %"<< res << ": i32 = rem " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    std::cout << "  let @"<< res << ": i32 = rem #" << opd1;
+                }else
                 std::cout << "  let %"<< res << ": i32 = rem #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
@@ -492,7 +595,16 @@ public:
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = rem %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = rem @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = rem %" << opd1;
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = rem @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = rem %" << opd1;
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -504,7 +616,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_AND){
             inst_binary instr = get<inst_binary>(inst);
@@ -512,16 +626,22 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = and " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = and " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = and " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = and #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = and #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = and #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = and %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = and %" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = and %" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -533,7 +653,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_OR){
             inst_binary instr = get<inst_binary>(inst);
@@ -541,16 +663,29 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = or " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = or " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = or " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = or #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = or #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = or #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = or %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = or @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = or %" << opd1;
+                }
+                else {
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = or @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = or %" << opd1;
+                }
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -562,7 +697,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_XOR){
             inst_binary instr = get<inst_binary>(inst);
@@ -570,16 +707,29 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = xor " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = xor " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = xor " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = xor #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = xor #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = xor #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = xor %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = xor @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = xor %" << opd1;
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = xor @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = xor %" << opd1;
+                }
+                //std::cout << "  let %"<< res << ": i32 = xor %" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -599,16 +749,29 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = gt " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = gt " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = gt " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = gt #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = gt #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = gt #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = gt %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = gt @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = gt %" << opd1;
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = gt @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = gt %" << opd1;
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -620,7 +783,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_LT){
             inst_binary instr = get<inst_binary>(inst);
@@ -628,16 +793,29 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = lt " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = lt " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = lt " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = lt #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = lt #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = lt #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = lt %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = lt @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = lt %" << opd1;
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = lt @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = lt %" << opd1;
+                }
+                //std::cout << "  let %"<< res << ": i32 = lt %" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -649,7 +827,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_GE){
             inst_binary instr = get<inst_binary>(inst);
@@ -657,16 +837,29 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = ge " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = ge " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = ge " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = ge #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = ge #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = ge #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = ge %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = ge @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = ge %" << opd1;
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = ge @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = ge %" << opd1;
+                }
+                //std::cout << "  let %"<< res << ": i32 = ge %" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -678,7 +871,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_LE){
             inst_binary instr = get<inst_binary>(inst);
@@ -686,16 +881,36 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = le " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = le " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = le " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = le #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = le #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = le #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = le %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL){
+                        std::cout << "  let @"<< res << ": i32 = le @" << opd1;
+
+                    }else{
+                        std::cout << "  let @"<< res << ": i32 = le %" << opd1;
+
+                    }
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL){
+                        std::cout << "  let %"<< res << ": i32 = le @" << opd1;
+
+                    }else{
+                        std::cout << "  let %"<< res << ": i32 = le %" << opd1;
+
+                    }
+                }
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -707,7 +922,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_EQ){
             inst_binary instr = get<inst_binary>(inst);
@@ -715,16 +932,33 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = eq " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = eq " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = eq " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = eq #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = eq #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = eq #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = eq %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL){
+                        std::cout << "  let @"<< res << ": i32 = eq @" << opd1;
+                    }else{
+                        std::cout << "  let @"<< res << ": i32 = eq %" << opd1;
+                    }
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL){
+                        std::cout << "  let %"<< res << ": i32 = eq @" << opd1;
+                    }else{
+                        std::cout << "  let %"<< res << ": i32 = eq %" << opd1;
+                    }
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -736,7 +970,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_NE){
             inst_binary instr = get<inst_binary>(inst);
@@ -744,16 +980,29 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_CONSTANT) {
-                std::cout << "  let %"<< res << ": i32 = ne " << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = ne " << opd1;
+                else std::cout << "  let %"<< res << ": i32 = ne " << opd1;
             } else if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": i32 = ne #" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @"<< res << ": i32 = ne #" << opd1;
+                else std::cout << "  let %"<< res << ": i32 = ne #" << opd1;
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
                     cout << ": i32*";
                 }
             } else {
-                std::cout << "  let %"<< res << ": i32 = ne %" << opd1;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL){
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let @"<< res << ": i32 = ne @" << opd1;
+                    else std::cout << "  let @"<< res << ": i32 = ne %" << opd1;
+                }else{
+                    if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                    std::cout << "  let %"<< res << ": i32 = ne @" << opd1;
+                    else std::cout << "  let %"<< res << ": i32 = ne %" << opd1;
+                }
+                
                 if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
                     cout << ": i32";
                 } else {
@@ -765,7 +1014,9 @@ public:
             } else if (instr.opd2.type_ == OPD_ARG) {
                 std::cout << ", #" << opd2 << ": i32" << std::endl;
             } else {
-                std::cout << ", %" << opd2 << ": i32" << std::endl;
+                if(SYM_TBL.lookup_var(opd2).is_GLOBAL)
+                std::cout << ", @" << opd2 << ": i32" << std::endl;
+                else std::cout << ", %" << opd2 << ": i32" << std::endl;
             }
         } else if(type == IR_LOAD){
             inst_load instr = get<inst_load>(inst);
@@ -776,14 +1027,19 @@ public:
             } else if (instr.target.type_ == OPD_ARG) {
                 std::cout << "  let #" << res;
             } else {
-                std::cout << "  let %" << res;
+                if(SYM_TBL.lookup_var(res).is_GLOBAL)
+                std::cout << "  let @" << res;
+                else std::cout << "  let %" << res;
             }
             if (instr.source.type_ == OPD_CONSTANT) {
                 std::cout << ": i32 = load " << opd << ": i32*" << std::endl;
             } else if (instr.source.type_ == OPD_ARG) {
                 std::cout << ": i32 = load #" << opd << ": i32*" << std::endl;
             } else {
-                std::cout << ": i32 = load %" << opd << ": i32*" << std::endl;
+                //cout<<endl<<"HEHE "<<SYM_TBL.lookup_var(opd).is_GLOBAL<<"opd name: "<<opd<<endl;
+                if(SYM_TBL.lookup_var(opd).is_GLOBAL)
+                std::cout << ": i32 = load @" << opd << ": i32*" << std::endl;
+                else std::cout << ": i32 = load %" << opd << ": i32*" << std::endl;
             }
         } else if(type == IR_STORE){
             inst_store instr = get<inst_store>(inst);
@@ -791,7 +1047,20 @@ public:
             string opd1 = get<string>(instr.opd1.opd_type_);
             string opd2 = get<string>(instr.opd2.opd_type_);
             if (instr.opd1.type_ == OPD_ARG) {
-                std::cout << "  let %"<< res << ": () = store #" << opd1 << ", %" << opd2 << ": i32*" << std::endl;
+                if(false){
+                    if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
+                        std::cout << "  let @"<< res << ": () = store #" << opd1 << ", @" << opd2 << ": i32*" << std::endl;
+                    }else{
+                        std::cout << "  let @"<< res << ": () = store #" << opd1 << ", %" << opd2 << ": i32*" << std::endl;
+                    }
+                }else{
+                    if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
+                        std::cout << "  let %"<< res << ": () = store #" << opd1 << ", @" << opd2 << ": i32*" << std::endl;
+                    }else{
+                        std::cout << "  let %"<< res << ": () = store #" << opd1 << ", %" << opd2 << ": i32*" << std::endl;
+                    }
+                }
+                
             }
             else if (instr.opd1.type_ == OPD_CONSTANT) {
                 std::cout << "  let %"<< res << ": () = store " << opd1 << ", %" << opd2 << ": i32*" << std::endl;

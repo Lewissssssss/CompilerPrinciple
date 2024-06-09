@@ -15,7 +15,7 @@ std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blo
 std::string cur_Func;
 std::vector<Var_Type> cur_params;
 Symbol_Table SYM_TBL;
-
+std::set<string> GLOBALs;
 int main(int argc, char **argv) {
 
 
