@@ -1,38 +1,38 @@
-// Input: 5 -123 -45 0 123 456 123
-// Output: 3
+// Input: None
+// Output: 4 2024 1 1 4 5 0 0 1 0 0 4 0 0 
+
+int a;
+int b[2];
+int c[4][3];
+int i = 2024;
 
 int main() {
-  int num, arr[10], key;
-  int i, res;
-  int left, right;
-  num = getint();
-  if (num > 10) {
-    num = 10;
-  }
-
-  i = 0;
-  while (i < num) {
-    arr[i] = getint();
-    i = i + 1;
-  }
-
-  key = getint();
-
-  left = 0;
-  right = num - 1;
-  while (left < right) {
-    i = (left + right) / 2;
-    if (arr[i] == key) {
-      putint(i);
-      return 0;
-    } else {
-      if (arr[i] > key) {
-        right = i - 1;
-      } else {
-        left = i + 1;
-      }
+    b[1] = 111;
+    while (a < 2) {
+        b[a] = a * 2;
+        a = a + 1;
     }
-  }
+    putint(a + b[0] + b[1]);
+    putch(32);
+    putint(i);
+    putch(32);
+    int i = 0;
+    while (i < 12) {
+        c[i / 3][i % 3] = 0;
+        i = i + 1;
+    }
+    c[0][0] = 1;
+    c[0][1] = 1;
+    c[0][2] = 4;
+    c[1][0] = 5;
+    c[2][0] = 1;
+    c[3][0] = 4;
+    i = 0;
+    while (i < 12) {
+        putint(c[i / 3][i % 3]); 
+        putch(32);
+        i = i + 1;
+    }
 
-  return 0;
+    return 0;
 }
