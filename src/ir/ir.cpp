@@ -831,6 +831,88 @@ Var_Type translate_unary(Node expr,Symbol_Table& symbol_table,BasicBlock current
         expr1_value.tmp_var_name = "%"+to_string(symbol_table.get_current_tbl_size());//signify it is a unary.
         return BinOpRes;
 }
+
+int short_count = 0;
+Var_Type translate_condition(Node expr, Symbol_Table& symbol_table, BasicBlock current_bb){
+    BBs bbs = Func_BB_map[cur_Func];
+    if (expr.type == "OR" || expr.type == "AND") {
+        string rhs_label = "short_rhs_" + to_string(short_count);
+        string se_label = "short_end_" + to_string(short_count);
+        short_count++;
+        // before branch rhs, end
+
+        Node expr1 = expr.children[0];
+        Var_Type val1 = translate_condition(expr1, symbol_table, current_bb);
+
+        Var_Type short_val;
+        short_val.tmp_var_name = "short_val_" + to_string(symbol_table.get_current_tbl_size()) + ".addr";
+        short_val.type = INT_TY;
+        short_val.val = 0;//default
+        symbol_table.add_symbol(short_val.tmp_var_name,short_val);
+        create_alloca(short_val, 1, current_bb);
+        if (val1.type == NONE) {
+            create_store(val1.tmp_var_name, short_val.tmp_var_name, current_bb, 2);
+        } else {
+            create_store(val1.tmp_var_name, short_val.tmp_var_name, current_bb);
+        }
+
+        // branch rhs, end
+        if (expr.type == "AND") {
+            create_branch(val1.tmp_var_name, rhs_label, se_label, current_bb);
+        } else if (expr.type == "OR") {
+            create_branch(val1.tmp_var_name, se_label, rhs_label, current_bb);
+        }
+
+        // short rhs
+        vector<Instruction> short_rhs_inst;
+        Operand rhs_label_op = Operand(OPD_VARIABLE, rhs_label);
+        Instruction short_rhs_label = Instruction(IR_LABEL, rhs_label_op);
+        short_rhs_inst.push_back(short_rhs_label);
+        BasicBlock short_rhs_bb = BasicBlock(short_rhs_inst, rhs_label);
+        bbs.push_back(short_rhs_bb);
+
+        Node expr2 = expr.children[1];
+        Var_Type val2 = get<Var_Type>(translate_expr(expr2, symbol_table, current_bb));
+        if (val2.type == NONE) {
+            create_store(val2.tmp_var_name, short_val.tmp_var_name, short_rhs_bb, 2);
+        } else {
+            create_store(val2.tmp_var_name, short_val.tmp_var_name, short_rhs_bb);
+        }
+        create_jump(se_label, short_rhs_bb);
+
+
+        // short end
+        vector<Instruction> short_end_inst;
+        Operand se_label_op = Operand(OPD_VARIABLE, se_label);
+        Instruction short_end_label = Instruction(IR_LABEL, se_label_op);
+        short_end_inst.push_back(short_end_label);
+        BasicBlock short_end_bb = BasicBlock(short_end_inst, se_label);
+        bbs.push_back(short_end_bb);
+
+        Var_Type short_end;
+        short_end.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+        short_end.type = INT_TY;
+        short_end.val = 0;//default
+        symbol_table.add_symbol(short_end.tmp_var_name,short_end);
+        create_load(short_end, short_val, short_end_bb);
+        return short_end;
+    }
+    else {
+        ir_Type cond_value = translate_expr(expr, symbol_table, current_bb);
+            
+        Var_Type Lval_tmp1;
+        Lval_tmp1 = get<Var_Type>(cond_value);
+        if(get<int>(get<Var_Type>(cond_value).val)==999){
+            //cout<<"QIUQIU"<<endl;
+            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+            Lval_tmp1.type=INT_TY;
+            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
+            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+        }
+        return Lval_tmp1;
+    }
+}
+
 BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock current_bb){
     Expr_Stmt_type stmt_type=get_exprTpye_from_node(&stmt);
     if (stmt_type == VarDecl_st) {
@@ -1071,25 +1153,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         bb_num++;
 
         // calculate condition expr in current basic block.
-        Node expr = *stmt.get(0);
-        // to do: 判断类型，val or fun
-        ir_Type cond_value = translate_expr(expr, symbol_table, current_bb);
-        
-        Var_Type Lval_tmp1;
-        Lval_tmp1 = get<Var_Type>(cond_value);
-        if(get<int>(get<Var_Type>(cond_value).val)==999){
-            //cout<<"QIUQIU"<<endl;
-            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-            Lval_tmp1.type=INT_TY;
-            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
-
-            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
-        }
-
-
-
-        string cond = Lval_tmp1.tmp_var_name;
-        create_branch(cond, tr_label, ex_label, current_bb);
+        Var_Type cond_value = translate_condition(stmt.children[0], symbol_table, current_bb);
+        string cond = cond_value.tmp_var_name;
+        create_branch(cond, tr_label, ex_label, Func_BB_map[cur_Func].back());
+ 
 
         // new basic block
         // new TRUE basic block
@@ -1140,24 +1207,12 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         bb_num++;
         string ex_label = "if_exit_" + to_string(bb_num-2);
         bb_num++;
-        // condition
-        Node Expr = *stmt.get(0);
-        ir_Type cond_value = translate_expr(Expr, symbol_table, current_bb);
 
-        Var_Type Lval_tmp1;
-        Lval_tmp1 = get<Var_Type>(cond_value);
-        if(get<int>(get<Var_Type>(cond_value).val)==999){
-            //cout<<"QIUQIU"<<endl;
-            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-            Lval_tmp1.type=INT_TY;
-            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
-
-            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
-        }
-
-
-        string cond = Lval_tmp1.tmp_var_name;
-        create_branch(cond, tr_label, fl_label, current_bb);
+        // calculate condition expr in current basic block.
+        Var_Type cond_value = translate_condition(stmt.children[0], symbol_table, current_bb);
+        string cond = cond_value.tmp_var_name;
+        create_branch(cond, tr_label, fl_label, Func_BB_map[cur_Func].back());
+ 
 
         // new TRUE basic block
         vector<Instruction> true_inst;
@@ -1244,22 +1299,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         bbs.push_back(entry_bb);
 
         // entry block of While should be separated.
-        Node Expr = *stmt.get(0);
-        ir_Type cond_value = translate_expr(Expr, symbol_table, entry_bb);
 
-        Var_Type Lval_tmp1;
-        Lval_tmp1 = get<Var_Type>(cond_value);
-        if(get<int>(get<Var_Type>(cond_value).val)==999){
-            //cout<<"QIUQIU"<<endl;
-            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-            Lval_tmp1.type=INT_TY;
-            create_load(Lval_tmp1,get<Var_Type>(cond_value),current_bb);
+        Var_Type cond_value = translate_condition(stmt.children[0], symbol_table, current_bb);
+        string cond = cond_value.tmp_var_name;
+        create_branch(cond, bd_label, ex_label, Func_BB_map[cur_Func].back());
 
-            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
-        }
-
-        string cond = Lval_tmp1.tmp_var_name;
-        create_branch(cond, bd_label, ex_label, entry_bb);
 
         // new BODY basic block
         vector<Instruction> body_inst;
