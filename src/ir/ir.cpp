@@ -724,14 +724,15 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         result.val = 999;//default for array, magical number 999 to signify
         symbol_table.add_symbol(result.tmp_var_name,result);
         //cout<<expr.name()<<endl;
-                        //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
+        //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
+                        
         create_offset(result.tmp_var_name, ID1, idxs,symbol_table);//ASDASDA
         // Var_Type arr_tmp;
         // arr_tmp.tmp_var_name = symbol_table.get_current_tbl_size();
         // arr_tmp.type = INT_TY;
         // symbol_table.add_symbol(arr_tmp.tmp_var_name,arr_tmp);
         // create_load(arr_tmp,result,current_bb);
-
+        //cout<<"????"<<endl;
         return result;
 
         // result.type = INT_TY;
@@ -887,49 +888,6 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 }
             }
 
-
-        //     string ttt = stmt.children[1].name();
-        //     if(stmt.children[1].children_size()!=0){//UNARY?
-        //         // auto tmptmp = translate_unary(stmt.children[1],symbol_table,current_bb);
-        //         // ttt = tmptmp.tmp_var_name;
-
-        //         // Var_Type tt;
-                
-
-        //         // string ID = ttt;
-        //         // std::regex pattern("LVal\\s*([a-zA-Z]+)");
-        //         // std::smatch match;
-        //         // if (std::regex_search(ID, match, pattern)){
-        //         //     ID = match[1];
-        //         // }
-        //         // tt.tmp_var_name = ID;
-        //         // if(is_a_tmp_param(tt)){
-        //         //     create_store(ID,tmp.tmp_var_name,current_bb,1);
-        //         // }else{
-        //         //     create_store(ID,tmp.tmp_var_name,current_bb,0);
-        //         // }
-
-        //     }else{
-        //         if(isDigitString(ttt)){
-        //             create_store(ttt,tmp.tmp_var_name,current_bb,2);
-        //         }else{
-        //             Var_Type tt;
-                    
-        //             string ID = ttt;
-        //             std::regex pattern("LVal\\s*([a-zA-Z]+)");
-        //             std::smatch match;
-        //             if (std::regex_search(ID, match, pattern)){
-        //                 ID = match[1];
-        //             }
-
-        //             tt.tmp_var_name = ID;
-        //             if(is_a_tmp_param(tt)){
-        //                 create_store(ID,tmp.tmp_var_name,current_bb,1);
-        //             }else{
-        //                 create_store(ID,tmp.tmp_var_name,current_bb,0);
-        //             }
-        //         }
-        //     }
             
         }        //auto var_type = SYM_TBL.lookup_var(name);
         //Var_Type alloca_instr = create_alloca(tmp,1,current_bb);
@@ -952,7 +910,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             tmp.type = type;
             vector<int> tmp_;//default assignment
             tmp_ = stmt.children[0].array_size;//add this size
-            tmp.val= tmp_;
+            tmp.val= tmp_;//revised to 999, seems no effets change or not
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
             int size = calculate_array_size(stmt.children[0]);
@@ -1593,16 +1551,17 @@ void handle_global(Node node){
         if (type == Type::ARRAY) {
             //cout<<"LALALALAALAL1"<<endl;
 
-            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
             //cout<<"LALALALAALAL2"<<endl;
             string name = (stmt.children)[0].name();
+            //cout<<"QAQAQ"<<endl;
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
             vector<int> tmp_;//default assignment
-            tmp.val= tmp_;
+            tmp.val= stmt.children[0].array_size;//maigc number to signify array
             SYM_TBL.add_symbol(name, tmp);
             //auto var_type = SYM_TBL.lookup_var(name);
+            //cout<<"AREUOK"<<" "<<name<<endl;
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //create_alloca(tmp,size,current_bb);
@@ -1611,29 +1570,30 @@ void handle_global(Node node){
             //cout<<"SAKJDASKJFASKJFAJ"<<endl;
         } else if (type == Type::LIST_2) {
             // 处理 LIST_2 类型的逻辑
-            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //cout<<"In LIST_2"<<endl;
+            //BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
 
             string name = (stmt.children)[0].name();
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
             vector<vector<int>> tmp_;//default assignment
-            tmp.val= tmp_;
+            tmp.val= stmt.children[0].array_size;
             SYM_TBL.add_symbol(name, tmp);
-
+            //cout<<"here"<<endl;
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_3) {
             // 处理 LIST_3 类型的逻辑
-            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
 
             string name = (stmt.children)[0].name();
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
             vector<vector<vector<int>>> tmp_;//default assignment
-            tmp.val= tmp_;
+            tmp.val= stmt.children[0].array_size;
             SYM_TBL.add_symbol(name, tmp);
 
             int size = calculate_array_size(stmt.children[0]);
@@ -1641,14 +1601,14 @@ void handle_global(Node node){
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
         } else if (type == Type::LIST_4) {
             // 处理 LIST_4 类型的逻辑
-            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
 
             string name = (stmt.children)[0].name();
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
             vector<vector<vector<vector<int>>>> tmp_;//default assignment
-            tmp.val= tmp_;
+            tmp.val= stmt.children[0].array_size;
             SYM_TBL.add_symbol(name, tmp);
 
             int size = calculate_array_size(stmt.children[0]);
@@ -1656,14 +1616,14 @@ void handle_global(Node node){
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
         } else if (type == Type::LIST_5) {
             // 处理 LIST_5 类型的逻辑
-            BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
+            //BasicBlock entry_bb = Func_BB_map.find(cur_Func)->second[0];        
 
             string name = (stmt.children)[0].name();
             Var_Type tmp;
             tmp.tmp_var_name = name;
             tmp.type = type;
             vector<vector<vector<vector<vector<int>>>>> tmp_;//default assignment
-            tmp.val= tmp_;
+            tmp.val= stmt.children[0].array_size;
             SYM_TBL.add_symbol(name, tmp);
 
             int size = calculate_array_size(stmt.children[0]);
