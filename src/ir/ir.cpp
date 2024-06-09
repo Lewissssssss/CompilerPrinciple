@@ -7,6 +7,10 @@ extern std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's ba
 extern std::string cur_Func;
 extern vector<Var_Type> cur_params;
 extern Symbol_Table SYM_TBL;
+
+void reverseVector(std::vector<Node>& params_) {
+    std::reverse(params_.begin(), params_.end());
+}
 bool canConvertToInt(const std::string& str) {
     if (str.empty()) {
         return false;
@@ -258,7 +262,7 @@ void create_load(Var_Type target, Var_Type source, BasicBlock& current_bb){
     }
 
     if (is_a_tmp_param(source)) {
-        src = new Operand(OPD_ARG, source.tmp_var_name+".addr");
+        src = new Operand(OPD_VARIABLE, source.tmp_var_name+".addr");
     } else {
         src = new Operand(OPD_VARIABLE, source.tmp_var_name);
     }
@@ -470,9 +474,19 @@ void create_store(string opd1, string opd2, BasicBlock current_bb, int opd1_type
     else if(opd1_type == 2){
         op1.type_ = OPD_CONSTANT;
     }
-    Operand op2 = Operand(OPD_VARIABLE, opd2);
-    Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
-    current_bb.inst_list.push_back(new_inst);
+
+    Var_Type tmp;
+    tmp.tmp_var_name = opd2;
+    if (is_a_tmp_param(tmp)) {
+        Operand op2 = Operand(OPD_VARIABLE, opd2 + ".addr");
+        Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
+        current_bb.inst_list.push_back(new_inst);
+    }
+    else {
+        Operand op2 = Operand(OPD_VARIABLE, opd2);
+        Instruction new_inst = Instruction(IR_STORE, result, op1, op2);
+        current_bb.inst_list.push_back(new_inst);
+    }
 }
 bool isDigitString(const std::string& s) {
     return std::all_of(s.begin(), s.end(), ::isdigit);
@@ -511,7 +525,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         symbol_table.add_symbol(tar.tmp_var_name,tar);
 
         string ID = expr.name();
-        std::regex pattern("LVal\\s*([a-zA-Z]+)");
+        std::regex pattern("LVal\\s*(.+)");
         std::smatch match;
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
@@ -592,7 +606,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
             expr1_value = get<Var_Type>(create_constant(stoi(expr.name()),INT_TY));
         }else{
             string ID = expr.name();
-            std::regex pattern("LVal\\s*([a-zA-Z]+)");
+            std::regex pattern("LVal\\s*(.+)");
             std::smatch match;
             if (std::regex_search(ID, match, pattern)){
                 ID = match[1];
@@ -632,10 +646,13 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         // Call ID, Args
         string ID = expr.type;
         Func_Type func = symbol_table.lookup_func(ID);
+        func.tmp_arg_name.clear();
+        func.args.clear();
         std::vector<ir_Type *> args_l;
         // node(ID) -> child(FuncRParams)->children(Arg, Arg, Arg, ...)
         if (expr.children_size() > 0){
             std::vector<Node> Args = expr.children[0].children;
+            reverseVector(Args);
             for (auto arg : Args) {
                 // string arg_string = arg->name();
                 if (!startsWith(arg.type, "LVal")){
@@ -692,7 +709,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
             ids+=""+iter->name()+"";
         }
         string ID = expr.name();
-        std::regex pattern("LVal\\s*([a-zA-Z]+)");
+        std::regex pattern("LVal\\s*(.+)");
         std::smatch match;
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
@@ -772,9 +789,7 @@ int calculate_array_size(Node node){
     return size; 
 
 }
-void reverseVector(std::vector<Node>& params_) {
-    std::reverse(params_.begin(), params_.end());
-}
+
 Var_Type translate_unary(Node expr,Symbol_Table& symbol_table,BasicBlock current_bb){
     string U_TY=get_unary_type(expr);
         auto zero_exp=create_constant(0, INT_TY);
@@ -788,7 +803,7 @@ Var_Type translate_unary(Node expr,Symbol_Table& symbol_table,BasicBlock current
             expr1_value = get<Var_Type>(create_constant(stoi(expr.name()),INT_TY));
         }else{
             string ID = expr.name();
-            std::regex pattern("LVal\\s*([a-zA-Z]+)");
+            std::regex pattern("LVal\\s*(.+)");
             std::smatch match;
             if (std::regex_search(ID, match, pattern)){
                 ID = match[1];
@@ -986,7 +1001,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         // Handle assignment statement
         string ID = stmt.children[0].name();
-        std::regex pattern("LVal\\s*([a-zA-Z]+)");
+        std::regex pattern("LVal\\s*(.+)");
         std::smatch match;
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
