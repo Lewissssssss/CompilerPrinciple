@@ -719,11 +719,15 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         vector<string> idxs;
         string ids;
         for(auto iter = expr.children.begin();iter!=expr.children.end();iter++){
-            string ID2 = iter->name();
+            Var_Type t1t1t1 = get<Var_Type>(translate_expr(*iter,symbol_table,current_bb));
+            string ID2 = t1t1t1.tmp_var_name;
             std::regex pattern("LVal\\s*([a-zA-Z]+)");
             std::smatch match;
             if (std::regex_search(ID2, match, pattern)){
                 ID2 = match[1];
+            }
+            if(t1t1t1.type!=NONE){
+                ID2="%"+ID2+": i32";//deal with anonymous var, not constant
             }
             idxs.push_back(ID2);
             //cout<<"LALALA"<<endl;
@@ -1470,6 +1474,13 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             }
                 
         }
+        //cout<<"ASDASDASD "<<func_name<<"6"<<endl;
+        if(func_name=="FucDef mainINT"){
+            //cout<<"ASDASDASD "<<func_name<<endl;
+            for(auto iter = GLOBALs.begin();iter!=GLOBALs.end();iter++){
+                create_store("2024",*iter,current_bb,2);
+            }
+        }
         
         BBs_.push_back(bb);
         Var_Type return_addr;
@@ -1582,7 +1593,7 @@ void handle_global(Node node){
             //cout<<"GLOBAL DECL "<<tmp.tmp_var_name<<endl;
             SYM_TBL.add_symbol(name, tmp);
             //cout<<"WFT"<<SYM_TBL.lookup_var(name).is_GLOBAL<<endl;
-            GLOBALs.insert(name);
+            //GLOBALs.insert(name);
             //create_alloca(tmp,1,current_bb);
             cout<<"@"<<name<<": "<<"region i32, "<<1<<endl;
         } else if (num == 2){
@@ -1649,7 +1660,7 @@ void handle_global(Node node){
             tmp.val= stmt.children[0].array_size;
             tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-            GLOBALs.insert(name);
+            //GLOBALs.insert(name);
             //cout<<"here"<<endl;
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
@@ -1666,7 +1677,7 @@ void handle_global(Node node){
             tmp.val= stmt.children[0].array_size;
             tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-            GLOBALs.insert(name);
+            //GLOBALs.insert(name);
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);        
@@ -1682,7 +1693,7 @@ void handle_global(Node node){
             tmp.val= stmt.children[0].array_size;
             tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-            GLOBALs.insert(name);
+            //GLOBALs.insert(name);
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);
@@ -1698,7 +1709,7 @@ void handle_global(Node node){
             tmp.val= stmt.children[0].array_size;
             tmp.is_GLOBAL = true;
             SYM_TBL.add_symbol(name, tmp);
-            GLOBALs.insert(name);
+            //GLOBALs.insert(name);
             int size = calculate_array_size(stmt.children[0]);
             cout<<"@"<<name<<": "<<"region i32, "<<size<<endl;            
             //SYM_TBL.add_symbol(alloca_instr.tmp_var_name, alloca_instr);

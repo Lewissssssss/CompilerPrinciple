@@ -1,14 +1,37 @@
-// Input: 5
-// Output: 120
+// Input: None
+// Output: 4 2024 1 1 4 5 0 0 1 0 0 4 0 0 
 
-int factorial(int n) {
-    if (n == 0) return 1;
-    return n * factorial(n - 1);
-}
+int a;
+int b[2];
+int c[4][3];
+int i = 2024;
 
 int main() {
-    int n = getint();
-    int result = factorial(n);
-    putint(result);
+    while (a < 2) {
+        b[a] = a * 2;
+        a = a + 1;
+    }
+    putint(a + b[0] + b[1]);
+    putch(32);
+    putint(i);
+    putch(32);
+    int i = 0;
+    while (i < 12) {
+        c[i / 3][i % 3] = 0;
+        i = i + 1;
+    }
+    c[0][0] = 1;
+    c[0][1] = 1;
+    c[0][2] = 4;
+    c[1][0] = 5;
+    c[2][0] = 1;
+    c[3][0] = 4;
+    i = 0;
+    while (i < 12) {
+        putint(c[i / 3][i % 3]); 
+        putch(32);
+        i = i + 1;
+    }
+
     return 0;
 }

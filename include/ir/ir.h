@@ -1027,9 +1027,7 @@ public:
             } else if (instr.target.type_ == OPD_ARG) {
                 std::cout << "  let #" << res;
             } else {
-                if(SYM_TBL.lookup_var(res).is_GLOBAL)
-                std::cout << "  let @" << res;
-                else std::cout << "  let %" << res;
+                std::cout << "  let %" << res;
             }
             if (instr.source.type_ == OPD_CONSTANT) {
                 std::cout << ": i32 = load " << opd << ": i32*" << std::endl;
@@ -1066,9 +1064,11 @@ public:
                 std::cout << "  let %"<< res << ": () = store " << opd1 << ", %" << opd2 << ": i32*" << std::endl;
             }
             else{
-                 std::cout << "  let %"<< res << ": () = store %" << opd1;
-                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
-                    cout << ": i32, %" << opd2 << ": i32*" << std::endl;
+                if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
+                 std::cout << "  let %"<< res << ": () = store @" << opd1;
+                 else std::cout << "  let %"<< res << ": () = store %" << opd1;
+                if (SYM_TBL.lookup_var(opd2).type == INT_TY) {
+                    cout << ": i32, @" << opd2 << ": i32*" << std::endl;
                 } else {
                     cout << ": i32*, %" << opd2 << ": i32*" << std::endl;
                 }
