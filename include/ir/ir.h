@@ -121,6 +121,7 @@ public:
         else {
             std::cout << "Error in lookup_var!" << std::endl;
             Var_Type v;
+            v.type = VOID_TY;
             v.tmp_var_name = "NOT_FOUND";
             return v;
             // assert(false);
@@ -130,7 +131,14 @@ public:
         auto iter2 = Func_sym_tbl.find(Identifier);
         if (iter2 != Func_sym_tbl.end())
             return iter2->second;
-        else std::cout << "Error in lookup_func!" << std::endl;
+        else{
+            std::cout << "Error in lookup_func!" << std::endl;
+            Func_Type v;
+            v.return_type = VOID_TY;
+            v.tmp_arg_name = {"NOT_FOUND"};
+            v.arg_num = 0;
+            return v;
+        }
         assert(false);
 
     }

@@ -199,8 +199,13 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         return useless_est;
     } 
     else {
-        // cout << "judge function : " << (node->ID == "FUNCTION") << endl;
-        if(node->ID == "FUNCTION" || node->children[0].type == "FuncRParams") {
+        // cout << "judge function : " << node->ID << endl;
+        Func_Type func;
+        func.tmp_arg_name = {"NOT_FOUND"};
+        if (SYM_TBL.Stack.top().Func_sym_tbl.size() != 0) {
+            func = SYM_TBL.lookup_func(node->type);
+        }
+        if(func.tmp_arg_name.size() != 1 || func.tmp_arg_name[0] != "NOT_FOUND") {
             return Call_et;
         }
         else if(node->t == INT_TY){
@@ -422,31 +427,13 @@ void create_ret(string exit_bb, Symbol_Table& symbol_table, BasicBlock current_b
     Instruction inst_jmp = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
     current_bb.inst_list.push_back(inst_jmp);
 
-    Instruction inst_label = Instruction(IR_LABEL, Operand(OPD_VARIABLE, "after_return"));
+    string ret_name = "after_return" + to_string(symbol_table.get_current_tbl_size());
+    Instruction inst_label = Instruction(IR_LABEL, Operand(OPD_VARIABLE, ret_name));
     vector<Instruction> label1 = {inst_label};
-    BasicBlock after_return = BasicBlock(label1, "after_return");
-    Instruction inst_jmp2 = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
-    after_return.inst_list.push_back(inst_jmp2);
+    BasicBlock after_return = BasicBlock(label1, ret_name);
+    // Instruction inst_jmp2 = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
+    // after_return.inst_list.push_back(inst_jmp2);
     bbs.push_back(after_return);
-
-    Instruction inst_label_exit = Instruction(IR_LABEL, Operand(OPD_VARIABLE, "exit"));
-    vector<Instruction> label2 = {inst_label_exit};
-    BasicBlock exit = BasicBlock(label2, "exit");
-    
-    Var_Type tar;
-    tar.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-    tar.type = INT_TY;
-    tar.val = 0;//default
-    symbol_table.add_symbol(tar.tmp_var_name,tar);
-
-    Var_Type return_addr = symbol_table.lookup_var("return.addr");
-    create_load(tar, return_addr, exit);
-
-    Operand op1 = Operand(OPD_VARIABLE, tar.tmp_var_name);
-    Instruction new_inst = Instruction(IR_RETURN, op1);
-    exit.inst_list.push_back(new_inst);
-
-    bbs.push_back(exit);
 
     // insert_instruction(new_inst, current_bb);
 }
@@ -510,12 +497,10 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         assert(0);
     }
     if (exp_type == INT_et) {
-        // cout << "exp_type == INT_et" << endl;
         int number = std::stoi(expr.type);
         return create_constant(number, INT_TY);
 
     } else if (exp_type == ID_et) {
-        // cout << "exp_type == ID_et" << endl;
         // for (auto i : symbol_table.Stack.top().Var_sym_tbl){
         //     cout << "first:" << i.first << endl;
         // }
@@ -550,7 +535,6 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         create_load(tar,src,current_bb);
         return tar;
     } else if (exp_type == BinOp_et) {
-        // cout << "exp_type == BinOp_et" << endl;
         auto operation=expr.name();
 
         auto expr1_addr=translate_expr(expr.children[0], symbol_table,current_bb);
@@ -644,13 +628,10 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         // Handle MINUS_et case
     } else if (exp_type == Call_et) {
         // Call ID, Args
-        // cout << "exp_type == Call_et" << endl;
         string ID = expr.type;
         Func_Type func = symbol_table.lookup_func(ID);
-        // cout << "exp_type == Call_et2" << endl;
         std::vector<ir_Type *> args_l;
         // node(ID) -> child(FuncRParams)->children(Arg, Arg, Arg, ...)
-        // cout << "exp_type == Call_et3" << endl;
         if (expr.children_size() > 0){
             std::vector<Node> Args = expr.children[0].children;
             for (auto arg : Args) {
@@ -682,19 +663,14 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
             }
         }
         func.arg_num = func.args.size();
-        // cout << "exp_type == Call_et3" << endl;  
-        // cout << "exp_type == Call_et4" << endl;
         string res_name = to_string(symbol_table.get_current_tbl_size());
         Var_Type res;
         res.type = func.return_type;
         res.val = func.return_val;
         res.tmp_var_name = res_name;
-        // cout << "exp_type == Call_et5" << endl;
         symbol_table.add_symbol(res_name, res);
 
-        // cout << "exp_type == Call_et6" << endl;
         create_function_call(func, ID, res_name, symbol_table, current_bb);
-        // cout << "exp_type == Call_et7" << endl;
         return res;
     }
     else if (exp_type == ARRAY_et) {
@@ -1024,7 +1000,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         if (stmt.children[0].children_size() == 0){
             addr_value = var.tmp_var_name;
         } else {
-            ir_Type res_  = translate_expr(stmt.children[0], symbol_table, current_bb);
+            ir_Type res_ = translate_expr(stmt.children[0], symbol_table, current_bb);
             addr_value = get<Var_Type>(res_).tmp_var_name;
         }
         
@@ -1636,6 +1612,32 @@ void handle_global(Node node){
 
     }
 }
+
+void create_func_exit(Symbol_Table& symbol_table) {
+    Instruction inst_jmp2 = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
+
+
+    Instruction inst_label_exit = Instruction(IR_LABEL, Operand(OPD_VARIABLE, "exit"));
+    vector<Instruction> label2 = {inst_label_exit};
+    BasicBlock exit = BasicBlock(label2, "exit");
+    
+    Var_Type tar;
+    tar.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+    tar.type = INT_TY;
+    tar.val = 0;//default
+    symbol_table.add_symbol(tar.tmp_var_name,tar);
+
+    Var_Type return_addr = symbol_table.lookup_var("return.addr");
+    create_load(tar, return_addr, exit);
+
+    Operand op1 = Operand(OPD_VARIABLE, tar.tmp_var_name);
+    Instruction new_inst = Instruction(IR_RETURN, op1);
+    exit.inst_list.push_back(new_inst);
+
+    Func_BB_map[cur_Func].push_back(exit);
+}
+
+
 bool once = true;
 void traverseTree(Node node) {
     Expr_Stmt_type node_type = get_exprTpye_from_node(&node);
@@ -1667,6 +1669,8 @@ void traverseTree(Node node) {
             traverseTree(child);
             //cout<<"after"<<endl;
         }
+        create_func_exit(SYM_TBL);
+        // cout << "func end!!!" << endl;
     }
     else if (node_type == Block_st){
         //cout<<"In block"<<endl;
