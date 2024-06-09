@@ -1065,7 +1065,14 @@ public:
             else if (instr.opd1.type_ == OPD_CONSTANT) {
                 std::cout << "  let %"<< res << ": () = store " << opd1 << ", %" << opd2 << ": i32*" << std::endl;
             }
-            else std::cout << "  let %"<< res << ": () = store %" << opd1 << ": i32, %" << opd2 << ": i32*" << std::endl;
+            else{
+                 std::cout << "  let %"<< res << ": () = store %" << opd1;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32, %" << opd2 << ": i32*" << std::endl;
+                } else {
+                    cout << ": i32*, %" << opd2 << ": i32*" << std::endl;
+                }
+            }
         } else if(type == IR_ALLOCATION){
             inst_allocation instr = get<inst_allocation>(inst);
             string res = get<string>(instr.res.opd_type_);
