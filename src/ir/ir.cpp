@@ -178,7 +178,7 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
     else if (name == "ContinueStmt"){
         return useless_est;
     }
-    else if (name == "ReturenStmt"){
+    else if (name == "ReturenStmt" || name == "ReturnStmt"){
         return Return_st;
     }
     else if (name == "Exps"){
@@ -433,7 +433,7 @@ void create_jump(string exit_bb, BasicBlock current_bb){
     // insert_instruction(new_inst, current_bb);
 }
 
-void create_ret(string exit_bb, Symbol_Table& symbol_table, BasicBlock current_bb){
+BasicBlock create_ret(string exit_bb, Symbol_Table& symbol_table, BasicBlock current_bb){
     BBs bbs = Func_BB_map[cur_Func];
 
     Instruction inst_jmp = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
@@ -446,7 +446,7 @@ void create_ret(string exit_bb, Symbol_Table& symbol_table, BasicBlock current_b
     // Instruction inst_jmp2 = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
     // after_return.inst_list.push_back(inst_jmp2);
     bbs.push_back(after_return);
-
+    return after_return;
     // insert_instruction(new_inst, current_bb);
 }
 
@@ -1353,30 +1353,27 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         return_addr.val = 0;//default
         // create_alloca(return_addr,1,current_bb);
         symbol_table.add_symbol(return_addr.tmp_var_name, return_addr);
-        auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
+        if(stmt.children_size() != 0){
+            auto return_value = translate_expr(stmt.children[0],symbol_table,current_bb);
 
-        Var_Type Lval_tmp1;
-        Lval_tmp1 = get<Var_Type>(return_value);
-        if(get<int>(get<Var_Type>(return_value).val)==9999){
-            //cout<<"QIUQIU"<<endl;
-            Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-            Lval_tmp1.type=INT_TY;
-            create_load(Lval_tmp1,get<Var_Type>(return_value),current_bb);
+            Var_Type Lval_tmp1;
+            Lval_tmp1 = get<Var_Type>(return_value);
+            if(get<int>(get<Var_Type>(return_value).val)==9999){
+                //cout<<"QIUQIU"<<endl;
+                Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+                Lval_tmp1.type=INT_TY;
+                create_load(Lval_tmp1,get<Var_Type>(return_value),current_bb);
 
-            symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
-            create_store(Lval_tmp1.tmp_var_name, return_addr.tmp_var_name, current_bb);
-        }else{
-            if (get<Var_Type>(return_value).type == NONE){
-                create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb, 2);
+                symbol_table.add_symbol(Lval_tmp1.tmp_var_name,Lval_tmp1);
+                create_store(Lval_tmp1.tmp_var_name, return_addr.tmp_var_name, current_bb);
+            }else{
+                if (get<Var_Type>(return_value).type == NONE){
+                    create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb, 2);
+                }
+                else create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
             }
-            else create_store(get<Var_Type>(return_value).tmp_var_name, return_addr.tmp_var_name, current_bb);
         }
-
-
-        create_ret(return_addr.tmp_var_name, symbol_table, current_bb);
-        vector<Instruction> empty;
-        BasicBlock end_block = BasicBlock(empty, "EOF");
-        return end_block;
+        return create_ret(return_addr.tmp_var_name, symbol_table, current_bb);
     } else if (stmt_type == FucDef_est) {
         // cout << "stmt_type == FucDef_est" << endl;
         // Handle function definition statement
@@ -1441,7 +1438,11 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         Func_Type ftmp;
         ftmp.args =  vector<Type>{};
         ftmp.arg_num = 0;
-        ftmp.return_type = INT_TY;
+        if (ret_type_ == "VOID") {
+            ftmp.return_type = VOID_TY;
+        } else {
+            ftmp.return_type = INT_TY;
+        }
         ftmp.return_val = 0;
 
         auto inst = new Instruction(IR_LABEL,*label_);
@@ -1711,20 +1712,25 @@ void handle_global(Node node){
 void create_func_exit(Symbol_Table& symbol_table) {
     Instruction inst_jmp2 = Instruction(IR_JUMP, Operand(OPD_VARIABLE, "exit"));
 
-
     Instruction inst_label_exit = Instruction(IR_LABEL, Operand(OPD_VARIABLE, "exit"));
     vector<Instruction> label2 = {inst_label_exit};
     BasicBlock exit = BasicBlock(label2, "exit");
     
+    Func_Type func = symbol_table.lookup_func(cur_Func);
+
     Var_Type tar;
-    tar.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-    tar.type = INT_TY;
-    tar.val = 0;//default
-    symbol_table.add_symbol(tar.tmp_var_name,tar);
+    if (func.return_type != VOID_TY) {
+        tar.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+        tar.type = INT_TY;
+        tar.val = 0;//default
+        symbol_table.add_symbol(tar.tmp_var_name,tar);
 
-    Var_Type return_addr = symbol_table.lookup_var("return.addr");
-    create_load(tar, return_addr, exit);
-
+        Var_Type return_addr = symbol_table.lookup_var("return.addr");
+        create_load(tar, return_addr, exit);
+    }
+    else {
+        tar.tmp_var_name = "VOID";
+    }
     Operand op1 = Operand(OPD_VARIABLE, tar.tmp_var_name);
     Instruction new_inst = Instruction(IR_RETURN, op1);
     exit.inst_list.push_back(new_inst);
