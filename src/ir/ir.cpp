@@ -528,9 +528,14 @@ void create_offset(string arr_ids, string arr_name,vector<string> ids,Symbol_Tab
         cout<<" let %"<<arr_ids<<": i32* = offset i32, #"<<arr_name<<": i32*";
     else
         cout<<" let %"<<arr_ids<<": i32* = offset i32, %"<<arr_name<<": i32*";
-    int sz=ids.size();
+    int sz=size.size();
     for(int i=0;i<sz;i++){
-        cout<<", ["<<ids[i]<<" < "<<to_string(size[i])<<"]";
+        if(i>=ids.size()){
+            cout<<", ["<<0<<" < "<<to_string(size[i])<<"]";
+        }else{
+            cout<<", ["<<ids[i]<<" < "<<to_string(size[i])<<"]";
+        }
+        
     }
     cout<<endl;
 

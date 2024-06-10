@@ -1089,7 +1089,7 @@ public:
             if (res != "VOID"){
                 std::cout << "  ret %"<< res << ": i32" << std::endl << "}" << endl << endl;
             } else {
-                std::cout << "  ret ()" << endl << endl;
+                std::cout << "  ret ()" << std::endl << "}" << endl << endl;
             }
         } else if(type == IR_BRANCH){
             inst_branch instr = get<inst_branch>(inst);
