@@ -128,6 +128,9 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
             // cout<<"ININTTY"<<endl;
             return ID_et;
         } else {
+            if (node->children_size() == 0) {
+                return ID_et;
+            }
             // cout<<"INASDASDA"<<endl;
             return ARRAY_et;
         }
@@ -505,8 +508,10 @@ void create_offset(string arr_ids, string arr_name,vector<string> ids,Symbol_Tab
     reverseVector(size);
     if(SYM_TBL.lookup_var(arr_name).is_GLOBAL)
         cout<<" let %"<<arr_ids<<": i32* = offset i32, @"<<arr_name<<": i32*";
+    else if (is_a_tmp_param(SYM_TBL.lookup_var(arr_name)))
+        cout<<" let %"<<arr_ids<<": i32* = offset i32, #"<<arr_name<<": i32*";
     else
-     cout<<" let %"<<arr_ids<<": i32* = offset i32, %"<<arr_name<<": i32*";
+        cout<<" let %"<<arr_ids<<": i32* = offset i32, %"<<arr_name<<": i32*";
     int sz=ids.size();
     for(int i=0;i<sz;i++){
         cout<<", ["<<ids[i]<<" < "<<to_string(size[i])<<"]";
@@ -554,15 +559,13 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
 
 
         Var_Type src;
-        // src.tmp_var_name = ID;
-        // src.type = INT_TY;
-        // src.val = 0;//default
-        // symbol_table.add_symbol(src.tmp_var_name,src);
         src = symbol_table.lookup_var(ID);
-        //auto iter=symbol_table.get_Lval(expr.name());
-        //cout<<"111"<<endl;
-        create_load(tar,src,current_bb);
-        return tar;
+
+        if (src.type == INT_TY) {
+            create_load(tar,src,current_bb);
+            return tar;
+        }
+        return src;
     } else if (exp_type == BinOp_et) {
         auto operation=expr.name();
 
@@ -570,7 +573,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         auto expr2_addr=translate_expr(expr.children[1], symbol_table,current_bb);
         Var_Type Lval_tmp1;
         Lval_tmp1 = get<Var_Type>(expr1_addr);
-        if(get<int>(get<Var_Type>(expr1_addr).val)==999){
+        if(get<int>(get<Var_Type>(expr1_addr).val)==9999){
             //cout<<"QIUQIU"<<endl;
             Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp1.type=INT_TY;
@@ -581,7 +584,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         }
         Var_Type Lval_tmp2;
         Lval_tmp2 = get<Var_Type>(expr2_addr);
-        if(get<int>(get<Var_Type>(expr2_addr).val)==999){
+        if(get<int>(get<Var_Type>(expr2_addr).val)==9999){
             //cout<<"QIUQIU"<<endl;
             Lval_tmp2.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp2.type=INT_TY;
@@ -674,27 +677,33 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
                     arg.ID = "FUNCTION";
                 }
                 ir_Type translated_arg = translate_expr(arg, symbol_table, current_bb);
-                Var_Type Lval_tmp;
-                //cout<<"SHITSHITSHIT!"<<endl;
-                if(get<int>(get<Var_Type>(translated_arg).val)==999){
-                    //cout<<"QIUQIU"<<endl;
-                    Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-                    Lval_tmp.type=INT_TY;
-                    //cout<<333;
-                    
-                    //cout<<"OVER"<<endl;
-                    Type arg_type = Lval_tmp.type;
-                    func.args.push_back(arg_type);
-                    string arg_temp = Lval_tmp.tmp_var_name;
-                    func.tmp_arg_name.push_back(arg_temp);
-                    symbol_table.add_symbol(Lval_tmp.tmp_var_name,Lval_tmp);
-                    create_load(Lval_tmp,get<Var_Type>(translated_arg),current_bb);
-                }else{
-                    //cout<<"WTFWTF"<<endl;
+
+                if (get<Var_Type>(translated_arg).type != INT_TY){
                     Type arg_type = get<Var_Type>(translated_arg).type;
-                    func.args.push_back(arg_type);
                     string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
+                    func.args.push_back(arg_type);
                     func.tmp_arg_name.push_back(arg_temp);
+                }else{
+                    if (get<int>(get<Var_Type>(translated_arg).val) == 9999){
+                        Var_Type Lval_tmp;
+                        Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+                        Lval_tmp.type=INT_TY;
+                        //cout<<333;
+                        
+                        //cout<<"OVER"<<endl;
+                        Type arg_type = Lval_tmp.type;
+                        func.args.push_back(arg_type);
+                        string arg_temp = Lval_tmp.tmp_var_name;
+                        func.tmp_arg_name.push_back(arg_temp);
+                        symbol_table.add_symbol(Lval_tmp.tmp_var_name,Lval_tmp);
+                        create_load(Lval_tmp,get<Var_Type>(translated_arg),current_bb);
+                    } else {
+                        //cout<<"WTFWTF"<<endl;
+                        Type arg_type = get<Var_Type>(translated_arg).type;
+                        func.args.push_back(arg_type);
+                        string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
+                        func.tmp_arg_name.push_back(arg_temp);
+                    }
                 }
 
             }
@@ -712,13 +721,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
     }
     else if (exp_type == ARRAY_et) {
         // ID[Idx1]..[IdxN]
-        //cout<<"cur node"<<expr.name()<<endl;
-        string ID1 = expr.get_id();
-        //cout<<"ARRAY_et"<<endl;
-        Var_Type &array = symbol_table.lookup_var(ID1);
-        Type array_type = array.type;
-        value array_value = array.val;
-        int result_temp;
+        // cout<<"cur node"<<expr.name()<<endl;
         Var_Type result;
         vector<string> idxs;
         string ids;
@@ -747,13 +750,13 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         }
         result.tmp_var_name = ID+ids;
         result.type = INT_TY;
-        result.val = 999;//default for array, magical number 999 to signify
+        result.val = 9999;//default for array, magical number 999 to signify
         result.is_GLOBAL=false;
         symbol_table.add_symbol(result.tmp_var_name,result);
         //cout<<expr.name()<<endl;
         //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
                         
-        create_offset(result.tmp_var_name, ID1, idxs,symbol_table);//ASDASDA
+        create_offset(result.tmp_var_name, ID, idxs,symbol_table);//ASDASDA
         // Var_Type arr_tmp;
         // arr_tmp.tmp_var_name = symbol_table.get_current_tbl_size();
         // arr_tmp.type = INT_TY;
@@ -902,7 +905,7 @@ Var_Type translate_condition(Node expr, Symbol_Table& symbol_table, BasicBlock c
             
         Var_Type Lval_tmp1;
         Lval_tmp1 = get<Var_Type>(cond_value);
-        if(get<int>(get<Var_Type>(cond_value).val)==999){
+        if(get<int>(get<Var_Type>(cond_value).val)==9999){
             //cout<<"QIUQIU"<<endl;
             Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp1.type=INT_TY;
@@ -942,7 +945,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
             Var_Type res = get<Var_Type>(translate_expr(stmt.children[1],symbol_table,current_bb));
 
-             if(get<int>(res.val)==999){
+             if(get<int>(res.val)==9999){
                 Var_Type Lval_tmp;
                 //cout<<"QIUQIU"<<endl;
                 Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
@@ -1115,7 +1118,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         Var_Type Lval_tmp1;
         Lval_tmp1 = get<Var_Type>(val);
-        if(get<int>(get<Var_Type>(val).val)==999){
+        if(get<int>(get<Var_Type>(val).val)==9999){
             //cout<<"QIUQIU"<<endl;
             Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp1.type=INT_TY;
@@ -1354,7 +1357,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         Var_Type Lval_tmp1;
         Lval_tmp1 = get<Var_Type>(return_value);
-        if(get<int>(get<Var_Type>(return_value).val)==999){
+        if(get<int>(get<Var_Type>(return_value).val)==9999){
             //cout<<"QIUQIU"<<endl;
             Lval_tmp1.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
             Lval_tmp1.type=INT_TY;
@@ -1406,11 +1409,21 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                 Var_Type tmp;
                 tmp.tmp_var_name = iter->name();
                 int childrensize=iter->children_size();
-                if(childrensize==0)
+                if(childrensize==0){
                     tmp.type = INT_TY;
-                else
+                    tmp.val = 0;//default
+                }else {
                     tmp.type = ARRAY;//
-                tmp.val = 0;//default
+                    vector<int> vec;
+                    for (int j = 0; j < childrensize; j++) {
+                        if (iter->children[j].type == "ConstGroup") {
+                            vec.push_back(9999);
+                        } else {
+                            vec.push_back(stoi(iter->children[j].type));
+                        }
+                    }
+                    tmp.val = vec;
+                }
                 args.push_back(tmp);
                 symbol_table.add_symbol(tmp.tmp_var_name,tmp);
             }
