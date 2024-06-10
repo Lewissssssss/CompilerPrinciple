@@ -764,9 +764,16 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
         }
+        //cout<<"ASKDLASKDJALKDJASLKD"<<ID<<endl;
+        auto cc = symbol_table.lookup_var(ID);
+        int dim = get<vector<int>>(cc.val).size();
+        
         result.tmp_var_name = ID+ids;
         result.type = INT_TY;
-        result.val = 9999;//default for array, magical number 999 to signify
+        if(dim>idxs.size()){
+            result.val = 111666;//not full indexes, ptr still
+        }else
+            result.val = 9999;//default for array, magical number 999 to signify
         result.is_GLOBAL=false;
         symbol_table.add_symbol(result.tmp_var_name,result);
         //cout<<expr.name()<<endl;
