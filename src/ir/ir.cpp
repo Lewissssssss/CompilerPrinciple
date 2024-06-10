@@ -1406,7 +1406,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         string func_name = stmt.name();
         BBs BBs_;
         vector<Instruction> insts;
-        string name = "b" + to_string(bb_num++);
+        string name = "entry";
         auto label_ = new Operand(OPD_VARIABLE, name);
 
         
