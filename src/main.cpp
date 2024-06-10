@@ -5,7 +5,7 @@ extern FILE *yyin;
 #include <iostream>
 using namespace std;
 extern int yyparse();
-
+int postfix = 0;
 Node root;
 TABLE_LISTS tables;
 

@@ -1,6 +1,6 @@
 #include <ir/ir.h>
 
-
+extern int postfix;
 extern int bb_num;
 
 extern std::unordered_map<std::string, BBs> Func_BB_map; // LOCAL, for func's basic blocks.
@@ -9,6 +9,9 @@ extern vector<Var_Type> cur_params;
 extern Symbol_Table SYM_TBL;
 
 void reverseVector(std::vector<Node>& params_) {
+    std::reverse(params_.begin(), params_.end());
+}
+void reverseVector(std::vector<int>& params_) {
     std::reverse(params_.begin(), params_.end());
 }
 extern std::set<std::string> GLOBALs;
@@ -499,6 +502,7 @@ void create_offset(string arr_ids, string arr_name,vector<string> ids,Symbol_Tab
     auto var = symbol_table.lookup_var(arr_name);
     auto vec = var.val;
     vector<int> size=get<1>(var.val);
+    reverseVector(size);
     if(SYM_TBL.lookup_var(arr_name).is_GLOBAL)
         cout<<" let %"<<arr_ids<<": i32* = offset i32, @"<<arr_name<<": i32*";
     else
@@ -721,17 +725,19 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         for(auto iter = expr.children.begin();iter!=expr.children.end();iter++){
             Var_Type t1t1t1 = get<Var_Type>(translate_expr(*iter,symbol_table,current_bb));
             string ID2 = t1t1t1.tmp_var_name;
+            string ID_save;
             std::regex pattern("LVal\\s*([a-zA-Z]+)");
             std::smatch match;
             if (std::regex_search(ID2, match, pattern)){
                 ID2 = match[1];
             }
+            ID_save = ID2;
             if(t1t1t1.type!=NONE){
                 ID2="%"+ID2+": i32";//deal with anonymous var, not constant
             }
             idxs.push_back(ID2);
             //cout<<"LALALA"<<endl;
-            ids+=""+ID2+"";
+            ids+=""+ID_save+"";
         }
         string ID = expr.name();
         std::regex pattern("LVal\\s*(.+)");
@@ -742,6 +748,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         result.tmp_var_name = ID+ids;
         result.type = INT_TY;
         result.val = 999;//default for array, magical number 999 to signify
+        result.is_GLOBAL=false;
         symbol_table.add_symbol(result.tmp_var_name,result);
         //cout<<expr.name()<<endl;
         //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
@@ -755,39 +762,6 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         //cout<<"????"<<endl;
         return result;
 
-        // result.type = INT_TY;
-        // if (array_type == ARRAY){
-        //     int idx1 = atoi(expr.get(0)->name().c_str());
-        //     result_temp = get<1>(array_value)[idx1];
-        // }
-        // else if(array_type ==LIST_2){
-        //     int idx1 = atoi(expr.get(0)->name().c_str());            
-        //     int idx2 = atoi(expr.get(1)->name().c_str());
-        //     result_temp = get<2>(array_value)[idx1][idx2];
-        // }
-        // else if(array_type ==LIST_3){
-        //     int idx1 = atoi(expr.get(0)->name().c_str());
-        //     int idx2 = atoi(expr.get(1)->name().c_str());
-        //     int idx3 = atoi(expr.get(2)->name().c_str());
-        //     result_temp = get<3>(array_value)[idx1][idx2][idx3];
-        // }
-        // else if(array_type ==LIST_4){
-        //     int idx1 = atoi(expr.get(0)->name().c_str());
-        //     int idx2 = atoi(expr.get(1)->name().c_str());
-        //     int idx3 = atoi(expr.get(2)->name().c_str());
-        //     int idx4 = atoi(expr.get(3)->name().c_str());
-        //     result_temp = get<4>(array_value)[idx1][idx2][idx3][idx4];
-        // }
-        // else if(array_type ==LIST_5){
-        //     int idx1 = atoi(expr.get(0)->name().c_str());
-        //     int idx2 = atoi(expr.get(1)->name().c_str());
-        //     int idx3 = atoi(expr.get(2)->name().c_str());
-        //     int idx4 = atoi(expr.get(3)->name().c_str());
-        //     int idx5 = atoi(expr.get(4)->name().c_str());
-        //     result_temp = get<5>(array_value)[idx1][idx2][idx3][idx4][idx5];
-        // }
-        // result.val = result_temp;
-        // return result;
     }
 }
 void create_alloca(Var_Type var, int size, BasicBlock current_bb){

@@ -1052,6 +1052,7 @@ public:
                         std::cout << "  let @"<< res << ": () = store #" << opd1 << ", %" << opd2 << ": i32*" << std::endl;
                     }
                 }else{
+                    // cout<<"STORE NAME: "<<opd2<<endl;
                     if(SYM_TBL.lookup_var(opd2).is_GLOBAL){
                         std::cout << "  let %"<< res << ": () = store #" << opd1 << ", @" << opd2 << ": i32*" << std::endl;
                     }else{
@@ -1067,7 +1068,8 @@ public:
                 if(SYM_TBL.lookup_var(opd1).is_GLOBAL)
                  std::cout << "  let %"<< res << ": () = store @" << opd1;
                  else std::cout << "  let %"<< res << ": () = store %" << opd1;
-                if (SYM_TBL.lookup_var(opd2).type == INT_TY) {
+                //cout<<"STORE NAME: "<<opd2<<endl;
+                if (SYM_TBL.lookup_var(opd2).is_GLOBAL) {
                     cout << ": i32, @" << opd2 << ": i32*" << std::endl;
                 } else {
                     cout << ": i32*, %" << opd2 << ": i32*" << std::endl;
