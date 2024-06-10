@@ -170,7 +170,6 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         return BinOp_et;
     }
     else if (name == "NOT"){
-        //cout<<"AAAA"<<endl;
         return useless_est;
     }
     else if (name == "AssignStmt"){
@@ -226,7 +225,7 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         return useless_est;
     } 
     else {
-         //cout << "judge function : " << node->ID << endl;
+        // cout << "judge function : " << node->ID << endl;
         Func_Type func;
         func.tmp_arg_name = {"NOT_FOUND"};
         if (SYM_TBL.Stack.top().Func_sym_tbl.size() != 0) {
@@ -236,7 +235,6 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
             return Call_et;
         }
         else if(node->t == INT_TY){
-            //cout<<"HEHEHE"<<endl;
             for (auto child : node->children) {
                 if ((child.type == "SUB" && child.children_size() == 0) || 
                     (child.type == "NOT" && child.children_size() == 0)) {
@@ -479,7 +477,7 @@ void create_function_call(Func_Type func, string ID, string res, Symbol_Table& s
             tmp.tmp_var_name = name;
         }
         else {
-            //cout<<"YOU?"<<endl;
+            // cout<<"here" << tmp.type <<endl;
             tmp = symbol_table.lookup_var(name);  
         }
         args.push_back(tmp);
@@ -538,7 +536,6 @@ void create_offset(string arr_ids, string arr_name,vector<string> ids,Symbol_Tab
         
     }
     cout<<endl;
-
 }
 ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_bb){
     Expr_Stmt_type exp_type=get_exprTpye_from_node(&expr);
@@ -769,21 +766,19 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         if (std::regex_search(ID, match, pattern)){
             ID = match[1];
         }
-        //cout<<"ASKDLASKDJALKDJASLKD"<<ID<<endl;
-        auto cc = symbol_table.lookup_var(ID);
-        int dim = get<vector<int>>(cc.val).size();
-        
         result.tmp_var_name = ID+ids;
         result.type = INT_TY;
-        if(dim>idxs.size()){
-            result.val = 111666;//not full indexes, ptr still
-        }else
-            result.val = 9999;//default for array, magical number 999 to signify
+        result.val = 9999;//default for array, magical number 999 to signify
         result.is_GLOBAL=false;
+        Var_Type array = symbol_table.lookup_var(ID);
+        if (expr.children_size() < (array.type-2)) {
+            result.type = ARRAY;
+        }
         symbol_table.add_symbol(result.tmp_var_name,result);
         //cout<<expr.name()<<endl;
         //cout<<"asdadafakfakfhiuhiwfhi"<<endl;
-                        
+        
+
         create_offset(result.tmp_var_name, ID, idxs,symbol_table);//ASDASDA
         // Var_Type arr_tmp;
         // arr_tmp.tmp_var_name = symbol_table.get_current_tbl_size();
@@ -1176,7 +1171,9 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         return current_bb;  
     } else if (stmt_type == If_st) {
         // cout << "stmt_type == If_st" << endl;
-
+        // auto st = symbol_table.Stack.top();
+        // SYM_TBL.Stack.push(st);
+        // cout << SYM_TBL.Stack.size() << endl;
         // Handle if statement
         BBs bbs = Func_BB_map[cur_Func];
         string tr_label = "if_true_" + to_string(bb_num);
@@ -1226,11 +1223,16 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         exit_inst.push_back(exit_label);
         BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
+        // SYM_TBL.Stack.pop();
+        // cout << SYM_TBL.Stack.size() << endl;
+
         return exit_bb;
 
     } else if (stmt_type == IfElse_st) {
         // cout << "stmt_type == IfElse_st" << endl;
-
+        // auto st = symbol_table.Stack.top();
+        // SYM_TBL.Stack.push(st);
+        // cout << SYM_TBL.Stack.size() << endl;
         // Handle if-else statement
         BBs bbs = Func_BB_map[cur_Func];
         string tr_label = "if_true_" + to_string(bb_num);
@@ -1306,11 +1308,15 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
         
+        // SYM_TBL.Stack.pop();
+        // cout << SYM_TBL.Stack.size() << endl;
 
         return exit_bb;
     } else if (stmt_type == While_st) {
         // cout << "stmt_type == While_st" << endl;
-
+        // auto st = symbol_table.Stack.top();
+        // SYM_TBL.Stack.push(st);
+        // cout << SYM_TBL.Stack.size() << endl;
         // Handle while statement
         BBs bbs = Func_BB_map[cur_Func];
         string et_label = "while_cond_" + to_string(bb_num);
@@ -1370,6 +1376,10 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         exit_inst.push_back(exit_label);
         BasicBlock exit_bb = BasicBlock(exit_inst, ex_label);
         bbs.push_back(exit_bb);
+
+        // SYM_TBL.Stack.pop();
+        // cout << SYM_TBL.Stack.size() << endl;
+
         return exit_bb;
     } else if (stmt_type == Return_st) {
         // cout << "stmt_type == Return_st" << endl;
@@ -1403,6 +1413,8 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         }
         return create_ret(return_addr.tmp_var_name, symbol_table, current_bb);
     } else if (stmt_type == FucDef_est) {
+        // cout << "a" << SYM_TBL.lookup_var("a").is_GLOBAL << endl;
+
         // cout << "stmt_type == FucDef_est" << endl;
         // Handle function definition statement
         string func_name = stmt.name();
@@ -1423,10 +1435,23 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
 
         }//fname!
 
+        Func_Type ftmp;
+        ftmp.args =  vector<Type>{};
+        ftmp.arg_num = 0;
+        if (ret_type_ == "VOID") {
+            ftmp.return_type = VOID_TY;
+        } else {
+            ftmp.return_type = INT_TY;
+        }
+        ftmp.return_val = 0;
+
+        symbol_table.add_symbol(name_,ftmp);
+        auto st = symbol_table.Stack.top();
+        SYM_TBL.Stack.push(st);
+
         auto fname = new Operand(OPD_VARIABLE, name_);
         auto ret_type = new Operand(OPD_VARIABLE, ret_type_);
         vector<Var_Type> args;
-        bool first = true;//for array param
         if (stmt.children[0].type == "FuncFParams"){
             Node params = stmt.children[0];
             vector<Node> params_ = params.children;
@@ -1434,37 +1459,21 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             for(auto iter = params_.begin();iter!=params_.end();iter++){
                 Var_Type tmp;
                 tmp.tmp_var_name = iter->name();
-                //cout<<"ASDALSDJASKDJASLDJASK"<<iter->name()<<endl<<endl;
                 int childrensize=iter->children_size();
                 if(childrensize==0){
                     tmp.type = INT_TY;
                     tmp.val = 0;//default
                 }else {
-                        auto pms = iter->children[0].children;
-                        vector<int> vec;
-                        vec.push_back(99999999);//+INF
-                                
-                        for(auto iter = pms.begin();iter!=pms.end();iter++){
-                            vec.push_back(stoi(iter->name()));
-                            //cout<<"SHITSHITSHIT"<<stoi(iter->name())<<endl;
+                    tmp.type = ARRAY;//
+                    vector<int> vec;
+                    for (int j = 0; j < childrensize; j++) {
+                        if (iter->children[j].type == "ConstGroup") {
+                            vec.push_back(9999);
+                        } else {
+                            vec.push_back(stoi(iter->children[j].type));
                         }
-                        reverseVector(vec);
-                        tmp.val = vec;
-
-                        //cout<<"FUC"<<iter->children[0].name()<<endl;
-                        //cout<<"ASDASDSADADA"<<vec.size()<<endl;
-                        if(vec.size()==1)
-                        tmp.type = ARRAY;//
-                        else if(vec.size()==2)
-                        tmp.type = LIST_2;
-                        else if(vec.size()==3)
-                        tmp.type = LIST_3;
-                        else if(vec.size()==4)
-                        tmp.type = LIST_4;
-                        else if(vec.size()==5)
-                        tmp.type = LIST_5;
-                        
-
+                    }
+                    tmp.val = vec;
                 }
                 args.push_back(tmp);
                 symbol_table.add_symbol(tmp.tmp_var_name,tmp);
@@ -1480,15 +1489,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         auto args_ = new Operand(OPD_ARGS, args);
         auto func_def_inst = new Instruction(IR_FUNCDEF, *fname,*args_,*ret_type);
         insert_instruction(*func_def_inst, current_bb);
-        Func_Type ftmp;
-        ftmp.args =  vector<Type>{};
-        ftmp.arg_num = 0;
-        if (ret_type_ == "VOID") {
-            ftmp.return_type = VOID_TY;
-        } else {
-            ftmp.return_type = INT_TY;
-        }
-        ftmp.return_val = 0;
+        
 
         auto inst = new Instruction(IR_LABEL,*label_);
         insts.push_back(*inst);
@@ -1522,14 +1523,15 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         return_addr.val = 0;//default
         create_alloca(return_addr,1, bb);
 
-        symbol_table.add_symbol(name_,ftmp);
         cur_Func = name_;
         cur_params = args;
         Func_BB_map.insert(pair(name_, BBs_));
+        
+        // cout << SYM_TBL.Stack.size() << endl;
         return bb;
     } else if (stmt_type == Block_st) {
-        auto st = symbol_table.Stack.top();
-        SYM_TBL.Stack.push(st);
+        // auto st = symbol_table.Stack.top();
+        // SYM_TBL.Stack.push(st);
         return current_bb;
     }
     //  else {
@@ -1780,7 +1782,10 @@ void create_func_exit(Symbol_Table& symbol_table) {
     Instruction new_inst = Instruction(IR_RETURN, op1);
     exit.inst_list.push_back(new_inst);
 
-    Func_BB_map[cur_Func].push_back(exit);
+    // Func_BB_map[cur_Func].push_back(exit);
+    SYM_TBL.Stack.pop();
+    // cout << SYM_TBL.Stack.size() << endl;
+    // cout << "a " << SYM_TBL.lookup_var("a").is_GLOBAL << endl;
 }
 
 
@@ -1816,6 +1821,7 @@ void traverseTree(Node node) {
             //cout<<"after"<<endl;
         }
         create_func_exit(SYM_TBL);
+
         // cout << "func end!!!" << endl;
     }
     else if (node_type == Block_st){
