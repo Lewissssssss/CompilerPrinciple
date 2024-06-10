@@ -115,24 +115,38 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
     else if (startsWith(name, "LVal")) {
         // LVal ID
         if(node->t == INT_TY){
-            for (auto child : node->children) {
-                if ((child.type == "SUB" && child.children_size() == 0) || 
-                    (child.type == "NOT" && child.children_size() == 0)) {
-                    return Unary_ID_et;
+            if (node->children_size() < 2) {
+                for (auto child : node->children) {
+                    if ((child.type == "SUB" && child.children_size() == 0) || 
+                        (child.type == "NOT" && child.children_size() == 0)) {
+                        return Unary_ID_et;
+                    }
+                    else {
+                        // cout<<"INASDASDA"<<endl;
+                        return ARRAY_et;
+                    }
                 }
-                else {
-                    // cout<<"INASDASDA"<<endl;
-                    return ARRAY_et;
-                }
+                // cout<<"ININTTY"<<endl;
+                return ID_et;
             }
-            // cout<<"ININTTY"<<endl;
-            return ID_et;
+            else {
+                // cout << "here " <<  node->t << "name" << node->type << endl;
+
+                for (auto child : node->children) {
+                    if ((child.type == "SUB" && child.children_size() == 0) || 
+                        (child.type == "NOT" && child.children_size() == 0)) {
+                        return Unary_ARRAY_et;
+                    }
+                }
+                return ARRAY_et;
+
+            }
         } else {
             if (node->children_size() == 0) {
                 return ID_et;
             }
-            // cout<<"INASDASDA"<<endl;
             return ARRAY_et;
+            // cout<<"INASDASDA"<<endl;
         }
     } 
     else if (startsWith(name, "FucDef")) {
@@ -610,7 +624,7 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         
         // Handle BinOp_et case
     } else if (exp_type == Unary_ARRAY_et||exp_type == Unary_BinOp_et||exp_type == Unary_ID_et) {
-        //cout<<"In UNARY!!!"<<endl;
+        // cout<<"In UNARY!!!"<<endl;
         string U_TY=get_unary_type(expr);
         auto zero_exp=create_constant(0, INT_TY);
         //auto expr1_value= get<Var_Type>(translate_expr(expr,symbol_table,current_bb));
