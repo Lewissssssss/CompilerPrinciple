@@ -156,6 +156,7 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         return BinOp_et;
     }
     else if (name == "NOT"){
+        //cout<<"AAAA"<<endl;
         return useless_est;
     }
     else if (name == "AssignStmt"){
@@ -211,7 +212,7 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         return useless_est;
     } 
     else {
-        // cout << "judge function : " << node->ID << endl;
+         //cout << "judge function : " << node->ID << endl;
         Func_Type func;
         func.tmp_arg_name = {"NOT_FOUND"};
         if (SYM_TBL.Stack.top().Func_sym_tbl.size() != 0) {
@@ -221,6 +222,7 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
             return Call_et;
         }
         else if(node->t == INT_TY){
+            //cout<<"HEHEHE"<<endl;
             for (auto child : node->children) {
                 if ((child.type == "SUB" && child.children_size() == 0) || 
                     (child.type == "NOT" && child.children_size() == 0)) {
