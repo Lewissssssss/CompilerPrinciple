@@ -1086,7 +1086,11 @@ public:
         } else if(type == IR_RETURN){            
             inst_return instr = get<inst_return>(inst);
             string res = get<string>(instr.res.opd_type_);
-            std::cout << "  ret %"<< res << ": i32" << std::endl << "}" << endl << endl;
+            if (res != "VOID"){
+                std::cout << "  ret %"<< res << ": i32" << std::endl << "}" << endl << endl;
+            } else {
+                std::cout << "  ret ()" << endl << endl;
+            }
         } else if(type == IR_BRANCH){
             inst_branch instr = get<inst_branch>(inst);
             string cond = get<string>(instr.cond.opd_type_);
