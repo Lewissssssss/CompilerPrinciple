@@ -1401,6 +1401,7 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
         auto fname = new Operand(OPD_VARIABLE, name_);
         auto ret_type = new Operand(OPD_VARIABLE, ret_type_);
         vector<Var_Type> args;
+        bool first = true;//for array param
         if (stmt.children[0].type == "FuncFParams"){
             Node params = stmt.children[0];
             vector<Node> params_ = params.children;
@@ -1408,21 +1409,37 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
             for(auto iter = params_.begin();iter!=params_.end();iter++){
                 Var_Type tmp;
                 tmp.tmp_var_name = iter->name();
+                //cout<<"ASDALSDJASKDJASLDJASK"<<iter->name()<<endl<<endl;
                 int childrensize=iter->children_size();
                 if(childrensize==0){
                     tmp.type = INT_TY;
                     tmp.val = 0;//default
                 }else {
-                    tmp.type = ARRAY;//
-                    vector<int> vec;
-                    for (int j = 0; j < childrensize; j++) {
-                        if (iter->children[j].type == "ConstGroup") {
-                            vec.push_back(9999);
-                        } else {
-                            vec.push_back(stoi(iter->children[j].type));
+                        auto pms = iter->children[0].children;
+                        vector<int> vec;
+                        vec.push_back(99999999);//+INF
+                                
+                        for(auto iter = pms.begin();iter!=pms.end();iter++){
+                            vec.push_back(stoi(iter->name()));
+                            //cout<<"SHITSHITSHIT"<<stoi(iter->name())<<endl;
                         }
-                    }
-                    tmp.val = vec;
+                        reverseVector(vec);
+                        tmp.val = vec;
+
+                        //cout<<"FUC"<<iter->children[0].name()<<endl;
+                        //cout<<"ASDASDSADADA"<<vec.size()<<endl;
+                        if(vec.size()==1)
+                        tmp.type = ARRAY;//
+                        else if(vec.size()==2)
+                        tmp.type = LIST_2;
+                        else if(vec.size()==3)
+                        tmp.type = LIST_3;
+                        else if(vec.size()==4)
+                        tmp.type = LIST_4;
+                        else if(vec.size()==5)
+                        tmp.type = LIST_5;
+                        
+
                 }
                 args.push_back(tmp);
                 symbol_table.add_symbol(tmp.tmp_var_name,tmp);
