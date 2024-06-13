@@ -1069,10 +1069,16 @@ public:
                  std::cout << "  let %"<< res << ": () = store @" << opd1;
                  else std::cout << "  let %"<< res << ": () = store %" << opd1;
                 //cout<<"STORE NAME: "<<opd2<<endl;
-                if (SYM_TBL.lookup_var(opd2).is_GLOBAL) {
-                    cout << ": i32, @" << opd2 << ": i32*" << std::endl;
+                if (SYM_TBL.lookup_var(opd1).type == INT_TY) {
+                    cout << ": i32, ";
                 } else {
-                    cout << ": i32*, %" << opd2 << ": i32*" << std::endl;
+                    cout << ": i32*, ";
+                }
+                
+                if (SYM_TBL.lookup_var(opd2).is_GLOBAL) {
+                    cout << "@" << opd2 << ": i32*" << std::endl;
+                } else {
+                    cout << "%" << opd2 << ": i32*" << std::endl;
                 }
             }
         } else if(type == IR_ALLOCATION){
@@ -1155,6 +1161,13 @@ public:
                     std::cout << ", " << name;
                 } else if (is_a_tmp_param(arg)) {
                     std::cout << ", #" << name;
+                    if (arg.type == INT_TY) {
+                        std::cout << ": i32";
+                    } else {
+                        std::cout << ": i32*";
+                    }
+                } else if (SYM_TBL.lookup_var(name).is_GLOBAL){
+                    std::cout << ", @" << name;
                     if (arg.type == INT_TY) {
                         std::cout << ": i32";
                     } else {

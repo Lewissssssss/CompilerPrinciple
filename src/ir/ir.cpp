@@ -144,8 +144,16 @@ Expr_Stmt_type get_exprTpye_from_node(Node *node) {
         } else {
             if (node->children_size() == 0) {
                 return ID_et;
+            } else {
+                for (auto child : node->children) {
+                    if ((child.type == "SUB" && child.children_size() == 0) || 
+                        (child.type == "NOT" && child.children_size() == 0)) {
+                        return Unary_ARRAY_et;
+                    }
+                }
+                return ARRAY_et;
             }
-            return ARRAY_et;
+            
             // cout<<"INASDASDA"<<endl;
         }
     } 
@@ -631,31 +639,55 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         // cout<<"In UNARY!!!"<<endl;
         string U_TY=get_unary_type(expr);
         auto zero_exp=create_constant(0, INT_TY);
-        //auto expr1_value= get<Var_Type>(translate_expr(expr,symbol_table,current_bb));
+
+        string ID = expr.name();
+        std::regex pattern("LVal\\s*(.+)");
+        std::smatch match;
+        if (std::regex_search(ID, match, pattern)){
+            ID = match[1];
+        }
+
         Var_Type expr1_value;
-        //cout<<expr.name()<<endl;
         if(isDigitString(expr.name())){
-            // expr1_value.tmp_var_name = expr.get_id();
-            // expr1_value.type = INT_TY;
-            // expr1_value.val = stoi(expr.get_id());
             expr1_value = get<Var_Type>(create_constant(stoi(expr.name()),INT_TY));
-        }else{
-            string ID = expr.name();
-            std::regex pattern("LVal\\s*(.+)");
-            std::smatch match;
-            if (std::regex_search(ID, match, pattern)){
-                ID = match[1];
+        } else {
+            expr1_value = symbol_table.lookup_var(ID);
+            string child = expr.children[0].type;
+            if (!((child == "NOT" || child == "ADD" || child == "SUB") && expr.children[0].children_size() == 0)) {
+                Var_Type expr_ = get<Var_Type>(translate_expr(expr.children[0], symbol_table,current_bb));
+                Var_Type result;
+                vector<string> idxs;
+                if ((expr.t == INT_TY || expr.t == NONE)) {
+                    string ID2 = expr_.tmp_var_name;
+                    idxs.push_back("%"+ID2+": i32");
+                    result.tmp_var_name = ID+ID2;
+                    result.type = INT_TY;
+                    result.val = 9999;//default for array, magical number 999 to signify
+                    result.is_GLOBAL=false;
+                    if (expr.children_size() < (expr1_value.type-2)) {
+                        result.type = ARRAY;
+                    }
+                    symbol_table.add_symbol(result.tmp_var_name,result);
+                    create_offset(result.tmp_var_name, ID, idxs, symbol_table);
+                    expr1_value = result;
+
+                    Var_Type temp;
+                    temp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+                    temp.type = INT_TY;
+                    temp.val = 0;//default
+                    symbol_table.add_symbol(temp.tmp_var_name, temp);
+                    create_load(temp, expr1_value,current_bb);
+                    expr1_value = temp;
+                }
+            } else {
+                Var_Type expr1_temp;
+                expr1_temp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
+                expr1_temp.type = INT_TY;
+                expr1_temp.val = 0;//default
+                symbol_table.add_symbol(expr1_temp.tmp_var_name,expr1_temp);
+                create_load(expr1_temp, expr1_value,current_bb);
+                expr1_value = expr1_temp;
             }
-            //cout<<"FUFUFUF"<<endl;
-            expr1_value= symbol_table.lookup_var(ID);
-            Var_Type expr1_temp;
-            expr1_temp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
-            expr1_temp.type = INT_TY;
-            expr1_temp.val = 0;//default
-            symbol_table.add_symbol(expr1_temp.tmp_var_name,expr1_temp);
-            create_load(expr1_temp, expr1_value,current_bb);
-            expr1_value = expr1_temp;
-            
         }
         
         Var_Type BinOpRes;
@@ -663,7 +695,6 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
         BinOpRes.val = 0;//default
         BinOpRes.type = INT_TY;
         symbol_table.add_symbol(BinOpRes.tmp_var_name,BinOpRes);
-        //symbol_table.add_symbol(expr1_value.tmp_var_name,expr1_value);
         if(U_TY == "ADD"){
             create_binary("ADD",BinOpRes,get<Var_Type>(zero_exp),expr1_value,current_bb);
 
@@ -701,12 +732,12 @@ ir_Type translate_expr(Node expr,Symbol_Table& symbol_table,BasicBlock current_b
                     string arg_temp = get<Var_Type>(translated_arg).tmp_var_name;
                     func.args.push_back(arg_type);
                     func.tmp_arg_name.push_back(arg_temp);
+
                 }else{
                     if (get<int>(get<Var_Type>(translated_arg).val) == 9999){
                         Var_Type Lval_tmp;
                         Lval_tmp.tmp_var_name = to_string(symbol_table.get_current_tbl_size());
                         Lval_tmp.type=INT_TY;
-                        //cout<<333;
                         
                         //cout<<"OVER"<<endl;
                         Type arg_type = Lval_tmp.type;
@@ -1469,10 +1500,14 @@ BasicBlock translate_stmt(Node stmt,Symbol_Table& symbol_table,BasicBlock curren
                     for (int j = 0; j < childrensize; j++) {
                         if (iter->children[j].type == "ConstGroup") {
                             vec.push_back(9999);
+                            for (Node CG = iter->children[j]; CG.children_size()!=0; CG=CG.children[0]){
+                                vec.push_back(stoi(CG.children[0].type));
+                            }
                         } else {
                             vec.push_back(stoi(iter->children[j].type));
                         }
                     }
+                    reverseVector(vec);
                     tmp.val = vec;
                 }
                 args.push_back(tmp);
